@@ -97,9 +97,11 @@
         .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
         .modal-box { background: #10162a; border: 1px solid #00f3ff; padding: 25px; border-radius: 15px; width: 100%; max-width: 380px; text-align: center; }
 
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #070914; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; }
-        .nav-item { text-align: center; color: #64748b; font-size: 11px; font-weight: bold; flex: 1; cursor: pointer; transition: 0.2s; }
+        /* --- UPDATED BOTTOM MENU SIZE FIX --- */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #070914; display: flex; justify-content: space-around; padding: 12px 0 !important; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; }
+        .nav-item { text-align: center; color: #64748b; font-size: 14px !important; font-weight: bold; flex: 1; cursor: pointer; transition: 0.2s; }
         .nav-item.active { color: #ffaa00; } 
+        .nav-icon, .nav-item i { font-size: 26px !important; display: inline-block; margin-bottom: 4px; }
         
         .app-section { display: none; }
         .app-section.active { display: block; }
@@ -231,7 +233,7 @@
             </div>
             <div class="app-brand" id="login-app-name">MH WARRIORS</div>
             
-            <div id="register-form">
+            <div id="register-form" style="display: none;">
                 <div class="form-title">Register</div>
                 <div class="name-row">
                     <input type="text" id="reg-firstname" class="auth-input" placeholder="First Name *">
@@ -245,7 +247,7 @@
                 <div class="switch-auth">Existing user? <span onclick="toggleAuthMode('login')">Login</span></div>
             </div>
 
-            <div id="login-form" style="display: none;">
+            <div id="login-form">
                 <div class="form-title">Login</div>
                 <input type="text" id="login-email" class="auth-input" placeholder="Username / Email / Mobile No.">
                 <input type="password" id="login-password" class="auth-input" placeholder="Password">
@@ -566,12 +568,35 @@
         // 3. START APP & LISTENERS
         window.onload = function() {
             startFirebaseListeners();
-            if(currentUserKey) { toggleAuthMode('login'); } 
-            else { toggleAuthMode('register'); }
+            if(currentUserKey) { 
+                document.getElementById('auth-screen').style.display = 'none'; 
+                document.getElementById('main-app').style.display = 'block'; 
+                loadDynamicFolders(); 
+                loadBrandingUI(); 
+            } 
+            else { toggleAuthMode('login'); }
         };
 
         function startFirebaseListeners() {
-            // Listen to Matches
+            if(currentUserKey) {
+                db.ref('users/' + currentUserKey).on('value', (snapshot) => {
+                    if(snapshot.exists()) {
+                        currentUserData = snapshot.val();
+                        currentUserData.key = snapshot.key;
+                        updateWalletUI();
+                        updateMenuStats();
+                        renderTxHistory();
+                        
+                        syncJoinedMatches();
+                        renderCategoryMatches();
+                        updateJoinedMatchesUI();
+                        renderMyStatistics();
+                    } else {
+                        logoutApp();
+                    }
+                });
+            }
+
             db.ref('matches').on('value', (snapshot) => {
                 fbMatches = [];
                 snapshot.forEach(child => { let m = child.val(); m.key = child.key; fbMatches.push(m); });
@@ -581,14 +606,12 @@
                 renderMyStatistics();
             });
 
-            // Listen to Categories
             db.ref('categories').on('value', (snapshot) => {
                 fbCategories = [];
                 snapshot.forEach(child => { let c = child.val(); c.key = child.key; fbCategories.push(c); });
                 loadDynamicFolders();
             });
 
-            // Listen to Settings & Branding
             db.ref('settings').on('value', (snapshot) => {
                 fbSettings = snapshot.val() || {};
                 loadBrandingUI();
@@ -596,30 +619,12 @@
                 else { document.getElementById('maint-screen').style.display = 'none'; }
             });
 
-            // Listen to Notifications
             db.ref('notifications').on('value', (snapshot) => {
                 fbNotifications = [];
                 snapshot.forEach(child => { let n = child.val(); n.key = child.key; fbNotifications.push(n); });
                 checkNewNotifications();
             });
 
-            // Listen to Current Logged-in User Live Wallet
-            if(currentUserKey) {
-                db.ref('users/' + currentUserKey).on('value', (snapshot) => {
-                    if(snapshot.exists()) {
-                        currentUserData = snapshot.val();
-                        currentUserData.key = snapshot.key;
-                        updateWalletUI();
-                        updateMenuStats();
-                        renderTxHistory();
-                    } else {
-                        // User was deleted
-                        logoutApp();
-                    }
-                });
-            }
-
-            // Global Leaderboard Listen
             db.ref('users').on('value', (snapshot) => {
                 let usersList = [];
                 snapshot.forEach(child => { usersList.push(child.val()); });
@@ -627,7 +632,7 @@
             });
         }
 
-        // --- AUTHENTICATION (LIVE) ---
+        // --- AUTHENTICATION ---
         function toggleAuthMode(mode) { 
             document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; 
             document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; 
@@ -638,12 +643,11 @@
             let lname = document.getElementById('reg-lastname').value.trim(); 
             let uname = document.getElementById('reg-username').value.trim(); 
             let phone = document.getElementById('reg-phone').value.trim(); 
-            let email = document.getElementById('reg-email').value.trim(); // Fixed: Email saving added
+            let email = document.getElementById('reg-email').value.trim(); 
             let pass = document.getElementById('reg-password').value; 
             
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
 
-            // Check if user exists
             db.ref('users').orderByChild('username').equalTo(uname).once('value', snapshot => {
                 if(snapshot.exists()) {
                     alert("Username already taken! Choose another.");
@@ -656,7 +660,7 @@
                     newUserRef.set(userData).then(() => {
                         localStorage.setItem('mh_live_user_key', newUserRef.key);
                         currentUserKey = newUserRef.key;
-                        startFirebaseListeners(); // Restart listener for this user
+                        startFirebaseListeners(); 
                         enterApp();
                     });
                 }
@@ -669,7 +673,6 @@
 
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
 
-            // UPDATED: Now checks Username, Email, OR Phone Number
             db.ref('users').once('value', snapshot => {
                 if(snapshot.exists()) {
                     let userObj = null; let userKey = null;
@@ -684,7 +687,7 @@
                     if(userObj) {
                         localStorage.setItem('mh_live_user_key', userKey);
                         currentUserKey = userKey;
-                        startFirebaseListeners(); // Start tracking wallet
+                        startFirebaseListeners(); 
                         enterApp();
                     } else { alert("Incorrect Details or Password! ❌"); }
                 } else { alert("User not found! ❌"); }
@@ -705,7 +708,7 @@
             toggleAuthMode('login'); 
         }
 
-        // --- WALLET & FINANCE (LIVE) ---
+        // --- WALLET & FINANCE ---
         function updateWalletUI() {
             if(!currentUserData) return;
             let d = currentUserData.deposit || 0;
@@ -733,7 +736,6 @@
             list.innerHTML = html;
         }
 
-        // Payment Gateway Logic
         let pgTimerInterval; let currentPayAmount = 0;
         function openPaymentGateway() { 
             let amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; 
@@ -768,7 +770,6 @@
             if(amt <= 0 || (currentUserData.winning||0) < amt) { alert("Insufficient WINNING balance!"); return; } 
             let upi = prompt("Enter your UPI ID:"); if(!upi) return; 
             
-            // Deduct locally and update firebase
             db.ref('users/' + currentUserKey).update({ winning: currentUserData.winning - amt });
             db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: amt, upi: upi, status: 'Pending' });
             db.ref('users/' + currentUserKey + '/transactions').push({ title: "Withdrawal Requested", amount: amt, sign: "-", status: "Pending", date: new Date().toLocaleString() });
@@ -787,11 +788,16 @@
         
         function renderCategoryMatches() { 
             let matchGrid = document.getElementById('dynamic-match-grid'); 
-            let filteredMatches = fbMatches.filter(match => match.category === currentActiveCategory && 
-                ((currentCategoryTab === 'upcoming' && !match.roomId && !match.resultText) || 
-                 (currentCategoryTab === 'ongoing' && match.roomId && !match.resultText) || 
-                 (currentCategoryTab === 'resulted' && match.resultText))
-            ); 
+            
+            let filteredMatches = fbMatches.filter(match => {
+                let hasRoomId = match.roomId && match.roomId.trim() !== "";
+                let hasResult = match.resultText && match.resultText.trim() !== "";
+                
+                return match.category === currentActiveCategory && 
+                    ((currentCategoryTab === 'upcoming' && !hasRoomId && !hasResult) || 
+                     (currentCategoryTab === 'ongoing' && hasRoomId && !hasResult) || 
+                     (currentCategoryTab === 'resulted' && hasResult));
+            }); 
             
             if(filteredMatches.length === 0) { matchGrid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #8a9bb4;">No matches found.</p>`; return; } 
             
@@ -805,7 +811,7 @@
                 if(currentCategoryTab === 'upcoming') { statusBadge = `<span style="color:#ffaa00; font-size:10px;">📅 UPCOMING</span>`; } 
                 else if(currentCategoryTab === 'ongoing') { 
                     statusBadge = `<span style="color:#39ff14; font-size:10px;">🔴 LIVE</span>`; 
-                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px; text-align:left;"><div style="font-size:11px; color:#8a9bb4;">Room ID: <b style="color:#00f3ff;">${match.roomId}</b></div><div style="font-size:11px; color:#8a9bb4;">Pass: <b style="color:#00f3ff;">${match.roomPass}</b></div></div>`; } 
+                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;"><div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div><button style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${match.roomId}'); alert('Room ID Copied! ✅');">COPY</button></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div><button style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${match.roomPass}'); alert('Password Copied! ✅');">COPY</button></div></div>`; } 
                     else { extraInfo = `<div style="margin-top:10px; text-align:center; color:#ff0055; font-size:10px; font-weight:bold; background:rgba(255,0,85,0.1); padding:6px; border-radius:4px;">🔒 ID/PASS HIDDEN</div>`; } 
                 } 
                 else if (currentCategoryTab === 'resulted') { 
@@ -830,6 +836,21 @@
             document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; 
             document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
             
+            let isJoined = joinedMatches.some(jm => jm.matchId === match.key);
+            let extraDiv = document.getElementById('detail-extra-info');
+            if (match.roomId && !match.resultText) {
+                if (isJoined) {
+                    extraDiv.innerHTML = `<div class="cred-box" style="margin: 0 15px 12px 15px;">
+                        <div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button class="copy-btn" onclick="navigator.clipboard.writeText('${match.roomId}'); alert('Room ID Copied! ✅')">COPY</button></div>
+                        <div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button class="copy-btn" onclick="navigator.clipboard.writeText('${match.roomPass}'); alert('Password Copied! ✅')">COPY</button></div>
+                    </div>`;
+                } else {
+                    extraDiv.innerHTML = `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`;
+                }
+            } else {
+                extraDiv.innerHTML = "";
+            }
+
             let filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
             let btn = document.getElementById('join-now-btn'); 
             
@@ -937,7 +958,9 @@
             joinedMatches.forEach(uMatch => { 
                 let liveMatch = fbMatches.find(m => m.key === uMatch.matchId); 
                 if(liveMatch) { 
-                    let status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
+                    let hasRoomId = liveMatch.roomId && liveMatch.roomId.trim() !== "";
+                    let hasResult = liveMatch.resultText && liveMatch.resultText.trim() !== "";
+                    let status = hasResult ? 'completed' : (hasRoomId ? 'ongoing' : 'upcoming'); 
                     if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } 
                 } 
             }); 
