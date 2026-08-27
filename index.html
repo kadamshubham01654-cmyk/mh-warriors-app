@@ -550,9 +550,9 @@
                 return;
             }
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
+                navigator.clipboard.writeText(text).then(function() {
                     alert(type + ' Copied! ✅');
-                }).catch(err => {
+                }).catch(function(err) {
                     alert(type + ': ' + text);
                 });
             } else {
@@ -566,15 +566,15 @@
             try { document.cookie = key + "=" + value + "; path=/; max-age=31536000"; } catch(e) {}
         }
         function getAppStorage(key) {
-            let val = null;
+            var val = null;
             try { val = localStorage.getItem(key); } catch(e) {}
             if (val) return val;
             try {
-                let name = key + "=";
-                let decodedCookie = decodeURIComponent(document.cookie);
-                let ca = decodedCookie.split(';');
-                for(let i = 0; i < ca.length; i++) {
-                    let c = ca[i].trim();
+                var name = key + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for(var i = 0; i < ca.length; i++) {
+                    var c = ca[i].trim();
                     if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
                 }
             } catch(e) {}
@@ -585,22 +585,22 @@
             try { document.cookie = key + "=; path=/; max-age=0"; } catch(e) {}
         }
 
-        let currentUserKey = getAppStorage('mh_live_user_key');
-        let currentUserData = null;
+        var currentUserKey = getAppStorage('mh_live_user_key');
+        var currentUserData = null;
         
-        let fbMatches = [];
-        let fbCategories = [];
-        let fbSettings = {};
-        let fbNotifications = [];
-        let joinedMatches = []; 
-        let activeMatchId = null; 
+        var fbMatches = [];
+        var fbCategories = [];
+        var fbSettings = {};
+        var fbNotifications = [];
+        var joinedMatches = []; 
+        var activeMatchId = null; 
         
-        let currentMMTab = 'ongoing'; 
-        let currentActiveCategory = ""; 
-        let currentCategoryTab = 'upcoming';
-        let knownNotifCount = 0;
-        let selectedSeats = [];
-        let currentMatchFee = 0;
+        var currentMMTab = 'ongoing'; 
+        var currentActiveCategory = ""; 
+        var currentCategoryTab = 'upcoming';
+        var knownNotifCount = 0;
+        var selectedSeats = [];
+        var currentMatchFee = 0;
 
         // 3. START APP & LISTENERS
         document.addEventListener("DOMContentLoaded", function() {
@@ -616,11 +616,10 @@
         });
 
         function startFirebaseListeners() {
-            // ANTI-CRASH: Remove old duplicate listeners before adding new ones
             db.ref().off(); 
 
             if(currentUserKey) {
-                db.ref('users/' + currentUserKey).on('value', (snapshot) => {
+                db.ref('users/' + currentUserKey).on('value', function(snapshot) {
                     if(snapshot.exists()) {
                         currentUserData = snapshot.val();
                         currentUserData.key = snapshot.key;
@@ -638,124 +637,133 @@
                 });
             }
 
-            db.ref('matches').on('value', (snapshot) => {
+            db.ref('matches').on('value', function(snapshot) {
                 fbMatches = [];
-                snapshot.forEach(child => { let m = child.val(); m.key = child.key; fbMatches.push(m); });
+                snapshot.forEach(function(child) { var m = child.val(); m.key = child.key; fbMatches.push(m); });
                 syncJoinedMatches();
                 renderCategoryMatches();
                 updateJoinedMatchesUI();
                 renderMyStatistics();
             });
 
-            db.ref('categories').on('value', (snapshot) => {
+            db.ref('categories').on('value', function(snapshot) {
                 fbCategories = [];
-                snapshot.forEach(child => { let c = child.val(); c.key = child.key; fbCategories.push(c); });
+                snapshot.forEach(function(child) { var c = child.val(); c.key = child.key; fbCategories.push(c); });
                 loadDynamicFolders();
             });
 
-            db.ref('settings').on('value', (snapshot) => {
+            db.ref('settings').on('value', function(snapshot) {
                 fbSettings = snapshot.val() || {};
                 loadBrandingUI();
                 if(fbSettings.maintenance === true) { document.getElementById('maint-screen').style.display = 'flex'; } 
                 else { document.getElementById('maint-screen').style.display = 'none'; }
             });
 
-            db.ref('notifications').on('value', (snapshot) => {
+            db.ref('notifications').on('value', function(snapshot) {
                 fbNotifications = [];
-                snapshot.forEach(child => { let n = child.val(); n.key = child.key; fbNotifications.push(n); });
+                snapshot.forEach(function(child) { var n = child.val(); n.key = child.key; fbNotifications.push(n); });
                 checkNewNotifications();
             });
 
-            db.ref('users').on('value', (snapshot) => {
-                let usersList = [];
-                snapshot.forEach(child => { usersList.push(child.val()); });
+            db.ref('users').on('value', function(snapshot) {
+                var usersList = [];
+                snapshot.forEach(function(child) { usersList.push(child.val()); });
                 loadLeaderboard(usersList);
             });
         }
 
-        // --- AUTHENTICATION (NO TIMEOUT) ---
+        // --- BULLETPROOF AUTHENTICATION ---
         function toggleAuthMode(mode) { 
             document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; 
             document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; 
         }
 
         function registerUser() { 
-            let fname = document.getElementById('reg-firstname').value.trim(); 
-            let lname = document.getElementById('reg-lastname').value.trim(); 
-            let uname = document.getElementById('reg-username').value.trim(); 
-            let phone = document.getElementById('reg-phone').value.trim(); 
-            let email = document.getElementById('reg-email').value.trim(); 
-            let pass = document.getElementById('reg-password').value; 
+            var fname = document.getElementById('reg-firstname').value.trim(); 
+            var lname = document.getElementById('reg-lastname').value.trim(); 
+            var uname = document.getElementById('reg-username').value.trim(); 
+            var phone = document.getElementById('reg-phone').value.trim(); 
+            var email = document.getElementById('reg-email').value.trim(); 
+            var pass = document.getElementById('reg-password').value; 
             
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
 
-            let btn = document.getElementById('btn-reg-main');
-            btn.innerText = "REGISTERING...";
-            btn.disabled = true;
+            var btn = document.getElementById('btn-reg-main');
+            btn.innerText = "WAIT...";
 
-            db.ref('users').orderByChild('username').equalTo(uname).once('value').then(snapshot => {
-                if(snapshot.exists()) {
-                    alert("Username already taken! Choose another.");
-                    btn.innerText = "REGISTER NOW"; btn.disabled = false;
-                } else {
-                    let newUserRef = db.ref('users').push();
-                    let userData = {
-                        firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass,
-                        deposit: 0, winning: 0, key: newUserRef.key
-                    };
-                    newUserRef.set(userData).then(() => {
-                        setAppStorage('mh_live_user_key', newUserRef.key);
-                        currentUserKey = newUserRef.key;
-                        startFirebaseListeners(); 
-                        enterApp();
-                        btn.innerText = "REGISTER NOW"; btn.disabled = false;
-                    }).catch(err => {
-                        alert("Registration Error: " + err.message);
-                        btn.innerText = "REGISTER NOW"; btn.disabled = false;
-                    });
-                }
-            }).catch(err => {
-                alert("Database Connection Error: " + err.message);
-                btn.innerText = "REGISTER NOW"; btn.disabled = false;
-            });
+            try {
+                db.ref('users').orderByChild('username').equalTo(uname).once('value', function(snapshot) {
+                    if(snapshot.exists()) {
+                        alert("Username already taken! Choose another.");
+                        btn.innerText = "REGISTER NOW";
+                    } else {
+                        var newUserRef = db.ref('users').push();
+                        var userData = {
+                            firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass,
+                            deposit: 0, winning: 0, key: newUserRef.key
+                        };
+                        newUserRef.set(userData, function(error) {
+                            if (error) {
+                                alert("Registration Error: " + error.message);
+                                btn.innerText = "REGISTER NOW";
+                            } else {
+                                setAppStorage('mh_live_user_key', newUserRef.key);
+                                currentUserKey = newUserRef.key;
+                                startFirebaseListeners(); 
+                                enterApp();
+                                btn.innerText = "REGISTER NOW";
+                            }
+                        });
+                    }
+                }, function(error) {
+                    alert("Database Error: " + error.message);
+                    btn.innerText = "REGISTER NOW";
+                });
+            } catch (e) {
+                alert("App Error: " + e.message);
+                btn.innerText = "REGISTER NOW";
+            }
         }
 
         function loginUser() { 
-            let loginVal = document.getElementById('login-email').value.trim();
-            let pass = document.getElementById('login-password').value;
+            var loginVal = document.getElementById('login-email').value.trim();
+            var pass = document.getElementById('login-password').value;
 
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
 
-            let btn = document.getElementById('btn-login-main');
-            btn.innerText = "LOGGING IN...";
-            btn.disabled = true;
+            var btn = document.getElementById('btn-login-main');
+            btn.innerText = "WAIT...";
 
-            db.ref('users').once('value').then(snapshot => {
-                btn.innerText = "LOGIN NOW"; btn.disabled = false;
-                
-                if(snapshot.exists()) {
-                    let userObj = null; let userKey = null;
-                    snapshot.forEach(child => { 
-                        let u = child.val();
-                        let matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || 
-                                      (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || 
-                                      (u.phone && String(u.phone) === String(loginVal));
-                        if(matchId && u.password === pass) {
-                            userObj = u; userKey = child.key;
-                        }
-                    });
-                    
-                    if(userObj) {
-                        setAppStorage('mh_live_user_key', userKey);
-                        currentUserKey = userKey;
-                        startFirebaseListeners(); 
-                        enterApp();
-                    } else { alert("Incorrect Details or Password! ❌"); }
-                } else { alert("User not found! ❌"); }
-            }).catch(err => {
-                btn.innerText = "LOGIN NOW"; btn.disabled = false;
-                alert("Database Connection Error: " + err.message);
-            });
+            try {
+                db.ref('users').once('value', function(snapshot) {
+                    btn.innerText = "LOGIN NOW";
+                    if(snapshot.exists()) {
+                        var userObj = null; var userKey = null;
+                        snapshot.forEach(function(child) { 
+                            var u = child.val();
+                            var matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || 
+                                          (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || 
+                                          (u.phone && String(u.phone) === String(loginVal));
+                            if(matchId && u.password === pass) {
+                                userObj = u; userKey = child.key;
+                            }
+                        });
+                        
+                        if(userObj) {
+                            setAppStorage('mh_live_user_key', userKey);
+                            currentUserKey = userKey;
+                            startFirebaseListeners(); 
+                            enterApp();
+                        } else { alert("Incorrect Details or Password! ❌"); }
+                    } else { alert("User not found! ❌"); }
+                }, function(error) {
+                    btn.innerText = "LOGIN NOW";
+                    alert("Database Connection Error: " + error.message);
+                });
+            } catch(e) {
+                btn.innerText = "LOGIN NOW";
+                alert("App Error: " + e.message);
+            }
         }
 
         function enterApp() { 
@@ -775,9 +783,9 @@
         // --- WALLET & FINANCE ---
         function updateWalletUI() {
             if(!currentUserData) return;
-            let d = currentUserData.deposit || 0;
-            let w = currentUserData.winning || 0;
-            let total = d + w;
+            var d = currentUserData.deposit || 0;
+            var w = currentUserData.winning || 0;
+            var total = d + w;
 
             document.getElementById('wallet-balance').innerText = total;
             document.getElementById('wallet-coin-display').innerText = total;
@@ -790,19 +798,19 @@
         function openTxHistoryPage() { document.getElementById('tx-history-subpage').style.display = 'block'; renderTxHistory(); }
 
         function renderTxHistory() {
-            let list = document.getElementById('user-tx-list');
+            var list = document.getElementById('user-tx-list');
             if(!currentUserData || !currentUserData.transactions) { list.innerHTML = `<p style="text-align:center; color:#8a9bb4; margin-top:30px;">No Transactions Yet.</p>`; return; }
-            let txs = Object.values(currentUserData.transactions).reverse();
-            let html = "";
-            txs.forEach(tx => {
+            var txs = Object.values(currentUserData.transactions).reverse();
+            var html = "";
+            txs.forEach(function(tx) {
                 html += `<div class="tx-item"><div><div class="tx-title">${tx.title}</div><div class="tx-date">${tx.date}</div></div><div style="text-align:right;"><div class="tx-amt ${tx.sign === '+' ? 'plus' : 'minus'}">${tx.sign} 🪙 ${tx.amount}</div><div class="tx-status ${tx.status}">${tx.status}</div></div></div>`;
             });
             list.innerHTML = html;
         }
 
-        let pgTimerInterval; let currentPayAmount = 0;
+        var pgTimerInterval; var currentPayAmount = 0;
         function openPaymentGateway() { 
-            let amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; 
+            var amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; 
             currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; 
             document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
             document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; 
@@ -810,11 +818,11 @@
             startPGTimer(8 * 60); document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block'; 
         }
         function closePaymentGateway() { document.getElementById('payment-gateway-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; clearInterval(pgTimerInterval); }
-        function startPGTimer(duration) { let timerDisplay = document.getElementById('pg-timer-display'); let timer = duration, minutes, seconds; clearInterval(pgTimerInterval); pgTimerInterval = setInterval(function () { minutes = parseInt(timer / 60, 10); seconds = parseInt(timer % 60, 10); minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds; timerDisplay.textContent = minutes + ":" + seconds; if (--timer < 0) { clearInterval(pgTimerInterval); timerDisplay.textContent = "EXPIRED"; closePaymentGateway(); } }, 1000); }
-        function payViaGatewayApp(appType) { let upi = fbSettings.upiId; if(!upi) { alert("Admin hasn't set UPI!"); return; } let upiLink = `upi://pay?pa=${upi}&pn=${encodeURIComponent(fbSettings.appName||'App')}&am=${currentPayAmount}&cu=INR`; window.location.href = upiLink; }
+        function startPGTimer(duration) { var timerDisplay = document.getElementById('pg-timer-display'); var timer = duration, minutes, seconds; clearInterval(pgTimerInterval); pgTimerInterval = setInterval(function () { minutes = parseInt(timer / 60, 10); seconds = parseInt(timer % 60, 10); minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds; timerDisplay.textContent = minutes + ":" + seconds; if (--timer < 0) { clearInterval(pgTimerInterval); timerDisplay.textContent = "EXPIRED"; closePaymentGateway(); } }, 1000); }
+        function payViaGatewayApp(appType) { var upi = fbSettings.upiId; if(!upi) { alert("Admin hasn't set UPI!"); return; } var upiLink = `upi://pay?pa=${upi}&pn=${encodeURIComponent(fbSettings.appName||'App')}&am=${currentPayAmount}&cu=INR`; window.location.href = upiLink; }
         
         function submitGatewayUTR() { 
-            let utr = document.getElementById('pg-utr-input').value.trim(); 
+            var utr = document.getElementById('pg-utr-input').value.trim(); 
             if(utr.length < 10) { alert("Enter valid UTR Number!"); return; } 
             
             db.ref('finance/deposits').push({
@@ -829,10 +837,10 @@
 
         function withdrawPrompt() { 
             if(!currentUserData) return;
-            let amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); 
-            if(!amount) return; let amt = parseInt(amount); 
+            var amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); 
+            if(!amount) return; var amt = parseInt(amount); 
             if(amt <= 0 || (currentUserData.winning||0) < amt) { alert("Insufficient WINNING balance!"); return; } 
-            let upi = prompt("Enter your UPI ID:"); if(!upi) return; 
+            var upi = prompt("Enter your UPI ID:"); if(!upi) return; 
             
             db.ref('users/' + currentUserKey).update({ winning: currentUserData.winning - amt });
             db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: amt, upi: upi, status: 'Pending' });
@@ -843,19 +851,19 @@
 
         // --- MATCH & FOLDER SYSTEM ---
         function loadDynamicFolders() { 
-            let grid = document.getElementById('dynamic-folders-grid'); 
+            var grid = document.getElementById('dynamic-folders-grid'); 
             if(fbCategories.length === 0) { grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #8a9bb4; padding: 20px;">No Games Available.</p>`; return; } 
-            grid.innerHTML = ""; fbCategories.forEach(cat => { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); 
+            grid.innerHTML = ""; fbCategories.forEach(function(cat) { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); 
         }
         function openCategoryFolder(categoryName) { currentActiveCategory = categoryName; document.getElementById('category-title-text').innerText = categoryName; document.getElementById('category-page').style.display = 'block'; switchCategoryTab('upcoming'); }
-        function switchCategoryTab(tabName) { currentCategoryTab = tabName; document.querySelectorAll('#category-tabs .mm-tab').forEach(t => t.classList.remove('active')); document.getElementById('cat-tab-' + tabName).classList.add('active'); renderCategoryMatches(); }
+        function switchCategoryTab(tabName) { currentCategoryTab = tabName; document.querySelectorAll('#category-tabs .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('cat-tab-' + tabName).classList.add('active'); renderCategoryMatches(); }
         
         function renderCategoryMatches() { 
-            let matchGrid = document.getElementById('dynamic-match-grid'); 
+            var matchGrid = document.getElementById('dynamic-match-grid'); 
             
-            let filteredMatches = fbMatches.filter(match => {
-                let hasRoomId = match.roomId && match.roomId.trim() !== "";
-                let hasResult = match.resultText && match.resultText.trim() !== "";
+            var filteredMatches = fbMatches.filter(function(match) {
+                var hasRoomId = match.roomId && match.roomId.trim() !== "";
+                var hasResult = match.resultText && match.resultText.trim() !== "";
                 
                 return match.category === currentActiveCategory && 
                     ((currentCategoryTab === 'upcoming' && !hasRoomId && !hasResult) || 
@@ -865,12 +873,12 @@
             
             if(filteredMatches.length === 0) { matchGrid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #8a9bb4;">No matches found.</p>`; return; } 
             
-            let html = ""; 
-            filteredMatches.forEach(match => { 
-                let filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
-                let isJoined = joinedMatches.some(jm => jm.matchId === match.key); 
-                let statusBadge = ""; let extraInfo = ""; 
-                let matchTimeStr = match.date ? `${match.date} ${match.time}` : "TBA";
+            var html = ""; 
+            filteredMatches.forEach(function(match) { 
+                var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
+                var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); 
+                var statusBadge = ""; var extraInfo = ""; 
+                var matchTimeStr = match.date ? `${match.date} ${match.time}` : "TBA";
 
                 if(currentCategoryTab === 'upcoming') { statusBadge = `<span style="color:#ffaa00; font-size:10px;">📅 UPCOMING</span>`; } 
                 else if(currentCategoryTab === 'ongoing') { 
@@ -898,7 +906,7 @@
 
         // --- MATCH DETAILS & SEAT JOINING ---
         function openMatchDetail(key) { 
-            let match = fbMatches.find(m => m.key === key); if(!match) return; 
+            var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; 
             activeMatchId = key; 
             document.getElementById('detail-match-name').innerText = match.title; 
             document.getElementById('detail-img').src = match.image; 
@@ -909,8 +917,8 @@
             document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; 
             document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
             
-            let isJoined = joinedMatches.some(jm => jm.matchId === match.key);
-            let extraDiv = document.getElementById('detail-extra-info');
+            var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; });
+            var extraDiv = document.getElementById('detail-extra-info');
             if (match.roomId && !match.resultText) {
                 if (isJoined) {
                     extraDiv.innerHTML = `<div class="cred-box" style="margin: 0 15px 12px 15px;">
@@ -924,8 +932,8 @@
                 extraDiv.innerHTML = "";
             }
 
-            let filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
-            let btn = document.getElementById('join-now-btn'); 
+            var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
+            var btn = document.getElementById('join-now-btn'); 
             
             if(match.resultText) { btn.innerText = "COMPLETED"; btn.style.background = "#2D63F9"; btn.removeAttribute('onclick'); } 
             else if(match.roomId) { btn.innerText = "ENTRY CLOSED"; btn.style.background = "#ff0055"; btn.removeAttribute('onclick'); } 
@@ -937,19 +945,19 @@
         function closeMatchDetail() { document.getElementById('match-detail-page').style.display = 'none'; }
 
         function openSeatSelection() {
-            let match = fbMatches.find(m => m.key === activeMatchId); if(!match) return;
+            var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match) return;
             selectedSeats = []; currentMatchFee = parseInt(match.fee);
-            let container = document.getElementById('seat-grid-container');
-            let html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">';
+            var container = document.getElementById('seat-grid-container');
+            var html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">';
             
-            let bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(p => p.position) : [];
-            let totalTeams = match.totalTeams || 12; 
-            let chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']);
+            var bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(function(p) { return p.position; }) : [];
+            var totalTeams = match.totalTeams || 12; 
+            var chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']);
             
-            for(let i=1; i<=totalTeams; i++) {
+            for(var i=1; i<=totalTeams; i++) {
                 html += `<div style="background:#121a2e; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;"><div style="font-size:11px; color:#8a9bb4; margin-bottom:8px; font-weight:bold;">Team ${i}</div><div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">`;
-                chars.forEach(c => {
-                    let posId = `T${i}-${c}`;
+                chars.forEach(function(c) {
+                    var posId = `T${i}-${c}`;
                     if(bookedSeats.includes(posId)) { html += `<div style="width:28px; height:28px; border-radius:4px; background:#334155; border:1px solid #334155; color:#8a9bb4; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:not-allowed;">${c}</div>`; } 
                     else { html += `<div id="seat-${posId}" onclick="toggleSeat('${posId}')" style="width:28px; height:28px; border-radius:4px; background:#070914; border:1px solid #64748b; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; transition:0.2s;">${c}</div>`; }
                 });
@@ -961,7 +969,7 @@
         }
 
         function toggleSeat(posId) {
-            let idx = selectedSeats.indexOf(posId); let el = document.getElementById(`seat-${posId}`);
+            var idx = selectedSeats.indexOf(posId); var el = document.getElementById(`seat-${posId}`);
             if(idx > -1) { selectedSeats.splice(idx, 1); el.style.background = '#070914'; el.style.borderColor = '#64748b'; el.style.color = '#fff'; } 
             else { if(selectedSeats.length >= 4) return; selectedSeats.push(posId); el.style.background = '#39ff14'; el.style.borderColor = '#39ff14'; el.style.color = '#000'; }
             document.getElementById('btn-next-seats').innerText = `NEXT (${selectedSeats.length} Selected)`;
@@ -971,8 +979,8 @@
 
         function goToRegistration() {
             if(selectedSeats.length === 0) return;
-            let dynamicInputs = document.getElementById('dynamic-player-inputs'); let html = "";
-            selectedSeats.forEach((seat, idx) => {
+            var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = "";
+            selectedSeats.forEach(function(seat, idx) {
                 html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);"><label style="font-size:12px; color:#39ff14; font-weight:bold; display:block; margin-bottom:8px;">Player ${idx+1} <span style="color:#fff;">[ Pos: ${seat} ]</span></label><input type="text" id="reg-ign-${idx}" class="auth-input" style="margin-bottom:8px;" placeholder="In-Game Name *"><input type="text" id="reg-uid-${idx}" class="auth-input" style="margin-bottom:0;" placeholder="Free Fire UID *"></div>`;
             });
             dynamicInputs.innerHTML = html;
@@ -981,27 +989,27 @@
         }
 
         function confirmMatchJoin() { 
-            let match = fbMatches.find(m => m.key === activeMatchId); if(!match || !currentUserData) return;
-            let totalFee = match.fee * selectedSeats.length;
-            let totalBal = (currentUserData.deposit || 0) + (currentUserData.winning || 0);
+            var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match || !currentUserData) return;
+            var totalFee = match.fee * selectedSeats.length;
+            var totalBal = (currentUserData.deposit || 0) + (currentUserData.winning || 0);
             if(totalBal < totalFee) { alert(`Insufficient coins! Need 🪙 ${totalFee}`); return; } 
 
-            let updates = {};
-            for(let i=0; i<selectedSeats.length; i++) {
-                let ign = document.getElementById(`reg-ign-${i}`).value.trim();
-                let uid = document.getElementById(`reg-uid-${i}`).value.trim();
+            var updates = {};
+            for(var i=0; i<selectedSeats.length; i++) {
+                var ign = document.getElementById(`reg-ign-${i}`).value.trim();
+                var uid = document.getElementById(`reg-uid-${i}`).value.trim();
                 if(!ign || !uid) { alert("Enter Name & UID!"); return; }
-                let newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push();
+                var newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push();
                 updates[`matches/${match.key}/joinedPlayers/${newPlayerRef.key}`] = { name: ign, uid: uid, position: selectedSeats[i], appUser: currentUserData.username };
             }
 
-            let newDep = currentUserData.deposit; let newWin = currentUserData.winning;
-            if (newDep >= totalFee) { newDep -= totalFee; } else { let rem = totalFee - newDep; newDep = 0; newWin -= rem; }
+            var newDep = currentUserData.deposit; var newWin = currentUserData.winning;
+            if (newDep >= totalFee) { newDep -= totalFee; } else { var rem = totalFee - newDep; newDep = 0; newWin -= rem; }
             
             updates[`users/${currentUserKey}/deposit`] = newDep;
             updates[`users/${currentUserKey}/winning`] = newWin;
 
-            db.ref().update(updates).then(() => {
+            db.ref().update(updates).then(function() {
                 db.ref(`users/${currentUserKey}/transactions`).push({ title: "Joined Match: " + match.title, amount: totalFee, sign: "-", status: "Success", date: new Date().toLocaleString() });
                 alert(`Successfully Registered!`); 
                 document.getElementById('register-modal').style.display = 'none'; closeSeatSelection(); closeMatchDetail();
@@ -1009,54 +1017,54 @@
         }
         function closeRegisterModal() { document.getElementById('register-modal').style.display = 'none'; }
         
-        function openRegisteredPlayersModal() { let match = fbMatches.find(m => m.key === activeMatchId); let players = match && match.joinedPlayers ? Object.values(match.joinedPlayers) : []; let listDiv = document.getElementById('registered-players-list'); if(players.length === 0) { listDiv.innerHTML = `<p style="text-align: center; color:#8a9bb4;">No players yet!</p>`; } else { let html = ""; players.forEach((p, index) => { html += `<div style="background: #070914; padding: 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #00f3ff;">#${index+1} ${p.name} <span style="color:#39ff14; font-size:10px;">[${p.position||''}]</span></span></div>`; }); listDiv.innerHTML = html; } document.getElementById('players-modal').style.display = 'flex'; }
+        function openRegisteredPlayersModal() { var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); var players = match && match.joinedPlayers ? Object.values(match.joinedPlayers) : []; var listDiv = document.getElementById('registered-players-list'); if(players.length === 0) { listDiv.innerHTML = `<p style="text-align: center; color:#8a9bb4;">No players yet!</p>`; } else { var html = ""; players.forEach(function(p, index) { html += `<div style="background: #070914; padding: 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #00f3ff;">#${index+1} ${p.name} <span style="color:#39ff14; font-size:10px;">[${p.position||''}]</span></span></div>`; }); listDiv.innerHTML = html; } document.getElementById('players-modal').style.display = 'flex'; }
         function closeRegisteredPlayersModal() { document.getElementById('players-modal').style.display = 'none'; }
 
         // --- SYNC & UI LOGIC ---
         function syncJoinedMatches() {
             if(!currentUserData) return;
             joinedMatches = [];
-            fbMatches.forEach(m => {
+            fbMatches.forEach(function(m) {
                 if(m.joinedPlayers) {
-                    let myPlayers = Object.values(m.joinedPlayers).filter(p => p.appUser === currentUserData.username);
-                    myPlayers.forEach(p => joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }));
+                    var myPlayers = Object.values(m.joinedPlayers).filter(function(p) { return p.appUser === currentUserData.username; });
+                    myPlayers.forEach(function(p) { joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }); });
                 }
             });
             updateMenuStats();
         }
 
         function updateJoinedMatchesUI() { 
-            let container = document.getElementById('joined-matches-container'); 
-            let filteredMatches = []; 
-            joinedMatches.forEach(uMatch => { 
-                let liveMatch = fbMatches.find(m => m.key === uMatch.matchId); 
+            var container = document.getElementById('joined-matches-container'); 
+            var filteredMatches = []; 
+            joinedMatches.forEach(function(uMatch) { 
+                var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); 
                 if(liveMatch) { 
-                    let status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
+                    var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
                     if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } 
                 } 
             }); 
             
             if(filteredMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">Matches Not Found!</p>`; return; } 
             
-            let html = ""; 
-            filteredMatches.forEach(data => { 
-                let m = data.live; let u = data.user; 
-                let statusBadge = currentMMTab === 'upcoming' ? `<span style="background:#ffaa00; color:black; padding:3px 6px; border-radius:4px; font-size:10px;">UPCOMING</span>` : (currentMMTab === 'ongoing' ? `<span style="background:#39ff14; color:black; padding:3px 6px; border-radius:4px; font-size:10px;">ONGOING</span>` : `<span style="background:#2D63F9; color:white; padding:3px 6px; border-radius:4px; font-size:10px;">COMPLETED</span>`);
+            var html = ""; 
+            filteredMatches.forEach(function(data) { 
+                var m = data.live; var u = data.user; 
+                var statusBadge = currentMMTab === 'upcoming' ? `<span style="background:#ffaa00; color:black; padding:3px 6px; border-radius:4px; font-size:10px;">UPCOMING</span>` : (currentMMTab === 'ongoing' ? `<span style="background:#39ff14; color:black; padding:3px 6px; border-radius:4px; font-size:10px;">ONGOING</span>` : `<span style="background:#2D63F9; color:white; padding:3px 6px; border-radius:4px; font-size:10px;">COMPLETED</span>`);
                 html += `<div style="background: #121a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 12px;" onclick="openMatchDetail('${m.key}')"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><h4 style="color: #fff; font-size:14px;">🎮 ${m.title}</h4>${statusBadge}</div><p style="font-size:12px; color:#8a9bb4;">In-Game Name: <b style="color:#fff;">${u.playerName}</b></p></div>`; 
             }); 
             container.innerHTML = html; 
         }
         function openMyMatchesPage(tabName) { currentMMTab = tabName; document.getElementById('tournaments-subpage').style.display = 'block'; switchMMTab(tabName); }
-        function switchMMTab(tabName) { currentMMTab = tabName; document.querySelectorAll('#tournaments-subpage .mm-tab').forEach(t => t.classList.remove('active')); document.getElementById('mm-tab-' + tabName).classList.add('active'); updateJoinedMatchesUI(); }
+        function switchMMTab(tabName) { currentMMTab = tabName; document.querySelectorAll('#tournaments-subpage .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('mm-tab-' + tabName).classList.add('active'); updateJoinedMatchesUI(); }
 
         function renderMyStatistics() { 
-            let container = document.getElementById('statistics-container'); 
+            var container = document.getElementById('statistics-container'); 
             if(joinedMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">No Matches Played Yet!</p>`; return; } 
-            let html = ""; 
-            [...joinedMatches].reverse().forEach(uMatch => { 
-                let m = fbMatches.find(x => x.key === uMatch.matchId); 
+            var html = ""; 
+            [...joinedMatches].reverse().forEach(function(uMatch) { 
+                var m = fbMatches.find(function(x) { return x.key === uMatch.matchId; }); 
                 if(m) { 
-                    let wonAmt = 0; if(m.resultData) { let myRes = m.resultData.find(r => r.appUser === currentUserData.username); if(myRes) wonAmt = myRes.winning; }
+                    var wonAmt = 0; if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) wonAmt = myRes.winning; }
                     html += `<div class="stat-match-card"><div class="sm-header"><div class="sm-title">${m.title}</div></div><div class="sm-footer"><div class="sm-col"><span class="sm-label">Entry Fee</span><span class="sm-val" style="color:#ffaa00;">🪙 ${m.fee}</span></div><div class="sm-col" style="text-align:right;"><span class="sm-label">Prize Won</span><span class="sm-val" style="color:${wonAmt > 0 ? '#39ff14' : '#f8fafc'};">🪙 ${wonAmt}</span></div></div></div>`; 
                 } 
             }); 
@@ -1068,8 +1076,8 @@
         function updateMenuStats() {
             if(!currentUserData) return;
             document.getElementById('menu-display-name').innerText = currentUserData.username;
-            let mCount = joinedMatches.length; let totalKills = 0; let totalWon = 0;
-            fbMatches.forEach(m => { if(m.resultData) { let myRes = m.resultData.find(r => r.appUser === currentUserData.username); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } });
+            var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0;
+            fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } });
             document.getElementById('menu-stat-matches').innerText = mCount;
             document.getElementById('menu-stat-kills').innerText = totalKills;
             document.getElementById('menu-stat-won').innerText = totalWon;
@@ -1085,22 +1093,22 @@
         }
 
         function updateProfileInfo() {
-            let f = document.getElementById('edit-fname').value.trim();
-            let l = document.getElementById('edit-lname').value.trim();
-            let p = document.getElementById('edit-phone').value.trim();
+            var f = document.getElementById('edit-fname').value.trim();
+            var l = document.getElementById('edit-lname').value.trim();
+            var p = document.getElementById('edit-phone').value.trim();
             if(!f) return;
-            db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(() => alert("Profile Updated! ✅"));
+            db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { alert("Profile Updated! ✅"); });
         }
 
         function loadBrandingUI() { 
-            let name = fbSettings.appName || "MH WARRIORS"; let logo = fbSettings.appLogo || ""; 
+            var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || ""; 
             document.getElementById('login-app-name').innerText = name; document.getElementById('header-app-name').innerText = name;
-            let noticeEl = document.getElementById('user-announcement-text'); if(fbSettings.announcement && noticeEl) noticeEl.innerText = fbSettings.announcement;
-            let bannerEl = document.getElementById('user-banner-img'); if(fbSettings.bannerImg && bannerEl) bannerEl.src = fbSettings.bannerImg;
+            var noticeEl = document.getElementById('user-announcement-text'); if(fbSettings.announcement && noticeEl) noticeEl.innerText = fbSettings.announcement;
+            var bannerEl = document.getElementById('user-banner-img'); if(fbSettings.bannerImg && bannerEl) bannerEl.src = fbSettings.bannerImg;
         }
 
         function checkNewNotifications() {
-            let count = fbNotifications.length;
+            var count = fbNotifications.length;
             if(count > knownNotifCount) {
                 if(knownNotifCount !== 0) { showLiveToast(fbNotifications[0].title, fbNotifications[0].message); }
                 knownNotifCount = count;
@@ -1109,23 +1117,23 @@
         }
 
         function loadLeaderboard(usersList) { 
-            usersList.sort((a, b) => (b.winning||0) - (a.winning||0));
-            let listHtml = ""; 
-            usersList.forEach((p, i) => { 
-                let isMe = currentUserData && p.username === currentUserData.username;
+            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); });
+            var listHtml = ""; 
+            usersList.forEach(function(p, i) { 
+                var isMe = currentUserData && p.username === currentUserData.username;
                 listHtml += `<div class="lb-list-item" style="${isMe ? 'border: 1px solid #00f3ff;' : ''}"><div style="width: 25%; font-size: 14px; color: #fff;">${i+1}</div><div style="flex: 1; font-size: 14px; font-weight: bold; color: #fff; text-align: left;">${p.username}</div><div style="width: 25%; font-size: 14px; font-weight: bold; color: #ffaa00; text-align: right;">🪙 ${p.winning||0}</div></div>`; 
             }); 
             document.getElementById('lb-list-container').innerHTML = listHtml || `<p style="text-align:center; color:#8a9bb4;">No entries yet.</p>`; 
         }
 
-        function switchTab(tabId) { document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active')); document.getElementById(tabId).classList.add('active'); document.getElementById('nav-' + tabId).classList.add('active'); }
+        function switchTab(tabId) { document.querySelectorAll('.app-section').forEach(function(s) { s.classList.remove('active'); }); document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); }); document.getElementById(tabId).classList.add('active'); document.getElementById('nav-' + tabId).classList.add('active'); }
         function closeCategoryFolder() { document.getElementById('category-page').style.display = 'none'; }
         function openStaticPage(pageId) { document.getElementById(pageId).style.display = 'block'; }
         function openSupportPage() { document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else alert("Link not set."); }
         function callSupport() { if(fbSettings.supportNo) window.location.href = "tel:" + fbSettings.supportNo; else alert("Number not set."); }
         function copyMyReferral() { window.copyToClipboard("REF-" + (currentUserData?currentUserData.username:"APP"), "Referral Code"); }
-        function closeSubPages() { document.querySelectorAll('.sub-page').forEach(p => p.style.display = 'none'); }
+        function closeSubPages() { document.querySelectorAll('.sub-page').forEach(function(p) { p.style.display = 'none'; }); }
     </script>
 </body>
 </html>
