@@ -97,7 +97,6 @@
         .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 300; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
         .modal-box { background: #10162a; border: 1px solid #00f3ff; padding: 25px; border-radius: 15px; width: 100%; max-width: 380px; text-align: center; }
 
-        /* --- UPDATED BOTTOM MENU SIZE FIX --- */
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #070914; display: flex; justify-content: space-around; padding: 12px 0 !important; border-top: 1px solid rgba(255,255,255,0.08); z-index: 100; }
         .nav-item { text-align: center; color: #64748b; font-size: 14px !important; font-weight: bold; flex: 1; cursor: pointer; transition: 0.2s; }
         .nav-item.active { color: #ffaa00; } 
@@ -243,7 +242,7 @@
                 <div class="phone-group"><span class="country-code">+91</span><input type="tel" id="reg-phone" class="phone-input" placeholder="Mobile Number"></div>
                 <input type="email" id="reg-email" class="auth-input" placeholder="Email Address">
                 <input type="password" id="reg-password" class="auth-input" placeholder="Password *">
-                <button class="auth-btn" onclick="registerUser()">REGISTER NOW</button>
+                <button type="button" class="auth-btn" id="btn-reg-main" onclick="registerUser()">REGISTER NOW</button>
                 <div class="switch-auth">Existing user? <span onclick="toggleAuthMode('login')">Login</span></div>
             </div>
 
@@ -251,7 +250,7 @@
                 <div class="form-title">Login</div>
                 <input type="text" id="login-email" class="auth-input" placeholder="Username / Email / Mobile No.">
                 <input type="password" id="login-password" class="auth-input" placeholder="Password">
-                <button class="auth-btn" style="margin-top: 15px;" onclick="loginUser()">LOGIN NOW</button>
+                <button type="button" class="auth-btn" id="btn-login-main" style="margin-top: 15px;" onclick="loginUser()">LOGIN NOW</button>
                 <div class="switch-auth">New user? <span onclick="toggleAuthMode('register')">Register</span></div>
             </div>
         </div>
@@ -330,7 +329,7 @@
             </div>
             <div style="padding: 15px; overflow-y:auto; padding-bottom: 80px;" id="seat-grid-container"></div>
             <div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0c1220; padding: 15px; border-top: 1px solid #1e293b; z-index: 200;">
-                <button class="auth-btn" id="btn-next-seats" style="width: 100%; background: #2D63F9;" onclick="goToRegistration()">NEXT (0 Selected)</button>
+                <button type="button" class="auth-btn" id="btn-next-seats" style="width: 100%; background: #2D63F9;" onclick="goToRegistration()">NEXT (0 Selected)</button>
             </div>
         </div>
 
@@ -339,7 +338,7 @@
                 <h1 style="color: #39ff14; font-size: 35px; margin-bottom: 10px;">Refer & Earn</h1>
                 <p style="color: #8a9bb4; font-size: 13px; margin-bottom: 20px;">Share your code. When a friend signs up, you get <b id="earn-owner-bonus" style="color:#ffaa00;">🪙 15</b> and they get <b id="earn-newuser-bonus" style="color:#39ff14;">🪙 10</b>!</p>
                 <div style="background:#070914; padding:15px; border-radius:8px; border:1px dashed #00f3ff; margin-bottom:20px;"><p style="font-size:11px; color:#8a9bb4; margin-bottom:5px; text-transform:uppercase;">Your Unique Referral Code</p><h2 id="my-ref-code" style="color:#fff; letter-spacing:2px;">-</h2></div>
-                <button class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9;" onclick="copyMyReferral()">📋 Copy Code & Share</button>
+                <button type="button" class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9;" onclick="copyMyReferral()">📋 Copy Code & Share</button>
             </div>
         </div>
 
@@ -418,7 +417,7 @@
                         <span class="profile-input-label">Mobile Number</span>
                         <div class="profile-input-group"><span style="font-size:16px;">📞</span><input type="tel" id="edit-phone" class="profile-input-no-border" placeholder="Mobile Number"></div>
                     </div>
-                    <button class="auth-btn" style="width:100%; padding:14px; font-size:14px; background:#2D63F9; color:#fff;" onclick="updateProfileInfo()">Update Profile</button>
+                    <button type="button" class="auth-btn" style="width:100%; padding:14px; font-size:14px; background:#2D63F9; color:#fff;" onclick="updateProfileInfo()">Update Profile</button>
                 </div>
             </div>
         </div>
@@ -432,8 +431,8 @@
                     <div><p style="font-size: 11px; color: #8a9bb4;">Deposit Balance</p><h3 style="color: #fff; margin-top: 5px;">🪙 <span id="wallet-dep-display">0</span></h3></div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;"><p style="font-size: 11px; color: #8a9bb4;">Winning Balance</p><h3 style="color: #39ff14; margin-top: 5px;">🪙 <span id="wallet-win-display">0</span></h3></div>
                 </div>
-                <div style="display: flex; gap: 10px;"><button class="auth-btn" style="background: linear-gradient(45deg, #00b300, #39ff14); color: black; flex:1;" onclick="openPaymentGateway()">Add Coins</button><button class="auth-btn" style="background: #ffaa00; color: black; flex:1;" onclick="withdrawPrompt()">Withdraw</button></div>
-                <button class="auth-btn" style="width: 100%; background: #16243D; color: #00f3ff; border: 1px solid #00f3ff; margin-top: 15px; font-size:14px;" onclick="openTxHistoryPage()">📜 View Transaction History</button>
+                <div style="display: flex; gap: 10px;"><button type="button" class="auth-btn" style="background: linear-gradient(45deg, #00b300, #39ff14); color: black; flex:1;" onclick="openPaymentGateway()">Add Coins</button><button type="button" class="auth-btn" style="background: #ffaa00; color: black; flex:1;" onclick="withdrawPrompt()">Withdraw</button></div>
+                <button type="button" class="auth-btn" style="width: 100%; background: #16243D; color: #00f3ff; border: 1px solid #00f3ff; margin-top: 15px; font-size:14px;" onclick="openTxHistoryPage()">📜 View Transaction History</button>
             </div>
         </div>
 
@@ -459,8 +458,8 @@
                 <div class="info-box-card"><div class="info-box-label">Map</div><div class="info-box-val" id="detail-map">-</div></div>
             </div>
             <div class="join-btn-container">
-                <button class="view-players-btn" onclick="openRegisteredPlayersModal()">👥 View Players</button>
-                <button class="join-action-btn" id="join-now-btn" onclick="openSeatSelection()">JOIN</button>
+                <button type="button" class="view-players-btn" onclick="openRegisteredPlayersModal()">👥 View Players</button>
+                <button type="button" class="join-action-btn" id="join-now-btn" onclick="openSeatSelection()">JOIN</button>
             </div>
         </div>
 
@@ -468,8 +467,8 @@
             <div class="modal-box" style="max-height:80vh; overflow-y:auto;">
                 <h3 style="color: #00f3ff; margin-bottom: 15px;">Player Registration</h3>
                 <div id="dynamic-player-inputs"></div>
-                <button class="auth-btn" id="btn-confirm-join" style="background: #39ff14; color: black; margin-top: 10px;" onclick="confirmMatchJoin()">Pay & Join</button>
-                <button class="auth-btn" style="background: #ff0055; margin-top: 10px;" onclick="closeRegisterModal()">Cancel</button>
+                <button type="button" class="auth-btn" id="btn-confirm-join" style="background: #39ff14; color: black; margin-top: 10px;" onclick="confirmMatchJoin()">Pay & Join</button>
+                <button type="button" class="auth-btn" style="background: #ff0055; margin-top: 10px;" onclick="closeRegisterModal()">Cancel</button>
             </div>
         </div>
 
@@ -477,7 +476,7 @@
             <div class="modal-box">
                 <h3 style="color: #00f3ff; margin-bottom: 15px;">Registered Players</h3>
                 <div id="registered-players-list" style="text-align: left; max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
-                <button class="auth-btn" style="background: #2D63F9;" onclick="closeRegisteredPlayersModal()">Close</button>
+                <button type="button" class="auth-btn" style="background: #2D63F9;" onclick="closeRegisteredPlayersModal()">Close</button>
             </div>
         </div>
 
@@ -507,7 +506,7 @@
                 <div class="pg-card-title">⚄ SCAN & PAY</div>
                 <div class="pg-qr-box"><img id="pg-admin-qr" src="https://via.placeholder.com/200?text=QR+Not+Set" class="pg-qr-img" onerror="this.src='https://via.placeholder.com/200?text=QR+Error'"></div>
                 <p style="text-align: center; font-size: 12px; color: #64748b; margin-bottom: 10px;">Admin UPI: <b id="pg-admin-upi" style="color: #1e293b;">Not Set</b></p>
-                <button class="pg-verify-btn" style="background: #f8fafc; color: #3b82f6; border: 1px solid #bfdbfe; padding: 10px;" onclick="copyPGAdminUPI()">📋 Copy UPI ID</button>
+                <button type="button" class="pg-verify-btn" style="background: #f8fafc; color: #3b82f6; border: 1px solid #bfdbfe; padding: 10px;" onclick="window.copyToClipboard(document.getElementById('pg-admin-upi').innerText, 'UPI ID');">📋 Copy UPI ID</button>
             </div>
             <div class="pg-card">
                 <div class="pg-timer-box">
@@ -525,13 +524,10 @@
             <div class="pg-card" style="border: 2px solid #4f46e5;">
                 <div class="pg-card-title" style="color: #4f46e5;">✅ ALREADY PAID? ENTER UTR</div>
                 <input type="number" id="pg-utr-input" class="pg-input" placeholder="12-Digit UTR / Reference number">
-                <button class="pg-verify-btn" onclick="submitGatewayUTR()">Verify Payment</button>
+                <button type="button" class="pg-verify-btn" onclick="submitGatewayUTR()">Verify Payment</button>
             </div>
         </div>
     </div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
         // 1. FIREBASE INITIALIZATION
@@ -547,27 +543,46 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 2. GLOBAL VARIABLES & STORAGE LOGIC (NEW: Cookies Backup)
+        // --- GLOBAL COPY FUNCTION ---
+        window.copyToClipboard = function(text, type) {
+            if (!text || text === "-" || text.includes("undefined")) {
+                alert("Data not available to copy!");
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert(type + ' Copied! ✅');
+                }).catch(err => {
+                    alert(type + ': ' + text);
+                });
+            } else {
+                alert(type + ': ' + text);
+            }
+        };
+
+        // 2. SAFE STORAGE LOGIC
         function setAppStorage(key, value) {
             try { localStorage.setItem(key, value); } catch(e) {}
-            document.cookie = key + "=" + value + "; path=/; max-age=31536000";
+            try { document.cookie = key + "=" + value + "; path=/; max-age=31536000"; } catch(e) {}
         }
         function getAppStorage(key) {
             let val = null;
             try { val = localStorage.getItem(key); } catch(e) {}
             if (val) return val;
-            let name = key + "=";
-            let decodedCookie = decodeURIComponent(document.cookie);
-            let ca = decodedCookie.split(';');
-            for(let i = 0; i <ca.length; i++) {
-                let c = ca[i].trim();
-                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-            }
+            try {
+                let name = key + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+                for(let i = 0; i < ca.length; i++) {
+                    let c = ca[i].trim();
+                    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+                }
+            } catch(e) {}
             return null;
         }
         function removeAppStorage(key) {
             try { localStorage.removeItem(key); } catch(e) {}
-            document.cookie = key + "=; path=/; max-age=0";
+            try { document.cookie = key + "=; path=/; max-age=0"; } catch(e) {}
         }
 
         let currentUserKey = getAppStorage('mh_live_user_key');
@@ -589,7 +604,7 @@
 
         // 3. START APP & LISTENERS
         document.addEventListener("DOMContentLoaded", function() {
-            currentUserKey = getAppStorage('mh_live_user_key'); // Check again on load
+            currentUserKey = getAppStorage('mh_live_user_key');
             startFirebaseListeners();
             if(currentUserKey) { 
                 document.getElementById('auth-screen').style.display = 'none'; 
@@ -671,9 +686,15 @@
             
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
 
+            let btn = document.getElementById('btn-reg-main');
+            btn.innerText = "REGISTERING...";
+            btn.disabled = true;
+
             db.ref('users').orderByChild('username').equalTo(uname).once('value', snapshot => {
                 if(snapshot.exists()) {
                     alert("Username already taken! Choose another.");
+                    btn.innerText = "REGISTER NOW";
+                    btn.disabled = false;
                 } else {
                     let newUserRef = db.ref('users').push();
                     let userData = {
@@ -685,8 +706,16 @@
                         currentUserKey = newUserRef.key;
                         startFirebaseListeners(); 
                         enterApp();
+                    }).catch(err => {
+                        alert("Registration Error: " + err.message);
+                        btn.innerText = "REGISTER NOW";
+                        btn.disabled = false;
                     });
                 }
+            }, err => {
+                alert("Database Connection Error: " + err.message);
+                btn.innerText = "REGISTER NOW";
+                btn.disabled = false;
             });
         }
 
@@ -696,13 +725,22 @@
 
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
 
+            let btn = document.getElementById('btn-login-main');
+            btn.innerText = "LOGGING IN...";
+            btn.disabled = true;
+
             db.ref('users').once('value', snapshot => {
+                btn.innerText = "LOGIN NOW";
+                btn.disabled = false;
                 if(snapshot.exists()) {
                     let userObj = null; let userKey = null;
                     
                     snapshot.forEach(child => { 
                         let u = child.val();
-                        if((u.username === loginVal || u.email === loginVal || u.phone === loginVal) && u.password === pass) {
+                        let matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || 
+                                      (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || 
+                                      (u.phone && String(u.phone) === String(loginVal));
+                        if(matchId && u.password === pass) {
                             userObj = u; userKey = child.key;
                         }
                     });
@@ -714,6 +752,10 @@
                         enterApp();
                     } else { alert("Incorrect Details or Password! ❌"); }
                 } else { alert("User not found! ❌"); }
+            }, err => {
+                btn.innerText = "LOGIN NOW";
+                btn.disabled = false;
+                alert("Database Connection Error: " + err.message);
             });
         }
 
@@ -834,7 +876,16 @@
                 if(currentCategoryTab === 'upcoming') { statusBadge = `<span style="color:#ffaa00; font-size:10px;">📅 UPCOMING</span>`; } 
                 else if(currentCategoryTab === 'ongoing') { 
                     statusBadge = `<span style="color:#39ff14; font-size:10px;">🔴 LIVE</span>`; 
-                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;"><div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div><button style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${match.roomId}'); alert('Room ID Copied! ✅');">COPY</button></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div><button style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); navigator.clipboard.writeText('${match.roomPass}'); alert('Password Copied! ✅');">COPY</button></div></div>`; } 
+                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                            <div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div>
+                            <button type="button" style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div>
+                            <button type="button" style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button>
+                        </div>
+                    </div>`; } 
                     else { extraInfo = `<div style="margin-top:10px; text-align:center; color:#ff0055; font-size:10px; font-weight:bold; background:rgba(255,0,85,0.1); padding:6px; border-radius:4px;">🔒 ID/PASS HIDDEN</div>`; } 
                 } 
                 else if (currentCategoryTab === 'resulted') { 
@@ -864,8 +915,8 @@
             if (match.roomId && !match.resultText) {
                 if (isJoined) {
                     extraDiv.innerHTML = `<div class="cred-box" style="margin: 0 15px 12px 15px;">
-                        <div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button class="copy-btn" onclick="navigator.clipboard.writeText('${match.roomId}'); alert('Room ID Copied! ✅')">COPY</button></div>
-                        <div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button class="copy-btn" onclick="navigator.clipboard.writeText('${match.roomPass}'); alert('Password Copied! ✅')">COPY</button></div>
+                        <div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div>
+                        <div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div>
                     </div>`;
                 } else {
                     extraDiv.innerHTML = `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`;
@@ -1076,7 +1127,7 @@
         function openSupportPage() { document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else alert("Link not set."); }
         function callSupport() { if(fbSettings.supportNo) window.location.href = "tel:" + fbSettings.supportNo; else alert("Number not set."); }
-        function copyMyReferral() { navigator.clipboard.writeText("REF-" + (currentUserData?currentUserData.username:"APP")).then(() => alert("Code Copied!")); }
+        function copyMyReferral() { window.copyToClipboard("REF-" + (currentUserData?currentUserData.username:"APP"), "Referral Code"); }
         function closeSubPages() { document.querySelectorAll('.sub-page').forEach(p => p.style.display = 'none'); }
     </script>
 </body>
