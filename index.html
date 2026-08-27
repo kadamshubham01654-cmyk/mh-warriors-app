@@ -616,6 +616,9 @@
         });
 
         function startFirebaseListeners() {
+            // ANTI-CRASH: Remove old duplicate listeners before adding new ones
+            db.ref().off(); 
+
             if(currentUserKey) {
                 db.ref('users/' + currentUserKey).on('value', (snapshot) => {
                     if(snapshot.exists()) {
@@ -670,7 +673,7 @@
             });
         }
 
-        // --- AUTHENTICATION ---
+        // --- AUTHENTICATION (WITH ANTI-HANG SYSTEM) ---
         function toggleAuthMode(mode) { 
             document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; 
             document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; 
@@ -685,16 +688,23 @@
             let pass = document.getElementById('reg-password').value; 
             
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
+            if(!navigator.onLine) { alert("No Internet Connection! ❌"); return; }
 
             let btn = document.getElementById('btn-reg-main');
             btn.innerText = "REGISTERING...";
             btn.disabled = true;
 
-            db.ref('users').orderByChild('username').equalTo(uname).once('value', snapshot => {
+            // SAFE TIMEOUT: 12 seconds auto-reset
+            let safeTimer = setTimeout(() => {
+                btn.innerText = "REGISTER NOW"; btn.disabled = false;
+                alert("Connection too slow or blocked! Please try again.");
+            }, 12000);
+
+            db.ref('users').orderByChild('username').equalTo(uname).once('value').then(snapshot => {
+                clearTimeout(safeTimer);
                 if(snapshot.exists()) {
                     alert("Username already taken! Choose another.");
-                    btn.innerText = "REGISTER NOW";
-                    btn.disabled = false;
+                    btn.innerText = "REGISTER NOW"; btn.disabled = false;
                 } else {
                     let newUserRef = db.ref('users').push();
                     let userData = {
@@ -706,16 +716,16 @@
                         currentUserKey = newUserRef.key;
                         startFirebaseListeners(); 
                         enterApp();
+                        btn.innerText = "REGISTER NOW"; btn.disabled = false;
                     }).catch(err => {
                         alert("Registration Error: " + err.message);
-                        btn.innerText = "REGISTER NOW";
-                        btn.disabled = false;
+                        btn.innerText = "REGISTER NOW"; btn.disabled = false;
                     });
                 }
-            }, err => {
+            }).catch(err => {
+                clearTimeout(safeTimer);
                 alert("Database Connection Error: " + err.message);
-                btn.innerText = "REGISTER NOW";
-                btn.disabled = false;
+                btn.innerText = "REGISTER NOW"; btn.disabled = false;
             });
         }
 
@@ -724,17 +734,24 @@
             let pass = document.getElementById('login-password').value;
 
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
+            if(!navigator.onLine) { alert("No Internet Connection! ❌"); return; }
 
             let btn = document.getElementById('btn-login-main');
             btn.innerText = "LOGGING IN...";
             btn.disabled = true;
 
-            db.ref('users').once('value', snapshot => {
-                btn.innerText = "LOGIN NOW";
-                btn.disabled = false;
+            // SAFE TIMEOUT: 12 seconds auto-reset
+            let safeTimer = setTimeout(() => {
+                btn.innerText = "LOGIN NOW"; btn.disabled = false;
+                alert("Connection too slow or blocked! Please try again.");
+            }, 12000);
+
+            db.ref('users').once('value').then(snapshot => {
+                clearTimeout(safeTimer);
+                btn.innerText = "LOGIN NOW"; btn.disabled = false;
+                
                 if(snapshot.exists()) {
                     let userObj = null; let userKey = null;
-                    
                     snapshot.forEach(child => { 
                         let u = child.val();
                         let matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || 
@@ -752,9 +769,9 @@
                         enterApp();
                     } else { alert("Incorrect Details or Password! ❌"); }
                 } else { alert("User not found! ❌"); }
-            }, err => {
-                btn.innerText = "LOGIN NOW";
-                btn.disabled = false;
+            }).catch(err => {
+                clearTimeout(safeTimer);
+                btn.innerText = "LOGIN NOW"; btn.disabled = false;
                 alert("Database Connection Error: " + err.message);
             });
         }
@@ -1125,7 +1142,7 @@
         function openSupportPage() { document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else alert("Link not set."); }
         function callSupport() { if(fbSettings.supportNo) window.location.href = "tel:" + fbSettings.supportNo; else alert("Number not set."); }
-        function copyMyReferral() { navigator.clipboard.writeText("REF-" + (currentUserData?currentUserData.username:"APP")).then(() => alert("Code Copied!")); }
+        function copyMyReferral() { window.copyToClipboard("REF-" + (currentUserData?currentUserData.username:"APP"), "Referral Code"); }
         function closeSubPages() { document.querySelectorAll('.sub-page').forEach(p => p.style.display = 'none'); }
     </script>
 </body>
