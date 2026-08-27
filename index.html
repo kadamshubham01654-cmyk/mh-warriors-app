@@ -673,7 +673,7 @@
             });
         }
 
-        // --- AUTHENTICATION (WITH ANTI-HANG SYSTEM) ---
+        // --- AUTHENTICATION (NO TIMEOUT) ---
         function toggleAuthMode(mode) { 
             document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; 
             document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; 
@@ -688,20 +688,12 @@
             let pass = document.getElementById('reg-password').value; 
             
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
-            if(!navigator.onLine) { alert("No Internet Connection! ❌"); return; }
 
             let btn = document.getElementById('btn-reg-main');
             btn.innerText = "REGISTERING...";
             btn.disabled = true;
 
-            // SAFE TIMEOUT: 12 seconds auto-reset
-            let safeTimer = setTimeout(() => {
-                btn.innerText = "REGISTER NOW"; btn.disabled = false;
-                alert("Connection too slow or blocked! Please try again.");
-            }, 12000);
-
             db.ref('users').orderByChild('username').equalTo(uname).once('value').then(snapshot => {
-                clearTimeout(safeTimer);
                 if(snapshot.exists()) {
                     alert("Username already taken! Choose another.");
                     btn.innerText = "REGISTER NOW"; btn.disabled = false;
@@ -723,7 +715,6 @@
                     });
                 }
             }).catch(err => {
-                clearTimeout(safeTimer);
                 alert("Database Connection Error: " + err.message);
                 btn.innerText = "REGISTER NOW"; btn.disabled = false;
             });
@@ -734,20 +725,12 @@
             let pass = document.getElementById('login-password').value;
 
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
-            if(!navigator.onLine) { alert("No Internet Connection! ❌"); return; }
 
             let btn = document.getElementById('btn-login-main');
             btn.innerText = "LOGGING IN...";
             btn.disabled = true;
 
-            // SAFE TIMEOUT: 12 seconds auto-reset
-            let safeTimer = setTimeout(() => {
-                btn.innerText = "LOGIN NOW"; btn.disabled = false;
-                alert("Connection too slow or blocked! Please try again.");
-            }, 12000);
-
             db.ref('users').once('value').then(snapshot => {
-                clearTimeout(safeTimer);
                 btn.innerText = "LOGIN NOW"; btn.disabled = false;
                 
                 if(snapshot.exists()) {
@@ -770,7 +753,6 @@
                     } else { alert("Incorrect Details or Password! ❌"); }
                 } else { alert("User not found! ❌"); }
             }).catch(err => {
-                clearTimeout(safeTimer);
                 btn.innerText = "LOGIN NOW"; btn.disabled = false;
                 alert("Database Connection Error: " + err.message);
             });
