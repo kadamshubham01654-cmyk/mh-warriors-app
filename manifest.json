@@ -1,0 +1,15 @@
+{
+  "name": "MH WARRIORS",
+  "short_name": "MH WARRIORS",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/1154/1154448.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
