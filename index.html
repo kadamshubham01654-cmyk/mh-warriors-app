@@ -1032,9 +1032,7 @@
             joinedMatches.forEach(uMatch => { 
                 let liveMatch = fbMatches.find(m => m.key === uMatch.matchId); 
                 if(liveMatch) { 
-                    let hasRoomId = liveMatch.roomId && liveMatch.roomId.trim() !== "";
-                    let hasResult = liveMatch.resultText && liveMatch.resultText.trim() !== "";
-                    let status = hasResult ? 'completed' : (hasRoomId ? 'ongoing' : 'upcoming'); 
+                    let status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
                     if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } 
                 } 
             }); 
@@ -1127,7 +1125,7 @@
         function openSupportPage() { document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else alert("Link not set."); }
         function callSupport() { if(fbSettings.supportNo) window.location.href = "tel:" + fbSettings.supportNo; else alert("Number not set."); }
-        function copyMyReferral() { window.copyToClipboard("REF-" + (currentUserData?currentUserData.username:"APP"), "Referral Code"); }
+        function copyMyReferral() { navigator.clipboard.writeText("REF-" + (currentUserData?currentUserData.username:"APP")).then(() => alert("Code Copied!")); }
         function closeSubPages() { document.querySelectorAll('.sub-page').forEach(p => p.style.display = 'none'); }
     </script>
 </body>
