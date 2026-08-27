@@ -547,8 +547,30 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // 2. GLOBAL VARIABLES
-        let currentUserKey = localStorage.getItem('mh_live_user_key');
+        // 2. GLOBAL VARIABLES & STORAGE LOGIC (NEW: Cookies Backup)
+        function setAppStorage(key, value) {
+            try { localStorage.setItem(key, value); } catch(e) {}
+            document.cookie = key + "=" + value + "; path=/; max-age=31536000";
+        }
+        function getAppStorage(key) {
+            let val = null;
+            try { val = localStorage.getItem(key); } catch(e) {}
+            if (val) return val;
+            let name = key + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i].trim();
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+            }
+            return null;
+        }
+        function removeAppStorage(key) {
+            try { localStorage.removeItem(key); } catch(e) {}
+            document.cookie = key + "=; path=/; max-age=0";
+        }
+
+        let currentUserKey = getAppStorage('mh_live_user_key');
         let currentUserData = null;
         
         let fbMatches = [];
@@ -566,7 +588,8 @@
         let currentMatchFee = 0;
 
         // 3. START APP & LISTENERS
-        window.onload = function() {
+        document.addEventListener("DOMContentLoaded", function() {
+            currentUserKey = getAppStorage('mh_live_user_key'); // Check again on load
             startFirebaseListeners();
             if(currentUserKey) { 
                 document.getElementById('auth-screen').style.display = 'none'; 
@@ -575,7 +598,7 @@
                 loadBrandingUI(); 
             } 
             else { toggleAuthMode('login'); }
-        };
+        });
 
         function startFirebaseListeners() {
             if(currentUserKey) {
@@ -658,7 +681,7 @@
                         deposit: 0, winning: 0, key: newUserRef.key
                     };
                     newUserRef.set(userData).then(() => {
-                        localStorage.setItem('mh_live_user_key', newUserRef.key);
+                        setAppStorage('mh_live_user_key', newUserRef.key);
                         currentUserKey = newUserRef.key;
                         startFirebaseListeners(); 
                         enterApp();
@@ -685,7 +708,7 @@
                     });
                     
                     if(userObj) {
-                        localStorage.setItem('mh_live_user_key', userKey);
+                        setAppStorage('mh_live_user_key', userKey);
                         currentUserKey = userKey;
                         startFirebaseListeners(); 
                         enterApp();
@@ -701,7 +724,7 @@
         }
 
         function logoutApp() { 
-            localStorage.removeItem('mh_live_user_key'); 
+            removeAppStorage('mh_live_user_key');
             currentUserKey = null; currentUserData = null;
             document.getElementById('main-app').style.display = 'none'; 
             document.getElementById('auth-screen').style.display = 'flex'; 
