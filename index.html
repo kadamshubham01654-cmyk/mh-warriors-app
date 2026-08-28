@@ -3,8 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <!-- 🚨 ANTI-CACHE BRAHMASTRA (ब्राउझरला जुना कचरा सेव्ह करू न देण्याची सिस्टीम) 🚨 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <title>MH WARRIORS</title>
     <link rel="manifest" href="manifest.json">
+    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #070914; color: #fff; padding-bottom: 70px; }
@@ -26,6 +33,7 @@
         .country-code { padding: 14px 10px; color: #8a9bb4; font-size: 14px; border-right: 1px solid rgba(255,255,255,0.1); }
         .phone-input { border: none; background: transparent; padding: 14px; color: white; width: 100%; outline: none; font-size: 14px; }
         .auth-btn { width: 100%; padding: 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; background: #2D63F9; color: white; text-transform: uppercase; transition: 0.2s; }
+        .auth-btn:disabled { background: #475569; cursor: not-allowed; }
         .switch-auth { margin-top: 18px; font-size: 14px; color: #8a9bb4; }
         .switch-auth span { color: #2D63F9; cursor: pointer; font-weight: bold; }
 
@@ -133,29 +141,15 @@
         .menu-opt-text { flex: 1; font-size: 14px; font-weight: bold; color: #334155; }
         .menu-opt-arrow { color: #94a3b8; font-weight: bold; font-size: 16px; }
 
-        .switch { position: relative; display: inline-block; width: 40px; height: 22px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: #3b82f6; }
-        input:checked + .slider:before { transform: translateX(18px); }
-
         .static-page-content { background: #fff; border-radius: 12px; padding: 20px; margin: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); color: #334155; font-size: 13px; line-height: 1.6; }
         .static-page-content h3 { color: #1e293b; font-size: 15px; margin-bottom: 10px; margin-top: 15px; }
         .static-page-content h3:first-child { margin-top: 0; }
         .static-page-content ul { padding-left: 20px; margin-bottom: 10px; }
         .static-page-content li { margin-bottom: 6px; }
         
-        .res-view-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 12px; color: #8a9bb4; }
-        .res-view-table th { padding: 8px; background: #16243D; color: #fff; border-bottom: 1px solid #0c1220; }
-        .res-view-table td { padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.05); color: #fff; }
-
         .stat-match-card { background: #151b2b; border-radius: 14px; padding: 16px; margin-bottom: 14px; border: 1px solid #1e293b; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .sm-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
         .sm-title { color: #f8fafc; font-size: 14px; font-weight: 800; width: 75%; line-height: 1.4; text-transform: uppercase; }
-        .sm-badge { background: rgba(99,102,241,0.15); color: #818cf8; padding: 5px 10px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.5px; border: 1px solid rgba(99,102,241,0.3); }
-        .sm-date { font-size: 11px; color: #64748b; margin-bottom: 12px; }
-        .sm-divider { height: 1px; background: #1e293b; margin-bottom: 12px; }
         .sm-footer { display: flex; justify-content: space-between; align-items: center; }
         .sm-col { display: flex; flex-direction: column; gap: 4px; }
         .sm-label { font-size: 11px; color: #94a3b8; font-weight: 600; }
@@ -168,7 +162,7 @@
         .profile-input-group:focus-within { border-color: #3b82f6; background: #fff; }
         .profile-input-no-border { flex: 1; border: none; padding: 12px 10px; outline: none; background: transparent; color: #1e293b; font-size: 14px; width: 100%; }
         
-        #payment-gateway-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; overflow-y: auto; padding-bottom: 30px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; }
+        #payment-gateway-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; overflow-y: auto; padding-bottom: 30px; }
         .pg-header-bar { background: #0c1220; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .pg-header-brand { display: flex; align-items: center; gap: 10px; color: white; font-weight: bold; font-size: 16px; }
         .pg-close-btn { color: white; font-size: 24px; cursor: pointer; }
@@ -194,7 +188,6 @@
         .pg-input { width: 100%; padding: 15px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none; background: #f8fafc; color: #1e293b; }
         .pg-input:focus { border-color: #3b82f6; background: #fff; }
         .pg-verify-btn { width: 100%; background: #4f46e5; color: white; border: none; padding: 15px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        .pg-footer { text-align: center; font-size: 11px; color: #94a3b8; margin-top: 20px; font-weight: bold; }
         
         .tx-item { background: #121a2e; border: 1px solid rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
         .tx-title { font-size: 13px; font-weight: bold; color: #fff; margin-bottom: 4px; }
@@ -205,6 +198,17 @@
         .tx-status.Pending { color: #ffaa00; font-size: 10px; border: 1px solid #ffaa00; padding: 2px 6px; border-radius: 4px; }
         .tx-status.Rejected { color: #ff0055; font-size: 10px; border: 1px solid #ff0055; padding: 2px 6px; border-radius: 4px; }
     </style>
+
+    <script>
+        // 🚨 SERVICE WORKER DESTROYER (कॅशे आपोआप उडवणारा कोड) 🚨
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister(); // जुना सर्विस वर्कर डिलीट करा
+                }
+            });
+        }
+    </script>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -543,21 +547,10 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- GLOBAL COPY FUNCTION ---
         window.copyToClipboard = function(text, type) {
-            if (!text || text === "-" || text.includes("undefined")) {
-                alert("Data not available to copy!");
-                return;
-            }
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(function() {
-                    alert(type + ' Copied! ✅');
-                }).catch(function(err) {
-                    alert(type + ': ' + text);
-                });
-            } else {
-                alert(type + ': ' + text);
-            }
+            if (!text || text === "-" || text.includes("undefined")) { alert("Data not available to copy!"); return; }
+            if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(function() { alert(type + ' Copied! ✅'); }).catch(function(err) { alert(type + ': ' + text); });
+            } else { alert(type + ': ' + text); }
         };
 
         // 2. SAFE STORAGE LOGIC
@@ -570,15 +563,9 @@
             try { val = localStorage.getItem(key); } catch(e) {}
             if (val) return val;
             try {
-                var name = key + "=";
-                var decodedCookie = decodeURIComponent(document.cookie);
-                var ca = decodedCookie.split(';');
-                for(var i = 0; i < ca.length; i++) {
-                    var c = ca[i].trim();
-                    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-                }
-            } catch(e) {}
-            return null;
+                var name = key + "="; var decodedCookie = decodeURIComponent(document.cookie); var ca = decodedCookie.split(';');
+                for(var i = 0; i < ca.length; i++) { var c = ca[i].trim(); if (c.indexOf(name) == 0) return c.substring(name.length, c.length); }
+            } catch(e) {} return null;
         }
         function removeAppStorage(key) {
             try { localStorage.removeItem(key); } catch(e) {}
@@ -588,19 +575,10 @@
         var currentUserKey = getAppStorage('mh_live_user_key');
         var currentUserData = null;
         
-        var fbMatches = [];
-        var fbCategories = [];
-        var fbSettings = {};
-        var fbNotifications = [];
-        var joinedMatches = []; 
-        var activeMatchId = null; 
-        
-        var currentMMTab = 'ongoing'; 
-        var currentActiveCategory = ""; 
-        var currentCategoryTab = 'upcoming';
-        var knownNotifCount = 0;
-        var selectedSeats = [];
-        var currentMatchFee = 0;
+        var fbMatches = []; var fbCategories = []; var fbSettings = {}; var fbNotifications = [];
+        var joinedMatches = []; var activeMatchId = null; 
+        var currentMMTab = 'ongoing'; var currentActiveCategory = ""; var currentCategoryTab = 'upcoming';
+        var knownNotifCount = 0; var selectedSeats = []; var currentMatchFee = 0;
 
         // 3. START APP & LISTENERS
         document.addEventListener("DOMContentLoaded", function() {
@@ -609,70 +587,50 @@
             if(currentUserKey) { 
                 document.getElementById('auth-screen').style.display = 'none'; 
                 document.getElementById('main-app').style.display = 'block'; 
-                loadDynamicFolders(); 
-                loadBrandingUI(); 
-            } 
-            else { toggleAuthMode('login'); }
+                loadDynamicFolders(); loadBrandingUI(); 
+            } else { toggleAuthMode('login'); }
         });
 
         function startFirebaseListeners() {
             db.ref().off(); 
-
             if(currentUserKey) {
                 db.ref('users/' + currentUserKey).on('value', function(snapshot) {
                     if(snapshot.exists()) {
-                        currentUserData = snapshot.val();
-                        currentUserData.key = snapshot.key;
-                        updateWalletUI();
-                        updateMenuStats();
-                        renderTxHistory();
-                        
-                        syncJoinedMatches();
-                        renderCategoryMatches();
-                        updateJoinedMatchesUI();
-                        renderMyStatistics();
-                    } else {
-                        logoutApp();
-                    }
+                        currentUserData = snapshot.val(); currentUserData.key = snapshot.key;
+                        updateWalletUI(); updateMenuStats(); renderTxHistory();
+                        syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics();
+                    } else { logoutApp(); }
                 });
             }
 
             db.ref('matches').on('value', function(snapshot) {
-                fbMatches = [];
-                snapshot.forEach(function(child) { var m = child.val(); m.key = child.key; fbMatches.push(m); });
-                syncJoinedMatches();
-                renderCategoryMatches();
-                updateJoinedMatchesUI();
-                renderMyStatistics();
+                fbMatches = []; snapshot.forEach(function(child) { var m = child.val(); m.key = child.key; fbMatches.push(m); });
+                syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics();
             });
 
             db.ref('categories').on('value', function(snapshot) {
-                fbCategories = [];
-                snapshot.forEach(function(child) { var c = child.val(); c.key = child.key; fbCategories.push(c); });
+                fbCategories = []; snapshot.forEach(function(child) { var c = child.val(); c.key = child.key; fbCategories.push(c); });
                 loadDynamicFolders();
             });
 
             db.ref('settings').on('value', function(snapshot) {
-                fbSettings = snapshot.val() || {};
-                loadBrandingUI();
+                fbSettings = snapshot.val() || {}; loadBrandingUI();
                 if(fbSettings.maintenance === true) { document.getElementById('maint-screen').style.display = 'flex'; } 
                 else { document.getElementById('maint-screen').style.display = 'none'; }
             });
 
             db.ref('notifications').on('value', function(snapshot) {
-                fbNotifications = [];
-                snapshot.forEach(function(child) { var n = child.val(); n.key = child.key; fbNotifications.push(n); });
+                fbNotifications = []; snapshot.forEach(function(child) { var n = child.val(); n.key = child.key; fbNotifications.push(n); });
                 checkNewNotifications();
             });
 
             db.ref('users').on('value', function(snapshot) {
-                var usersList = [];
-                snapshot.forEach(function(child) { usersList.push(child.val()); });
+                var usersList = []; snapshot.forEach(function(child) { usersList.push(child.val()); });
                 loadLeaderboard(usersList);
             });
         }
 
-        // --- BULLETPROOF AUTHENTICATION ---
+        // --- 🚨 BULLETPROOF AUTHENTICATION WITH AUTO-RESET 🚨 ---
         function toggleAuthMode(mode) { 
             document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; 
             document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; 
@@ -689,40 +647,32 @@
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
 
             var btn = document.getElementById('btn-reg-main');
-            btn.innerText = "WAIT...";
+            btn.innerText = "WAIT..."; btn.disabled = true;
+
+            // 15 seconds Auto-Reset fallback
+            var resetTimer = setTimeout(function() {
+                btn.innerText = "REGISTER NOW"; btn.disabled = false;
+                alert("Network Slow! Request timed out. Please try again.");
+            }, 15000);
 
             try {
                 db.ref('users').orderByChild('username').equalTo(uname).once('value', function(snapshot) {
+                    clearTimeout(resetTimer);
                     if(snapshot.exists()) {
                         alert("Username already taken! Choose another.");
-                        btn.innerText = "REGISTER NOW";
+                        btn.innerText = "REGISTER NOW"; btn.disabled = false;
                     } else {
                         var newUserRef = db.ref('users').push();
-                        var userData = {
-                            firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass,
-                            deposit: 0, winning: 0, key: newUserRef.key
-                        };
+                        var userData = { firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass, deposit: 0, winning: 0, key: newUserRef.key };
                         newUserRef.set(userData, function(error) {
-                            if (error) {
-                                alert("Registration Error: " + error.message);
-                                btn.innerText = "REGISTER NOW";
-                            } else {
-                                setAppStorage('mh_live_user_key', newUserRef.key);
-                                currentUserKey = newUserRef.key;
-                                startFirebaseListeners(); 
-                                enterApp();
-                                btn.innerText = "REGISTER NOW";
-                            }
+                            if (error) { alert("Registration Error: " + error.message); btn.innerText = "REGISTER NOW"; btn.disabled = false; } 
+                            else { setAppStorage('mh_live_user_key', newUserRef.key); currentUserKey = newUserRef.key; startFirebaseListeners(); enterApp(); btn.innerText = "REGISTER NOW"; btn.disabled = false; }
                         });
                     }
                 }, function(error) {
-                    alert("Database Error: " + error.message);
-                    btn.innerText = "REGISTER NOW";
+                    clearTimeout(resetTimer); alert("Database Error: " + error.message); btn.innerText = "REGISTER NOW"; btn.disabled = false;
                 });
-            } catch (e) {
-                alert("App Error: " + e.message);
-                btn.innerText = "REGISTER NOW";
-            }
+            } catch (e) { clearTimeout(resetTimer); alert("App Error: " + e.message); btn.innerText = "REGISTER NOW"; btn.disabled = false; }
         }
 
         function loginUser() { 
@@ -732,66 +682,44 @@
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
 
             var btn = document.getElementById('btn-login-main');
-            btn.innerText = "WAIT...";
+            btn.innerText = "WAIT..."; btn.disabled = true;
+
+            // 15 seconds Auto-Reset fallback
+            var resetTimer = setTimeout(function() {
+                btn.innerText = "LOGIN NOW"; btn.disabled = false;
+                alert("Network Slow! Request timed out. Please try again.");
+            }, 15000);
 
             try {
                 db.ref('users').once('value', function(snapshot) {
-                    btn.innerText = "LOGIN NOW";
+                    clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false;
                     if(snapshot.exists()) {
                         var userObj = null; var userKey = null;
                         snapshot.forEach(function(child) { 
                             var u = child.val();
-                            var matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || 
-                                          (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || 
-                                          (u.phone && String(u.phone) === String(loginVal));
-                            if(matchId && u.password === pass) {
-                                userObj = u; userKey = child.key;
-                            }
+                            var matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || (u.phone && String(u.phone) === String(loginVal));
+                            if(matchId && u.password === pass) { userObj = u; userKey = child.key; }
                         });
                         
-                        if(userObj) {
-                            setAppStorage('mh_live_user_key', userKey);
-                            currentUserKey = userKey;
-                            startFirebaseListeners(); 
-                            enterApp();
-                        } else { alert("Incorrect Details or Password! ❌"); }
+                        if(userObj) { setAppStorage('mh_live_user_key', userKey); currentUserKey = userKey; startFirebaseListeners(); enterApp(); } 
+                        else { alert("Incorrect Details or Password! ❌"); }
                     } else { alert("User not found! ❌"); }
                 }, function(error) {
-                    btn.innerText = "LOGIN NOW";
-                    alert("Database Connection Error: " + error.message);
+                    clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; alert("Connection Error: " + error.message);
                 });
-            } catch(e) {
-                btn.innerText = "LOGIN NOW";
-                alert("App Error: " + e.message);
-            }
+            } catch(e) { clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; alert("App Error: " + e.message); }
         }
 
-        function enterApp() { 
-            document.getElementById('auth-screen').style.display = 'none'; 
-            document.getElementById('main-app').style.display = 'block'; 
-            loadDynamicFolders(); loadBrandingUI(); 
-        }
-
-        function logoutApp() { 
-            removeAppStorage('mh_live_user_key');
-            currentUserKey = null; currentUserData = null;
-            document.getElementById('main-app').style.display = 'none'; 
-            document.getElementById('auth-screen').style.display = 'flex'; 
-            toggleAuthMode('login'); 
-        }
+        function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); }
+        function logoutApp() { removeAppStorage('mh_live_user_key'); currentUserKey = null; currentUserData = null; document.getElementById('main-app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; toggleAuthMode('login'); }
 
         // --- WALLET & FINANCE ---
         function updateWalletUI() {
             if(!currentUserData) return;
-            var d = currentUserData.deposit || 0;
-            var w = currentUserData.winning || 0;
-            var total = d + w;
-
-            document.getElementById('wallet-balance').innerText = total;
-            document.getElementById('wallet-coin-display').innerText = total;
-            document.getElementById('wallet-dep-display').innerText = d;
-            document.getElementById('wallet-win-display').innerText = w;
-            document.getElementById('my-lb-coins').innerText = w;
+            var total = (currentUserData.deposit || 0) + (currentUserData.winning || 0);
+            document.getElementById('wallet-balance').innerText = total; document.getElementById('wallet-coin-display').innerText = total;
+            document.getElementById('wallet-dep-display').innerText = (currentUserData.deposit || 0); document.getElementById('wallet-win-display').innerText = (currentUserData.winning || 0);
+            document.getElementById('my-lb-coins').innerText = (currentUserData.winning || 0);
         }
 
         function openWalletPage() { document.getElementById('wallet-subpage').style.display = 'block'; }
@@ -800,59 +728,35 @@
         function renderTxHistory() {
             var list = document.getElementById('user-tx-list');
             if(!currentUserData || !currentUserData.transactions) { list.innerHTML = `<p style="text-align:center; color:#8a9bb4; margin-top:30px;">No Transactions Yet.</p>`; return; }
-            var txs = Object.values(currentUserData.transactions).reverse();
-            var html = "";
-            txs.forEach(function(tx) {
-                html += `<div class="tx-item"><div><div class="tx-title">${tx.title}</div><div class="tx-date">${tx.date}</div></div><div style="text-align:right;"><div class="tx-amt ${tx.sign === '+' ? 'plus' : 'minus'}">${tx.sign} 🪙 ${tx.amount}</div><div class="tx-status ${tx.status}">${tx.status}</div></div></div>`;
-            });
+            var txs = Object.values(currentUserData.transactions).reverse(); var html = "";
+            txs.forEach(function(tx) { html += `<div class="tx-item"><div><div class="tx-title">${tx.title}</div><div class="tx-date">${tx.date}</div></div><div style="text-align:right;"><div class="tx-amt ${tx.sign === '+' ? 'plus' : 'minus'}">${tx.sign} 🪙 ${tx.amount}</div><div class="tx-status ${tx.status}">${tx.status}</div></div></div>`; });
             list.innerHTML = html;
         }
 
         var pgTimerInterval; var currentPayAmount = 0;
-        function openPaymentGateway() { 
-            var amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; 
-            currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; 
-            document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); 
-            document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; 
-            document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; 
-            startPGTimer(8 * 60); document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block'; 
-        }
+        function openPaymentGateway() { var amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; startPGTimer(8 * 60); document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block'; }
         function closePaymentGateway() { document.getElementById('payment-gateway-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; clearInterval(pgTimerInterval); }
         function startPGTimer(duration) { var timerDisplay = document.getElementById('pg-timer-display'); var timer = duration, minutes, seconds; clearInterval(pgTimerInterval); pgTimerInterval = setInterval(function () { minutes = parseInt(timer / 60, 10); seconds = parseInt(timer % 60, 10); minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds; timerDisplay.textContent = minutes + ":" + seconds; if (--timer < 0) { clearInterval(pgTimerInterval); timerDisplay.textContent = "EXPIRED"; closePaymentGateway(); } }, 1000); }
         function payViaGatewayApp(appType) { var upi = fbSettings.upiId; if(!upi) { alert("Admin hasn't set UPI!"); return; } var upiLink = `upi://pay?pa=${upi}&pn=${encodeURIComponent(fbSettings.appName||'App')}&am=${currentPayAmount}&cu=INR`; window.location.href = upiLink; }
         
         function submitGatewayUTR() { 
-            var utr = document.getElementById('pg-utr-input').value.trim(); 
-            if(utr.length < 10) { alert("Enter valid UTR Number!"); return; } 
-            
-            db.ref('finance/deposits').push({
-                userId: currentUserData.username, userName: currentUserData.firstName,
-                amount: currentPayAmount, utr: utr, status: 'Pending', time: new Date().toLocaleString()
-            });
-
+            var utr = document.getElementById('pg-utr-input').value.trim(); if(utr.length < 10) { alert("Enter valid UTR Number!"); return; } 
+            db.ref('finance/deposits').push({ userId: currentUserData.username, userName: currentUserData.firstName, amount: currentPayAmount, utr: utr, status: 'Pending', time: new Date().toLocaleString() });
             db.ref('users/' + currentUserKey + '/transactions').push({ title: "Deposit Processing (UTR: "+utr+")", amount: currentPayAmount, sign: "+", status: "Pending", date: new Date().toLocaleString() });
-
             alert("Payment Verification Sent to Admin! ✅"); closePaymentGateway(); 
         }
 
         function withdrawPrompt() { 
-            if(!currentUserData) return;
-            var amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); 
-            if(!amount) return; var amt = parseInt(amount); 
-            if(amt <= 0 || (currentUserData.winning||0) < amt) { alert("Insufficient WINNING balance!"); return; } 
-            var upi = prompt("Enter your UPI ID:"); if(!upi) return; 
-            
+            if(!currentUserData) return; var amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); if(!amount) return; var amt = parseInt(amount); if(amt <= 0 || (currentUserData.winning||0) < amt) { alert("Insufficient WINNING balance!"); return; } var upi = prompt("Enter your UPI ID:"); if(!upi) return; 
             db.ref('users/' + currentUserKey).update({ winning: currentUserData.winning - amt });
             db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: amt, upi: upi, status: 'Pending' });
             db.ref('users/' + currentUserKey + '/transactions').push({ title: "Withdrawal Requested", amount: amt, sign: "-", status: "Pending", date: new Date().toLocaleString() });
-
             alert("Withdrawal Requested! ✅"); closeSubPages(); 
         }
 
         // --- MATCH & FOLDER SYSTEM ---
         function loadDynamicFolders() { 
-            var grid = document.getElementById('dynamic-folders-grid'); 
-            if(fbCategories.length === 0) { grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #8a9bb4; padding: 20px;">No Games Available.</p>`; return; } 
+            var grid = document.getElementById('dynamic-folders-grid'); if(fbCategories.length === 0) { grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #8a9bb4; padding: 20px;">No Games Available.</p>`; return; } 
             grid.innerHTML = ""; fbCategories.forEach(function(cat) { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); 
         }
         function openCategoryFolder(categoryName) { currentActiveCategory = categoryName; document.getElementById('category-title-text').innerText = categoryName; document.getElementById('category-page').style.display = 'block'; switchCategoryTab('upcoming'); }
@@ -860,44 +764,21 @@
         
         function renderCategoryMatches() { 
             var matchGrid = document.getElementById('dynamic-match-grid'); 
-            
-            var filteredMatches = fbMatches.filter(function(match) {
-                var hasRoomId = match.roomId && match.roomId.trim() !== "";
-                var hasResult = match.resultText && match.resultText.trim() !== "";
-                
-                return match.category === currentActiveCategory && 
-                    ((currentCategoryTab === 'upcoming' && !hasRoomId && !hasResult) || 
-                     (currentCategoryTab === 'ongoing' && hasRoomId && !hasResult) || 
-                     (currentCategoryTab === 'resulted' && hasResult));
-            }); 
-            
+            var filteredMatches = fbMatches.filter(function(match) { var hasRoomId = match.roomId && match.roomId.trim() !== ""; var hasResult = match.resultText && match.resultText.trim() !== ""; return match.category === currentActiveCategory && ((currentCategoryTab === 'upcoming' && !hasRoomId && !hasResult) || (currentCategoryTab === 'ongoing' && hasRoomId && !hasResult) || (currentCategoryTab === 'resulted' && hasResult)); }); 
             if(filteredMatches.length === 0) { matchGrid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #8a9bb4;">No matches found.</p>`; return; } 
-            
             var html = ""; 
             filteredMatches.forEach(function(match) { 
-                var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
-                var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); 
-                var statusBadge = ""; var extraInfo = ""; 
-                var matchTimeStr = match.date ? `${match.date} ${match.time}` : "TBA";
-
+                var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); var statusBadge = ""; var extraInfo = ""; var matchTimeStr = match.date ? `${match.date} ${match.time}` : "TBA";
                 if(currentCategoryTab === 'upcoming') { statusBadge = `<span style="color:#ffaa00; font-size:10px;">📅 UPCOMING</span>`; } 
                 else if(currentCategoryTab === 'ongoing') { 
                     statusBadge = `<span style="color:#39ff14; font-size:10px;">🔴 LIVE</span>`; 
-                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
-                            <div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div>
-                            <button type="button" style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div>
-                            <button type="button" style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button>
-                        </div>
-                    </div>`; } 
+                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;"><div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div><button type="button" style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div><button type="button" style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>`; } 
                     else { extraInfo = `<div style="margin-top:10px; text-align:center; color:#ff0055; font-size:10px; font-weight:bold; background:rgba(255,0,85,0.1); padding:6px; border-radius:4px;">🔒 ID/PASS HIDDEN</div>`; } 
-                } 
-                else if (currentCategoryTab === 'resulted') { 
+                } else if (currentCategoryTab === 'resulted') { 
                     statusBadge = `<span style="color:#2D63F9; font-size:10px;">🏆 RESULTED</span>`; 
-                    extraInfo = `<div style="margin-top:10px; background:rgba(57,255,20,0.1); border:1px solid rgba(57,255,20,0.3); padding:8px; border-radius:6px; font-size:11px;"><div style="color:#39ff14; font-weight:bold;">🏆 Match Completed!</div></div>`;
+                    var myWonAmt = 0; if (isJoined && match.resultData) { var myRes = match.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) myWonAmt = myRes.winning; }
+                    var resultTextHtml = myWonAmt > 0 ? `<span style="color:#39ff14; font-weight:bold;">You Won 🪙 ${myWonAmt}! 🎉</span>` : `<span style="color:#8a9bb4; font-weight:bold;">Match Completed</span>`;
+                    extraInfo = `<div style="margin-top:10px; background:rgba(57,255,20,0.05); border:1px solid rgba(255,255,255,0.1); padding:8px; border-radius:6px; font-size:11px; text-align:center;">${resultTextHtml}</div>`;
                 } 
                 html += `<div class="game-card" onclick="openMatchDetail('${match.key}')"><img src="${match.image}" class="game-card-img"><div class="game-card-footer"><span class="game-title">${match.title}</span><div style="font-size:9px; color:#8a9bb4;">📅 ${matchTimeStr}</div><div class="live-status"><span class="fee-badge">🪙 ${match.fee}</span><div style="color:#39ff14;">${filledSlots}/${match.slots} Joined</div></div><div style="text-align:center; margin-top:5px; font-weight:bold;">${statusBadge}</div>${extraInfo}</div></div>`; 
             }); 
@@ -906,34 +787,16 @@
 
         // --- MATCH DETAILS & SEAT JOINING ---
         function openMatchDetail(key) { 
-            var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; 
-            activeMatchId = key; 
-            document.getElementById('detail-match-name').innerText = match.title; 
-            document.getElementById('detail-img').src = match.image; 
-            document.getElementById('detail-fee').innerText = match.fee; 
-            document.getElementById('detail-prize').innerText = match.prize; 
-            document.getElementById('detail-perkill').innerText = match.perKill || '0'; 
-            document.getElementById('detail-map').innerText = match.map || '-'; 
-            document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; 
-            document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
+            var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; activeMatchId = key; 
+            document.getElementById('detail-match-name').innerText = match.title; document.getElementById('detail-img').src = match.image; document.getElementById('detail-fee').innerText = match.fee; document.getElementById('detail-prize').innerText = match.prize; document.getElementById('detail-perkill').innerText = match.perKill || '0'; document.getElementById('detail-map').innerText = match.map || '-'; document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
             
-            var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; });
-            var extraDiv = document.getElementById('detail-extra-info');
+            var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); var extraDiv = document.getElementById('detail-extra-info');
             if (match.roomId && !match.resultText) {
-                if (isJoined) {
-                    extraDiv.innerHTML = `<div class="cred-box" style="margin: 0 15px 12px 15px;">
-                        <div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div>
-                        <div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div>
-                    </div>`;
-                } else {
-                    extraDiv.innerHTML = `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`;
-                }
-            } else {
-                extraDiv.innerHTML = "";
-            }
+                if (isJoined) { extraDiv.innerHTML = `<div class="cred-box" style="margin: 0 15px 12px 15px;"><div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>`; } 
+                else { extraDiv.innerHTML = `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`; }
+            } else { extraDiv.innerHTML = ""; }
 
-            var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; 
-            var btn = document.getElementById('join-now-btn'); 
+            var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; var btn = document.getElementById('join-now-btn'); 
             
             if(match.resultText) { btn.innerText = "COMPLETED"; btn.style.background = "#2D63F9"; btn.removeAttribute('onclick'); } 
             else if(match.roomId) { btn.innerText = "ENTRY CLOSED"; btn.style.background = "#ff0055"; btn.removeAttribute('onclick'); } 
@@ -946,26 +809,17 @@
 
         function openSeatSelection() {
             var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match) return;
-            selectedSeats = []; currentMatchFee = parseInt(match.fee);
-            var container = document.getElementById('seat-grid-container');
-            var html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">';
-            
-            var bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(function(p) { return p.position; }) : [];
-            var totalTeams = match.totalTeams || 12; 
-            var chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']);
-            
+            selectedSeats = []; currentMatchFee = parseInt(match.fee); var container = document.getElementById('seat-grid-container'); var html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">';
+            var bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(function(p) { return p.position; }) : []; var totalTeams = match.totalTeams || 12; var chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']);
             for(var i=1; i<=totalTeams; i++) {
                 html += `<div style="background:#121a2e; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;"><div style="font-size:11px; color:#8a9bb4; margin-bottom:8px; font-weight:bold;">Team ${i}</div><div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">`;
                 chars.forEach(function(c) {
                     var posId = `T${i}-${c}`;
                     if(bookedSeats.includes(posId)) { html += `<div style="width:28px; height:28px; border-radius:4px; background:#334155; border:1px solid #334155; color:#8a9bb4; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:not-allowed;">${c}</div>`; } 
                     else { html += `<div id="seat-${posId}" onclick="toggleSeat('${posId}')" style="width:28px; height:28px; border-radius:4px; background:#070914; border:1px solid #64748b; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; transition:0.2s;">${c}</div>`; }
-                });
-                html += `</div></div>`;
+                }); html += `</div></div>`;
             }
-            container.innerHTML = html + '</div>';
-            document.getElementById('btn-next-seats').innerText = `NEXT (0 Selected)`;
-            document.getElementById('match-detail-page').style.display = 'none'; document.getElementById('seat-selection-page').style.display = 'block';
+            container.innerHTML = html + '</div>'; document.getElementById('btn-next-seats').innerText = `NEXT (0 Selected)`; document.getElementById('match-detail-page').style.display = 'none'; document.getElementById('seat-selection-page').style.display = 'block';
         }
 
         function toggleSeat(posId) {
@@ -978,41 +832,29 @@
         function closeSeatSelection() { document.getElementById('seat-selection-page').style.display = 'none'; document.getElementById('match-detail-page').style.display = 'block'; }
 
         function goToRegistration() {
-            if(selectedSeats.length === 0) return;
-            var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = "";
-            selectedSeats.forEach(function(seat, idx) {
-                html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);"><label style="font-size:12px; color:#39ff14; font-weight:bold; display:block; margin-bottom:8px;">Player ${idx+1} <span style="color:#fff;">[ Pos: ${seat} ]</span></label><input type="text" id="reg-ign-${idx}" class="auth-input" style="margin-bottom:8px;" placeholder="In-Game Name *"><input type="text" id="reg-uid-${idx}" class="auth-input" style="margin-bottom:0;" placeholder="Free Fire UID *"></div>`;
-            });
-            dynamicInputs.innerHTML = html;
-            document.getElementById('btn-confirm-join').innerText = `Pay 🪙 ${currentMatchFee * selectedSeats.length} & Join`;
-            document.getElementById('register-modal').style.display = 'flex';
+            if(selectedSeats.length === 0) return; var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = "";
+            selectedSeats.forEach(function(seat, idx) { html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);"><label style="font-size:12px; color:#39ff14; font-weight:bold; display:block; margin-bottom:8px;">Player ${idx+1} <span style="color:#fff;">[ Pos: ${seat} ]</span></label><input type="text" id="reg-ign-${idx}" class="auth-input" style="margin-bottom:8px;" placeholder="In-Game Name *"><input type="text" id="reg-uid-${idx}" class="auth-input" style="margin-bottom:0;" placeholder="Free Fire UID *"></div>`; });
+            dynamicInputs.innerHTML = html; document.getElementById('btn-confirm-join').innerText = `Pay 🪙 ${currentMatchFee * selectedSeats.length} & Join`; document.getElementById('register-modal').style.display = 'flex';
         }
 
         function confirmMatchJoin() { 
             var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match || !currentUserData) return;
-            var totalFee = match.fee * selectedSeats.length;
-            var totalBal = (currentUserData.deposit || 0) + (currentUserData.winning || 0);
+            var totalFee = match.fee * selectedSeats.length; var totalBal = (currentUserData.deposit || 0) + (currentUserData.winning || 0);
             if(totalBal < totalFee) { alert(`Insufficient coins! Need 🪙 ${totalFee}`); return; } 
 
             var updates = {};
             for(var i=0; i<selectedSeats.length; i++) {
-                var ign = document.getElementById(`reg-ign-${i}`).value.trim();
-                var uid = document.getElementById(`reg-uid-${i}`).value.trim();
-                if(!ign || !uid) { alert("Enter Name & UID!"); return; }
-                var newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push();
-                updates[`matches/${match.key}/joinedPlayers/${newPlayerRef.key}`] = { name: ign, uid: uid, position: selectedSeats[i], appUser: currentUserData.username };
+                var ign = document.getElementById(`reg-ign-${i}`).value.trim(); var uid = document.getElementById(`reg-uid-${i}`).value.trim(); if(!ign || !uid) { alert("Enter Name & UID!"); return; }
+                var newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push(); updates[`matches/${match.key}/joinedPlayers/${newPlayerRef.key}`] = { name: ign, uid: uid, position: selectedSeats[i], appUser: currentUserData.username };
             }
 
             var newDep = currentUserData.deposit; var newWin = currentUserData.winning;
             if (newDep >= totalFee) { newDep -= totalFee; } else { var rem = totalFee - newDep; newDep = 0; newWin -= rem; }
-            
-            updates[`users/${currentUserKey}/deposit`] = newDep;
-            updates[`users/${currentUserKey}/winning`] = newWin;
+            updates[`users/${currentUserKey}/deposit`] = newDep; updates[`users/${currentUserKey}/winning`] = newWin;
 
             db.ref().update(updates).then(function() {
                 db.ref(`users/${currentUserKey}/transactions`).push({ title: "Joined Match: " + match.title, amount: totalFee, sign: "-", status: "Success", date: new Date().toLocaleString() });
-                alert(`Successfully Registered!`); 
-                document.getElementById('register-modal').style.display = 'none'; closeSeatSelection(); closeMatchDetail();
+                alert(`Successfully Registered!`); document.getElementById('register-modal').style.display = 'none'; closeSeatSelection(); closeMatchDetail();
             });
         }
         function closeRegisterModal() { document.getElementById('register-modal').style.display = 'none'; }
@@ -1022,30 +864,15 @@
 
         // --- SYNC & UI LOGIC ---
         function syncJoinedMatches() {
-            if(!currentUserData) return;
-            joinedMatches = [];
-            fbMatches.forEach(function(m) {
-                if(m.joinedPlayers) {
-                    var myPlayers = Object.values(m.joinedPlayers).filter(function(p) { return p.appUser === currentUserData.username; });
-                    myPlayers.forEach(function(p) { joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }); });
-                }
-            });
+            if(!currentUserData) return; joinedMatches = [];
+            fbMatches.forEach(function(m) { if(m.joinedPlayers) { var myPlayers = Object.values(m.joinedPlayers).filter(function(p) { return p.appUser === currentUserData.username; }); myPlayers.forEach(function(p) { joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }); }); } });
             updateMenuStats();
         }
 
         function updateJoinedMatchesUI() { 
-            var container = document.getElementById('joined-matches-container'); 
-            var filteredMatches = []; 
-            joinedMatches.forEach(function(uMatch) { 
-                var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); 
-                if(liveMatch) { 
-                    var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
-                    if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } 
-                } 
-            }); 
-            
+            var container = document.getElementById('joined-matches-container'); var filteredMatches = []; 
+            joinedMatches.forEach(function(uMatch) { var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); if(liveMatch) { var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } } }); 
             if(filteredMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">Matches Not Found!</p>`; return; } 
-            
             var html = ""; 
             filteredMatches.forEach(function(data) { 
                 var m = data.live; var u = data.user; 
@@ -1058,8 +885,7 @@
         function switchMMTab(tabName) { currentMMTab = tabName; document.querySelectorAll('#tournaments-subpage .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('mm-tab-' + tabName).classList.add('active'); updateJoinedMatchesUI(); }
 
         function renderMyStatistics() { 
-            var container = document.getElementById('statistics-container'); 
-            if(joinedMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">No Matches Played Yet!</p>`; return; } 
+            var container = document.getElementById('statistics-container'); if(joinedMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">No Matches Played Yet!</p>`; return; } 
             var html = ""; 
             [...joinedMatches].reverse().forEach(function(uMatch) { 
                 var m = fbMatches.find(function(x) { return x.key === uMatch.matchId; }); 
@@ -1074,55 +900,29 @@
 
         // --- PROFILE & SETTINGS ---
         function updateMenuStats() {
-            if(!currentUserData) return;
-            document.getElementById('menu-display-name').innerText = currentUserData.username;
+            if(!currentUserData) return; document.getElementById('menu-display-name').innerText = currentUserData.username;
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0;
             fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } });
-            document.getElementById('menu-stat-matches').innerText = mCount;
-            document.getElementById('menu-stat-kills').innerText = totalKills;
-            document.getElementById('menu-stat-won').innerText = totalWon;
+            document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon;
         }
 
         function openProfilePage() { 
-            if(!currentUserData) return;
-            document.getElementById('edit-fname').value = currentUserData.firstName || "";
-            document.getElementById('edit-lname').value = currentUserData.lastName || "";
-            document.getElementById('edit-uname').value = currentUserData.username || "";
-            document.getElementById('edit-phone').value = currentUserData.phone || "";
-            document.getElementById('profile-subpage').style.display = 'block'; 
+            if(!currentUserData) return; document.getElementById('edit-fname').value = currentUserData.firstName || ""; document.getElementById('edit-lname').value = currentUserData.lastName || ""; document.getElementById('edit-uname').value = currentUserData.username || ""; document.getElementById('edit-phone').value = currentUserData.phone || ""; document.getElementById('profile-subpage').style.display = 'block'; 
         }
 
-        function updateProfileInfo() {
-            var f = document.getElementById('edit-fname').value.trim();
-            var l = document.getElementById('edit-lname').value.trim();
-            var p = document.getElementById('edit-phone').value.trim();
-            if(!f) return;
-            db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { alert("Profile Updated! ✅"); });
-        }
+        function updateProfileInfo() { var f = document.getElementById('edit-fname').value.trim(); var l = document.getElementById('edit-lname').value.trim(); var p = document.getElementById('edit-phone').value.trim(); if(!f) return; db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { alert("Profile Updated! ✅"); }); }
 
         function loadBrandingUI() { 
-            var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || ""; 
-            document.getElementById('login-app-name').innerText = name; document.getElementById('header-app-name').innerText = name;
+            var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || ""; document.getElementById('login-app-name').innerText = name; document.getElementById('header-app-name').innerText = name;
             var noticeEl = document.getElementById('user-announcement-text'); if(fbSettings.announcement && noticeEl) noticeEl.innerText = fbSettings.announcement;
             var bannerEl = document.getElementById('user-banner-img'); if(fbSettings.bannerImg && bannerEl) bannerEl.src = fbSettings.bannerImg;
         }
 
-        function checkNewNotifications() {
-            var count = fbNotifications.length;
-            if(count > knownNotifCount) {
-                if(knownNotifCount !== 0) { showLiveToast(fbNotifications[0].title, fbNotifications[0].message); }
-                knownNotifCount = count;
-                document.getElementById('notif-badge').style.display = 'block';
-            }
-        }
+        function checkNewNotifications() { var count = fbNotifications.length; if(count > knownNotifCount) { if(knownNotifCount !== 0) { showLiveToast(fbNotifications[0].title, fbNotifications[0].message); } knownNotifCount = count; document.getElementById('notif-badge').style.display = 'block'; } }
 
         function loadLeaderboard(usersList) { 
-            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); });
-            var listHtml = ""; 
-            usersList.forEach(function(p, i) { 
-                var isMe = currentUserData && p.username === currentUserData.username;
-                listHtml += `<div class="lb-list-item" style="${isMe ? 'border: 1px solid #00f3ff;' : ''}"><div style="width: 25%; font-size: 14px; color: #fff;">${i+1}</div><div style="flex: 1; font-size: 14px; font-weight: bold; color: #fff; text-align: left;">${p.username}</div><div style="width: 25%; font-size: 14px; font-weight: bold; color: #ffaa00; text-align: right;">🪙 ${p.winning||0}</div></div>`; 
-            }); 
+            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); var listHtml = ""; 
+            usersList.forEach(function(p, i) { var isMe = currentUserData && p.username === currentUserData.username; listHtml += `<div class="lb-list-item" style="${isMe ? 'border: 1px solid #00f3ff;' : ''}"><div style="width: 25%; font-size: 14px; color: #fff;">${i+1}</div><div style="flex: 1; font-size: 14px; font-weight: bold; color: #fff; text-align: left;">${p.username}</div><div style="width: 25%; font-size: 14px; font-weight: bold; color: #ffaa00; text-align: right;">🪙 ${p.winning||0}</div></div>`; }); 
             document.getElementById('lb-list-container').innerHTML = listHtml || `<p style="text-align:center; color:#8a9bb4;">No entries yet.</p>`; 
         }
 
