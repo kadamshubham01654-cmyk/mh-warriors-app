@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
+    <!-- 🚨 ANTI-CACHE BRAHMASTRA 🚨 -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
@@ -359,7 +360,9 @@
                 <h1 style="color: #39ff14; font-size: 35px; margin-bottom: 10px;">Refer & Earn</h1>
                 <p style="color: #8a9bb4; font-size: 13px; margin-bottom: 20px;">Share your code. When a friend signs up, you get <b id="earn-owner-bonus" style="color:#ffaa00;">🪙 15</b> and they get <b id="earn-newuser-bonus" style="color:#39ff14;">🪙 10</b>!</p>
                 <div style="background:#070914; padding:15px; border-radius:8px; border:1px dashed #00f3ff; margin-bottom:20px;"><p style="font-size:11px; color:#8a9bb4; margin-bottom:5px; text-transform:uppercase;">Your Unique Referral Code</p><h2 id="my-ref-code" style="color:#fff; letter-spacing:2px;">-</h2></div>
-                <button type="button" class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9;" onclick="copyMyReferral()">📋 Copy Code & Share</button>
+                
+                <!-- 🚨 UPDATE: नवीन SHARE सिस्टीम 🚨 -->
+                <button type="button" class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9;" onclick="shareMyReferral()">📤 Share Code & Link</button>
             </div>
         </div>
 
@@ -603,7 +606,6 @@
             db.ref('users').on('value', function(snapshot) { var usersList = []; snapshot.forEach(function(child) { usersList.push(child.val()); }); loadLeaderboard(usersList); });
         }
 
-        // 🚨 BULLETPROOF AUTH 🚨
         function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
         
         function registerUser() { 
@@ -685,7 +687,7 @@
             }); matchGrid.innerHTML = html; 
         }
 
-        // 🚨 MATCH DETAILS & NEW RESULT UI 🚨
+        // MATCH DETAILS
         function openMatchDetail(key) { 
             var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; activeMatchId = key; 
             document.getElementById('detail-match-name').innerText = match.title; document.getElementById('detail-img').src = match.image; document.getElementById('detail-fee').innerText = match.fee; document.getElementById('detail-prize').innerText = match.prize; document.getElementById('detail-perkill').innerText = match.perKill || '0'; document.getElementById('detail-map').innerText = match.map || '-'; document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
@@ -693,24 +695,10 @@
             var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); 
             var extraDiv = document.getElementById('detail-extra-info');
             
-            // 🏆 RESULT UI LOGIC (WITH BOOYAH!) 🏆
             if (match.resultText && match.resultData) {
                 match.resultData.sort(function(a, b) { return (b.winning || 0) - (a.winning || 0); });
-                
-                var resHtml = `<div class="res-winner-box">🔥 BOOYAH! 🏆</div>
-                               <div class="res-full-header">FULL RESULT</div>
-                               <div class="res-table-head">
-                                  <div class="res-col-1">#</div>
-                                  <div class="res-col-2">Player Name</div>
-                                  <div class="res-col-3">Kills</div>
-                                  <div class="res-col-4">Winning</div>
-                               </div>`;
-                
-                match.resultData.forEach(function(player, index) {
-                    var rankClass = "";
-                    if(index === 0) rankClass = "top-1"; else if(index === 1) rankClass = "top-2"; else if(index === 2) rankClass = "top-3";
-                    resHtml += `<div class="res-row ${rankClass}"><div class="res-col-1">${index + 1}</div><div class="res-col-2">${player.playerName || player.appUser}</div><div class="res-col-3">${player.kills || 0}</div><div class="res-col-4">🪙 ${player.winning || 0}</div></div>`;
-                });
+                var resHtml = `<div class="res-winner-box">🔥 BOOYAH! 🏆</div><div class="res-full-header">FULL RESULT</div><div class="res-table-head"><div class="res-col-1">#</div><div class="res-col-2">Player Name</div><div class="res-col-3">Kills</div><div class="res-col-4">Winning</div></div>`;
+                match.resultData.forEach(function(player, index) { var rankClass = ""; if(index === 0) rankClass = "top-1"; else if(index === 1) rankClass = "top-2"; else if(index === 2) rankClass = "top-3"; resHtml += `<div class="res-row ${rankClass}"><div class="res-col-1">${index + 1}</div><div class="res-col-2">${player.playerName || player.appUser}</div><div class="res-col-3">${player.kills || 0}</div><div class="res-col-4">🪙 ${player.winning || 0}</div></div>`; });
                 extraDiv.innerHTML = resHtml;
             } else if (match.roomId && !match.resultText) {
                 if (isJoined) { extraDiv.innerHTML = `<div class="cred-box" style="margin: 0 15px 12px 15px;"><div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>`; } 
@@ -718,19 +706,13 @@
             } else { extraDiv.innerHTML = ""; }
 
             var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; var btn = document.getElementById('join-now-btn'); 
-            if(match.resultText) { btn.innerText = "COMPLETED"; btn.style.background = "#2D63F9"; btn.removeAttribute('onclick'); } 
-            else if(match.roomId) { btn.innerText = "ENTRY CLOSED"; btn.style.background = "#ff0055"; btn.removeAttribute('onclick'); } 
-            else if(filledSlots >= match.slots) { btn.innerText = "JOINING FULL"; btn.style.background = "#ff0055"; btn.removeAttribute('onclick'); } 
-            else { btn.innerText = "JOIN"; btn.style.background = "#2D63F9"; btn.setAttribute('onclick', 'openSeatSelection()'); } 
-            
-            document.getElementById('match-detail-page').style.display = 'block'; 
+            if(match.resultText) { btn.innerText = "COMPLETED"; btn.style.background = "#2D63F9"; btn.removeAttribute('onclick'); } else if(match.roomId) { btn.innerText = "ENTRY CLOSED"; btn.style.background = "#ff0055"; btn.removeAttribute('onclick'); } else if(filledSlots >= match.slots) { btn.innerText = "JOINING FULL"; btn.style.background = "#ff0055"; btn.removeAttribute('onclick'); } else { btn.innerText = "JOIN"; btn.style.background = "#2D63F9"; btn.setAttribute('onclick', 'openSeatSelection()'); } document.getElementById('match-detail-page').style.display = 'block'; 
         }
         function closeMatchDetail() { document.getElementById('match-detail-page').style.display = 'none'; }
 
         function openSeatSelection() { var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match) return; selectedSeats = []; currentMatchFee = parseInt(match.fee); var container = document.getElementById('seat-grid-container'); var html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">'; var bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(function(p) { return p.position; }) : []; var totalTeams = match.totalTeams || 12; var chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']); for(var i=1; i<=totalTeams; i++) { html += `<div style="background:#121a2e; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;"><div style="font-size:11px; color:#8a9bb4; margin-bottom:8px; font-weight:bold;">Team ${i}</div><div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">`; chars.forEach(function(c) { var posId = `T${i}-${c}`; if(bookedSeats.includes(posId)) { html += `<div style="width:28px; height:28px; border-radius:4px; background:#334155; border:1px solid #334155; color:#8a9bb4; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:not-allowed;">${c}</div>`; } else { html += `<div id="seat-${posId}" onclick="toggleSeat('${posId}')" style="width:28px; height:28px; border-radius:4px; background:#070914; border:1px solid #64748b; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; transition:0.2s;">${c}</div>`; } }); html += `</div></div>`; } container.innerHTML = html + '</div>'; document.getElementById('btn-next-seats').innerText = `NEXT (0 Selected)`; document.getElementById('match-detail-page').style.display = 'none'; document.getElementById('seat-selection-page').style.display = 'block'; }
         function toggleSeat(posId) { var idx = selectedSeats.indexOf(posId); var el = document.getElementById(`seat-${posId}`); if(idx > -1) { selectedSeats.splice(idx, 1); el.style.background = '#070914'; el.style.borderColor = '#64748b'; el.style.color = '#fff'; } else { if(selectedSeats.length >= 4) return; selectedSeats.push(posId); el.style.background = '#39ff14'; el.style.borderColor = '#39ff14'; el.style.color = '#000'; } document.getElementById('btn-next-seats').innerText = `NEXT (${selectedSeats.length} Selected)`; }
         function closeSeatSelection() { document.getElementById('seat-selection-page').style.display = 'none'; document.getElementById('match-detail-page').style.display = 'block'; }
-
         function goToRegistration() { if(selectedSeats.length === 0) return; var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = ""; selectedSeats.forEach(function(seat, idx) { html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);"><label style="font-size:12px; color:#39ff14; font-weight:bold; display:block; margin-bottom:8px;">Player ${idx+1} <span style="color:#fff;">[ Pos: ${seat} ]</span></label><input type="text" id="reg-ign-${idx}" class="auth-input" style="margin-bottom:8px;" placeholder="In-Game Name *"><input type="text" id="reg-uid-${idx}" class="auth-input" style="margin-bottom:0;" placeholder="Free Fire UID *"></div>`; }); dynamicInputs.innerHTML = html; document.getElementById('btn-confirm-join').innerText = `Pay 🪙 ${currentMatchFee * selectedSeats.length} & Join`; document.getElementById('register-modal').style.display = 'flex'; }
         function confirmMatchJoin() { var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match || !currentUserData) return; var totalFee = match.fee * selectedSeats.length; var totalBal = (currentUserData.deposit || 0) + (currentUserData.winning || 0); if(totalBal < totalFee) { alert(`Insufficient coins! Need 🪙 ${totalFee}`); return; } var updates = {}; for(var i=0; i<selectedSeats.length; i++) { var ign = document.getElementById(`reg-ign-${i}`).value.trim(); var uid = document.getElementById(`reg-uid-${i}`).value.trim(); if(!ign || !uid) { alert("Enter Name & UID!"); return; } var newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push(); updates[`matches/${match.key}/joinedPlayers/${newPlayerRef.key}`] = { name: ign, uid: uid, position: selectedSeats[i], appUser: currentUserData.username }; } var newDep = currentUserData.deposit; var newWin = currentUserData.winning; if (newDep >= totalFee) { newDep -= totalFee; } else { var rem = totalFee - newDep; newDep = 0; newWin -= rem; } updates[`users/${currentUserKey}/deposit`] = newDep; updates[`users/${currentUserKey}/winning`] = newWin; db.ref().update(updates).then(function() { db.ref(`users/${currentUserKey}/transactions`).push({ title: "Joined Match: " + match.title, amount: totalFee, sign: "-", status: "Success", date: new Date().toLocaleString() }); alert(`Successfully Registered!`); document.getElementById('register-modal').style.display = 'none'; closeSeatSelection(); closeMatchDetail(); }); }
         function closeRegisterModal() { document.getElementById('register-modal').style.display = 'none'; }
@@ -744,7 +726,33 @@
         function switchMMTab(tabName) { currentMMTab = tabName; document.querySelectorAll('#tournaments-subpage .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('mm-tab-' + tabName).classList.add('active'); updateJoinedMatchesUI(); }
         function renderMyStatistics() { var container = document.getElementById('statistics-container'); if(joinedMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">No Matches Played Yet!</p>`; return; } var html = ""; [...joinedMatches].reverse().forEach(function(uMatch) { var m = fbMatches.find(function(x) { return x.key === uMatch.matchId; }); if(m) { var wonAmt = 0; if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) wonAmt = myRes.winning; } html += `<div class="stat-match-card"><div class="sm-header"><div class="sm-title">${m.title}</div></div><div class="sm-footer"><div class="sm-col"><span class="sm-label">Entry Fee</span><span class="sm-val" style="color:#ffaa00;">🪙 ${m.fee}</span></div><div class="sm-col" style="text-align:right;"><span class="sm-label">Prize Won</span><span class="sm-val" style="color:${wonAmt > 0 ? '#39ff14' : '#f8fafc'};">🪙 ${wonAmt}</span></div></div></div>`; } }); container.innerHTML = html; }
         function openStatisticsPage() { document.getElementById('statistics-subpage').style.display = 'block'; renderMyStatistics(); }
-        function updateMenuStats() { if(!currentUserData) return; document.getElementById('menu-display-name').innerText = currentUserData.username; var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; }
+        
+        function updateMenuStats() { 
+            if(!currentUserData) return; 
+            document.getElementById('menu-display-name').innerText = currentUserData.username; 
+            
+            // 🚨 UPDATE: Auto Generate Referral Code 🚨
+            document.getElementById('my-ref-code').innerText = "MH-" + currentUserData.username.toUpperCase();
+            
+            var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
+        }
+
+        // 🚨 UPDATE: Web Share API System 🚨
+        function shareMyReferral() {
+            if(!currentUserData) return;
+            var refCode = "MH-" + currentUserData.username.toUpperCase();
+            var appLink = "https://kadamshubham01654-cmyk.github.io/mh-warriors-app/";
+            
+            var shareText = `🎮 *Invite Friends & Earn Rewards!* 🎮\n\nमित्रांना इन्व्हाईट करा आणि जिंका रियल कॅश! 💰\nमाझा Referral Code वापरून रजिस्टर कर आणि मिळव 🪙 10 Welcome Bonus!\n\n✅ Earn rewards for every successful referral\n✅ Play Free Fire tournaments and win cash prizes\n✅ Fast and secure wallet system\n\n🔥 *My Referral Code:* ${refCode}\n📥 *Download MH WARRIORS now:* ${appLink}`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'MH WARRIORS', text: shareText }).catch(function(err) { console.log('Error sharing:', err); });
+            } else {
+                window.copyToClipboard(shareText, "Share Text");
+                alert("Share feature not supported on this browser. Text copied to clipboard! ✅");
+            }
+        }
+
         function openProfilePage() { if(!currentUserData) return; document.getElementById('edit-fname').value = currentUserData.firstName || ""; document.getElementById('edit-lname').value = currentUserData.lastName || ""; document.getElementById('edit-uname').value = currentUserData.username || ""; document.getElementById('edit-phone').value = currentUserData.phone || ""; document.getElementById('profile-subpage').style.display = 'block'; }
         function updateProfileInfo() { var f = document.getElementById('edit-fname').value.trim(); var l = document.getElementById('edit-lname').value.trim(); var p = document.getElementById('edit-phone').value.trim(); if(!f) return; db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { alert("Profile Updated! ✅"); }); }
         function loadBrandingUI() { var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || ""; document.getElementById('login-app-name').innerText = name; document.getElementById('header-app-name').innerText = name; var noticeEl = document.getElementById('user-announcement-text'); if(fbSettings.announcement && noticeEl) noticeEl.innerText = fbSettings.announcement; var bannerEl = document.getElementById('user-banner-img'); if(fbSettings.bannerImg && bannerEl) bannerEl.src = fbSettings.bannerImg; }
@@ -756,7 +764,6 @@
         function openSupportPage() { document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else alert("Link not set."); }
         function callSupport() { if(fbSettings.supportNo) window.location.href = "tel:" + fbSettings.supportNo; else alert("Number not set."); }
-        function copyMyReferral() { window.copyToClipboard("REF-" + (currentUserData?currentUserData.username:"APP"), "Referral Code"); }
         function closeSubPages() { document.querySelectorAll('.sub-page').forEach(function(p) { p.style.display = 'none'; }); }
     </script>
 </body>
