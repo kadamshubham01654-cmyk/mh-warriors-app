@@ -608,20 +608,29 @@
 
         function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
         
-        // 🚨 FIREBASE AUTO-WAKEUP SYSTEM (ANTI-FREEZE) 🚨
+        // 🚨 AUTO-RECONNECT LOGIC (Anti-Freeze) 🚨
         document.addEventListener("visibilitychange", function() {
             if (document.visibilityState === 'visible') { 
-                db.goOffline(); 
-                setTimeout(function(){ db.goOnline(); }, 300); 
+                try {
+                    db.goOffline(); 
+                    setTimeout(function(){ db.goOnline(); }, 300); 
+                } catch(e) {}
             }
         });
 
         function registerUser() { 
-            db.goOffline(); db.goOnline(); // Force Wakeup
             var fname = document.getElementById('reg-firstname').value.trim(); var lname = document.getElementById('reg-lastname').value.trim(); var uname = document.getElementById('reg-username').value.trim(); var phone = document.getElementById('reg-phone').value.trim(); var email = document.getElementById('reg-email').value.trim(); var pass = document.getElementById('reg-password').value; 
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
+            
             var btn = document.getElementById('btn-reg-main'); btn.innerText = "WAIT..."; btn.disabled = true;
-            var resetTimer = setTimeout(function() { btn.innerText = "REGISTER NOW"; btn.disabled = false; alert("Network Slow! Request timed out. Please try again."); }, 15000);
+            
+            // 🚨 AUTO-CLEAN & RELOAD SYSTEM 🚨
+            var resetTimer = setTimeout(function() { 
+                btn.innerText = "REGISTER NOW"; btn.disabled = false; 
+                alert("Network Slow! Refreshing app to fix connection..."); 
+                window.location.href = window.location.pathname + "?v=" + new Date().getTime(); 
+            }, 12000);
+
             try {
                 db.ref('users').orderByChild('username').equalTo(uname).once('value', function(snapshot) {
                     clearTimeout(resetTimer);
@@ -636,11 +645,18 @@
         }
 
         function loginUser() { 
-            db.goOffline(); db.goOnline(); // Force Wakeup
             var loginVal = document.getElementById('login-email').value.trim(); var pass = document.getElementById('login-password').value;
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
+            
             var btn = document.getElementById('btn-login-main'); btn.innerText = "WAIT..."; btn.disabled = true;
-            var resetTimer = setTimeout(function() { btn.innerText = "LOGIN NOW"; btn.disabled = false; alert("Network Slow! Request timed out. Please try again."); }, 15000);
+            
+            // 🚨 AUTO-CLEAN & RELOAD SYSTEM 🚨
+            var resetTimer = setTimeout(function() { 
+                btn.innerText = "LOGIN NOW"; btn.disabled = false; 
+                alert("Network Slow! Refreshing app to fix connection..."); 
+                window.location.href = window.location.pathname + "?v=" + new Date().getTime(); 
+            }, 12000);
+
             try {
                 db.ref('users').once('value', function(snapshot) {
                     clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false;
@@ -809,7 +825,6 @@
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
         }
 
-        // Web Share API System
         function shareMyReferral() {
             if(!currentUserData) return;
             var rawName = currentUserData.username.toUpperCase();
