@@ -10,7 +10,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
         /* TEXT SELECTION DISABLE CODE */
-        body { background: #070914; color: #fff; padding-bottom: 70px; -webkit-touch-callout: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: contain; }
+        body { background: #070914; color: #fff; padding-bottom: 70px; -webkit-touch-callout: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
         input { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
         
         /* SPLASH SCREEN */
@@ -256,11 +256,13 @@
 </head>
 <body>
 
+    <!-- 🚀 SPLASH SCREEN 🚀 -->
     <div id="splash-screen">
         <img src="23000.png" class="splash-logo" onerror="this.style.display='none';">
         <h2 class="splash-text">MH WARRIORS</h2>
     </div>
 
+    <!-- 🔔 CUSTOM TOAST NOTIFICATION 🔔 -->
     <div id="live-toast">
         <div class="toast-icon" id="toast-icon">🔔</div>
         <div class="toast-content">
@@ -278,6 +280,7 @@
     <div id="auth-screen">
         <div class="auth-container">
             <div style="display:flex; justify-content:center; margin-bottom:15px;">
+                <!-- 🎨 UPDATED LOGO WITH CUSTOM CLASS -->
                 <img id="login-app-logo" src="23000.png" class="custom-logo" style="width:100px; height:100px; border-radius:20px; display:block; object-fit:cover; border:2px solid #00f3ff; box-shadow: 0 0 15px rgba(0,243,255,0.3);" onerror="this.style.display='none';">
             </div>
             <div class="app-brand" id="login-app-name">MH WARRIORS</div>
@@ -449,6 +452,23 @@
             <div class="static-page-content"><h3>Eligibility</h3><ul><li>Users must be 18 years or older to participate.</li><li>Providing fake details may result in account suspension.</li></ul></div>
         </div>
 
+        <!-- 🚨 NEW: CONTACT US SUBPAGE (Added Missing HTML) 🚨 -->
+        <div id="support-subpage" class="sub-page" style="background:#f0f2f5;">
+            <div class="detail-header" style="background:#fff; color:#1e293b; border-bottom:1px solid #e2e8f0;">
+                <span class="back-arrow" style="color:#1e293b;" onclick="closeSubPages()">←</span><span class="detail-title">CONTACT US</span>
+            </div>
+            <div class="static-page-content">
+                <h3>Customer Support</h3>
+                <p>If you have any queries or need help, contact us directly on WhatsApp or Call.</p>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button type="button" class="auth-btn" style="flex:1; background:#25D366; color:white;" onclick="openWhatsApp()">WhatsApp</button>
+                    <button type="button" class="auth-btn" style="flex:1; background:#2D63F9; color:white;" onclick="callSupport()">Call Us</button>
+                </div>
+                <h3 style="margin-top:20px;">Rules & Regulations</h3>
+                <p id="support-rules-text" style="white-space: pre-wrap;">Loading...</p>
+            </div>
+        </div>
+
         <div id="profile-subpage" class="sub-page" style="background: #f0f2f5;">
             <div class="detail-header" style="background:#fff; color:#1e293b; border-bottom:1px solid #e2e8f0;">
                 <span class="back-arrow" style="color:#1e293b;" onclick="closeSubPages()">←</span><span class="detail-title">UPDATE PROFILE</span>
@@ -581,7 +601,7 @@
     </div>
 
     <script>
-        // 🚀 CUSTOM ALERT FUNCTION (Replaces default alert)
+        // 🚀 CUSTOM ALERT FUNCTION
         function showCustomAlert(msg, type="info") {
             var toast = document.getElementById('live-toast');
             var icon = document.getElementById('toast-icon');
@@ -594,22 +614,15 @@
             setTimeout(function() { toast.style.top = '-100px'; }, 3500);
         }
 
-        // 🚀 PULL TO REFRESH SYSTEM
-        let touchstartY = 0;
-        document.addEventListener('touchstart', e => { touchstartY = e.changedTouches[0].screenY; }, {passive: true});
-        document.addEventListener('touchend', e => {
-            if(window.scrollY === 0 && e.changedTouches[0].screenY - touchstartY > 180) {
-                showCustomAlert("Refreshing App...", "info");
-                setTimeout(() => { window.location.reload(); }, 1000);
-            }
-        }, {passive: true});
-
-        // 🚀 REMOVE SPLASH SCREEN AFTER LOAD
-        window.addEventListener('load', function() {
+        // 🚀 SAFE SPLASH SCREEN REMOVAL
+        document.addEventListener("DOMContentLoaded", function() {
             setTimeout(function() {
-                document.getElementById('splash-screen').style.opacity = '0';
-                setTimeout(function() { document.getElementById('splash-screen').style.display = 'none'; }, 500);
-            }, 2000);
+                var splash = document.getElementById('splash-screen');
+                if(splash) {
+                    splash.style.opacity = '0';
+                    setTimeout(function() { splash.style.display = 'none'; }, 500);
+                }
+            }, 1500);
         });
 
         // FIREBASE INITIALIZATION
@@ -962,7 +975,23 @@
 
         function openProfilePage() { if(!currentUserData) return; document.getElementById('edit-fname').value = currentUserData.firstName || ""; document.getElementById('edit-lname').value = currentUserData.lastName || ""; document.getElementById('edit-uname').value = currentUserData.username || ""; document.getElementById('edit-phone').value = currentUserData.phone || ""; document.getElementById('profile-subpage').style.display = 'block'; }
         function updateProfileInfo() { var f = document.getElementById('edit-fname').value.trim(); var l = document.getElementById('edit-lname').value.trim(); var p = document.getElementById('edit-phone').value.trim(); if(!f) return; db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { showCustomAlert("Profile Updated! ✅"); }); }
-        function loadBrandingUI() { var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || "23000.png"; document.getElementById('login-app-name').innerText = name; document.getElementById('header-app-name').innerText = name; var noticeEl = document.getElementById('user-announcement-text'); if(fbSettings.announcement && noticeEl) noticeEl.innerText = fbSettings.announcement; var bannerEl = document.getElementById('user-banner-img'); if(fbSettings.bannerImg && bannerEl) bannerEl.src = fbSettings.bannerImg; }
+        
+        function loadBrandingUI() { 
+            var name = fbSettings.appName || "MH WARRIORS"; 
+            var logo = fbSettings.appLogo || "23000.png"; 
+            document.getElementById('login-app-name').innerText = name; 
+            document.getElementById('header-app-name').innerText = name; 
+            
+            var loginLogo = document.getElementById('login-app-logo');
+            var headerLogo = document.getElementById('header-app-logo');
+            if(loginLogo) { loginLogo.src = logo; loginLogo.style.display = 'block'; }
+            if(headerLogo) { headerLogo.src = logo; headerLogo.style.display = 'block'; }
+            
+            var noticeEl = document.getElementById('user-announcement-text'); 
+            if(fbSettings.announcement && noticeEl) noticeEl.innerText = fbSettings.announcement; 
+            var bannerEl = document.getElementById('user-banner-img'); 
+            if(fbSettings.bannerImg && bannerEl) bannerEl.src = fbSettings.bannerImg; 
+        }
         
         function checkNewNotifications() { 
             var count = fbNotifications.length; 
