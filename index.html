@@ -360,8 +360,6 @@
                 <h1 style="color: #39ff14; font-size: 35px; margin-bottom: 10px;">Refer & Earn</h1>
                 <p style="color: #8a9bb4; font-size: 13px; margin-bottom: 20px;">Share your code. When a friend signs up, you get <b id="earn-owner-bonus" style="color:#ffaa00;">🪙 15</b> and they get <b id="earn-newuser-bonus" style="color:#39ff14;">🪙 10</b>!</p>
                 <div style="background:#070914; padding:15px; border-radius:8px; border:1px dashed #00f3ff; margin-bottom:20px;"><p style="font-size:11px; color:#8a9bb4; margin-bottom:5px; text-transform:uppercase;">Your Unique Referral Code</p><h2 id="my-ref-code" style="color:#fff; letter-spacing:2px;">-</h2></div>
-                
-                <!-- 🚨 UPDATE: नवीन SHARE सिस्टीम 🚨 -->
                 <button type="button" class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9;" onclick="shareMyReferral()">📤 Share Code & Link</button>
             </div>
         </div>
@@ -608,7 +606,16 @@
 
         function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
         
+        // 🚨 FIREBASE AUTO-WAKEUP SYSTEM (ANTI-FREEZE) 🚨
+        document.addEventListener("visibilitychange", function() {
+            if (document.visibilityState === 'visible') { 
+                db.goOffline(); 
+                setTimeout(function(){ db.goOnline(); }, 300); 
+            }
+        });
+
         function registerUser() { 
+            db.goOffline(); db.goOnline(); // Force Wakeup
             var fname = document.getElementById('reg-firstname').value.trim(); var lname = document.getElementById('reg-lastname').value.trim(); var uname = document.getElementById('reg-username').value.trim(); var phone = document.getElementById('reg-phone').value.trim(); var email = document.getElementById('reg-email').value.trim(); var pass = document.getElementById('reg-password').value; 
             if(!fname || !uname || !pass) { alert("First Name, Username & Password required!"); return; } 
             var btn = document.getElementById('btn-reg-main'); btn.innerText = "WAIT..."; btn.disabled = true;
@@ -627,6 +634,7 @@
         }
 
         function loginUser() { 
+            db.goOffline(); db.goOnline(); // Force Wakeup
             var loginVal = document.getElementById('login-email').value.trim(); var pass = document.getElementById('login-password').value;
             if(!loginVal || !pass) { alert("Enter login details & Password!"); return; }
             var btn = document.getElementById('btn-login-main'); btn.innerText = "WAIT..."; btn.disabled = true;
@@ -731,13 +739,13 @@
             if(!currentUserData) return; 
             document.getElementById('menu-display-name').innerText = currentUserData.username; 
             
-            // 🚨 UPDATE: Auto Generate Referral Code 🚨
+            // Auto Generate Referral Code
             document.getElementById('my-ref-code').innerText = "MH-" + currentUserData.username.toUpperCase();
             
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
         }
 
-        // 🚨 UPDATE: Web Share API System 🚨
+        // Web Share API System
         function shareMyReferral() {
             if(!currentUserData) return;
             var refCode = "MH-" + currentUserData.username.toUpperCase();
