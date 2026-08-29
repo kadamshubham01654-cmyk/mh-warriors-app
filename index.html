@@ -727,9 +727,13 @@
             
             var rawName = currentUserData.username.toUpperCase();
             var finalRefCode = rawName;
-            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } 
-            else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } 
-            else { finalRefCode = "MH-" + rawName; }
+            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { 
+                finalRefCode = "MH-" + rawName.substring(3); 
+            } else if(rawName.startsWith("MH")) { 
+                finalRefCode = "MH-" + rawName.substring(2); 
+            } else { 
+                finalRefCode = "MH-" + rawName; 
+            }
             document.getElementById('my-ref-code').innerText = finalRefCode;
             
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
@@ -740,9 +744,13 @@
             if(!currentUserData) return;
             var rawName = currentUserData.username.toUpperCase();
             var finalRefCode = rawName;
-            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } 
-            else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } 
-            else { finalRefCode = "MH-" + rawName; }
+            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { 
+                finalRefCode = "MH-" + rawName.substring(3); 
+            } else if(rawName.startsWith("MH")) { 
+                finalRefCode = "MH-" + rawName.substring(2); 
+            } else { 
+                finalRefCode = "MH-" + rawName; 
+            }
             
             var appLink = "https://kadamshubham01654-cmyk.github.io/mh-warriors-app/";
             var shareText = `🎮 *Invite Friends & Earn Rewards!* 🎮\n\nमित्रांना इन्व्हाईट करा आणि जिंका रियल कॅश! 💰\nमाझा Referral Code वापरून रजिस्टर कर आणि मिळव 🪙 10 Welcome Bonus!\n\n✅ Earn rewards for every successful referral\n✅ Play Free Fire tournaments and win cash prizes\n✅ Fast and secure wallet system\n\n🔥 *My Referral Code:* ${finalRefCode}\n📥 *Download MH WARRIORS now:* ${appLink}`;
