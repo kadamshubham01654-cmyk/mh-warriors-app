@@ -211,6 +211,23 @@
         .res-row.top-1 .res-col-1 { color: #ffaa00; font-size: 16px; }
         .res-row.top-2 { background: rgba(192, 192, 192, 0.1); border-color: #c0c0c0; }
         .res-row.top-3 { background: rgba(205, 127, 50, 0.1); border-color: #cd7f32; }
+        
+        /* 🤍 NEW WHITE CARD DESIGN FOR MY MATCHES 🤍 */
+        .wmc-card { background: #ffffff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; border-bottom: 4px solid #2D63F9; }
+        .wmc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
+        .wmc-logo { width: 45px; height: 45px; border-radius: 50%; background: #0c1220; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 2px solid #2D63F9; }
+        .wmc-title-sec { flex: 1; text-align: left; }
+        .wmc-title { font-size: 15px; font-weight: 900; color: #0f172a; text-transform: uppercase; margin-bottom: 3px; }
+        .wmc-date { font-size: 11px; color: #64748b; font-weight: 600; }
+        .wmc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 15px; text-align: center; }
+        .wmc-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; font-weight: 800; letter-spacing: 0.5px; }
+        .wmc-val { font-size: 14px; font-weight: 900; color: #1e293b; display: flex; justify-content: center; align-items: center; gap: 4px; }
+        .wmc-val.coin { color: #d97706; }
+        .wmc-footer { display: flex; gap: 10px; }
+        .wmc-btn { flex: 1; padding: 12px 10px; border-radius: 6px; font-size: 11px; font-weight: 900; text-align: center; cursor: pointer; text-transform: uppercase; transition: 0.2s; letter-spacing: 0.5px;}
+        .wmc-btn-primary { background: #10b981; color: white; border: none; box-shadow: 0 2px 5px rgba(16,185,129,0.3); }
+        .wmc-btn-primary:active { transform: scale(0.95); }
+        .wmc-btn-outline { background: transparent; color: #3b82f6; border: 1px solid #3b82f6; }
     </style>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -714,13 +731,66 @@
 
         // SYNC & MENU
         function syncJoinedMatches() { if(!currentUserData) return; joinedMatches = []; fbMatches.forEach(function(m) { if(m.joinedPlayers) { var myPlayers = Object.values(m.joinedPlayers).filter(function(p) { return p.appUser === currentUserData.username; }); myPlayers.forEach(function(p) { joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }); }); } }); updateMenuStats(); }
-        function updateJoinedMatchesUI() { var container = document.getElementById('joined-matches-container'); var filteredMatches = []; joinedMatches.forEach(function(uMatch) { var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); if(liveMatch) { var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } } }); if(filteredMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">Matches Not Found!</p>`; return; } var html = ""; filteredMatches.forEach(function(data) { var m = data.live; var u = data.user; var statusBadge = currentMMTab === 'upcoming' ? `<span style="background:#ffaa00; color:black; padding:3px 6px; border-radius:4px; font-size:10px;">UPCOMING</span>` : (currentMMTab === 'ongoing' ? `<span style="background:#39ff14; color:black; padding:3px 6px; border-radius:4px; font-size:10px;">ONGOING</span>` : `<span style="background:#2D63F9; color:white; padding:3px 6px; border-radius:4px; font-size:10px;">COMPLETED</span>`); html += `<div style="background: #121a2e; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 15px; margin-bottom: 12px;" onclick="openMatchDetail('${m.key}')"><div style="display:flex; justify-content:space-between; margin-bottom:8px;"><h4 style="color: #fff; font-size:14px;">🎮 ${m.title}</h4>${statusBadge}</div><p style="font-size:12px; color:#8a9bb4;">In-Game Name: <b style="color:#fff;">${u.playerName}</b></p></div>`; }); container.innerHTML = html; }
+        
+        function updateJoinedMatchesUI() { 
+            var container = document.getElementById('joined-matches-container'); 
+            var filteredMatches = []; 
+            joinedMatches.forEach(function(uMatch) { 
+                var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); 
+                if(liveMatch) { 
+                    var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
+                    if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } 
+                } 
+            }); 
+            if(filteredMatches.length === 0) { 
+                container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px; font-weight:bold;">Matches Not Found!</p>`; 
+                return; 
+            } 
+            var html = ""; 
+            filteredMatches.forEach(function(data) { 
+                var m = data.live; var u = data.user; 
+                var matchTimeStr = m.date ? `${m.date} ${m.time}` : "TBA";
+                
+                var btnHtml = "";
+                if (currentMMTab === 'upcoming') {
+                    btnHtml = `<div class="wmc-btn wmc-btn-outline" style="border-color:#eab308; color:#ca8a04;">⏳ UPCOMING</div>`;
+                } else if (currentMMTab === 'ongoing') {
+                    btnHtml = `<div class="wmc-btn wmc-btn-primary" style="background:#2D63F9;" onclick="openMatchDetail('${m.key}')">🎮 VIEW ROOM ID</div>`;
+                } else {
+                    btnHtml = `<div class="wmc-btn wmc-btn-primary" onclick="openMatchDetail('${m.key}')">🏆 WATCH RESULT</div>`;
+                }
+
+                html += `
+                <div class="wmc-card">
+                    <div class="wmc-header">
+                        <div class="wmc-logo">🎮</div>
+                        <div class="wmc-title-sec">
+                            <div class="wmc-title">${m.title}</div>
+                            <div class="wmc-date">${matchTimeStr}</div>
+                        </div>
+                    </div>
+                    <div class="wmc-grid">
+                        <div><div class="wmc-label">Prize Pool</div><div class="wmc-val coin">🪙 ${m.prize || 0}</div></div>
+                        <div><div class="wmc-label">Per Kill</div><div class="wmc-val coin">🪙 ${m.perKill || 0}</div></div>
+                        <div><div class="wmc-label">Entry Fee</div><div class="wmc-val coin">🪙 ${m.fee || 0}</div></div>
+                        <div><div class="wmc-label">Type</div><div class="wmc-val">${m.teamType || 'Solo'}</div></div>
+                        <div><div class="wmc-label">Mode</div><div class="wmc-val">CLASSIC</div></div>
+                        <div><div class="wmc-label">Map</div><div class="wmc-val">${m.map || 'Bermuda'}</div></div>
+                    </div>
+                    <div class="wmc-footer">
+                        ${btnHtml}
+                        <div class="wmc-btn wmc-btn-outline">JOINED: ${u.playerName}</div>
+                    </div>
+                </div>`; 
+            }); 
+            container.innerHTML = html; 
+        }
+
         function openMyMatchesPage(tabName) { currentMMTab = tabName; document.getElementById('tournaments-subpage').style.display = 'block'; switchMMTab(tabName); }
         function switchMMTab(tabName) { currentMMTab = tabName; document.querySelectorAll('#tournaments-subpage .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('mm-tab-' + tabName).classList.add('active'); updateJoinedMatchesUI(); }
         function renderMyStatistics() { var container = document.getElementById('statistics-container'); if(joinedMatches.length === 0) { container.innerHTML = `<p style="color: #8a9bb4; text-align: center; padding-top:20px;">No Matches Played Yet!</p>`; return; } var html = ""; [...joinedMatches].reverse().forEach(function(uMatch) { var m = fbMatches.find(function(x) { return x.key === uMatch.matchId; }); if(m) { var wonAmt = 0; if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) wonAmt = myRes.winning; } html += `<div class="stat-match-card"><div class="sm-header"><div class="sm-title">${m.title}</div></div><div class="sm-footer"><div class="sm-col"><span class="sm-label">Entry Fee</span><span class="sm-val" style="color:#ffaa00;">🪙 ${m.fee}</span></div><div class="sm-col" style="text-align:right;"><span class="sm-label">Prize Won</span><span class="sm-val" style="color:${wonAmt > 0 ? '#39ff14' : '#f8fafc'};">🪙 ${wonAmt}</span></div></div></div>`; } }); container.innerHTML = html; }
         function openStatisticsPage() { document.getElementById('statistics-subpage').style.display = 'block'; renderMyStatistics(); }
         
-        // 🚨 UPDATE: Fixed Referral Code Logic 🚨
         function updateMenuStats() { 
             if(!currentUserData) return; 
             document.getElementById('menu-display-name').innerText = currentUserData.username; 
