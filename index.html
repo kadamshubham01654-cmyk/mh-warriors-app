@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MH WARRIORS</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json?v=2">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
-        /* TEXT SELECTION DISABLE CODE */
-        body { background: #070914; color: #fff; padding-bottom: 70px; -webkit-touch-callout: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: contain; }
+        /* TEXT SELECTION DISABLE CODE & PULL-TO-REFRESH FIX */
+        body { background: #070914; color: #fff; padding-bottom: 70px; -webkit-touch-callout: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; touch-action: none; }
         input { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
         
         /* SPLASH SCREEN */
@@ -685,6 +685,15 @@
             else { toggleAuthMode('login'); }
         });
 
+        // --- BACK BUTTON HASH ROUTING FIX ---
+        function trackPageOpen() { history.pushState({page: 'view'}, null, '#view'); }
+        window.addEventListener('popstate', function (e) {
+            if(location.hash !== '#view') {
+                document.querySelectorAll('.sub-page, .match-detail-page, #payment-gateway-screen').forEach(function(p) { p.style.display = 'none'; });
+                document.querySelectorAll('.modal-bg').forEach(function(m) { m.style.display = 'none'; });
+            }
+        });
+
         function startFirebaseListeners() {
             db.ref().off(); 
             if(currentUserKey) {
@@ -746,10 +755,10 @@
         function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); }
         function logoutApp() { removeAppStorage('mh_live_user_key'); currentUserKey = null; currentUserData = null; document.getElementById('main-app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; toggleAuthMode('login'); }
 
-        // WALLET
         function updateWalletUI() { if(!currentUserData) return; var total = (currentUserData.deposit || 0) + (currentUserData.winning || 0); document.getElementById('wallet-balance').innerText = total; document.getElementById('wallet-coin-display').innerText = total; document.getElementById('wallet-dep-display').innerText = (currentUserData.deposit || 0); document.getElementById('wallet-win-display').innerText = (currentUserData.winning || 0); document.getElementById('my-lb-coins').innerText = (currentUserData.winning || 0); }
-        function openWalletPage() { document.getElementById('wallet-subpage').style.display = 'block'; }
-        function openTxHistoryPage() { document.getElementById('tx-history-subpage').style.display = 'block'; renderTxHistory(); }
+        
+        function openWalletPage() { trackPageOpen(); document.getElementById('wallet-subpage').style.display = 'block'; }
+        function openTxHistoryPage() { trackPageOpen(); document.getElementById('tx-history-subpage').style.display = 'block'; renderTxHistory(); }
         function renderTxHistory() { 
             var list = document.getElementById('user-tx-list'); 
             if(!currentUserData || !currentUserData.transactions) { list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Transactions Yet.</div></div>`; return; } 
@@ -759,20 +768,19 @@
         }
 
         var pgTimerInterval; var currentPayAmount = 0;
-        function openPaymentGateway() { var amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; startPGTimer(8 * 60); document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block'; }
+        function openPaymentGateway() { var amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; trackPageOpen(); currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; startPGTimer(8 * 60); document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block'; }
         function closePaymentGateway() { document.getElementById('payment-gateway-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; clearInterval(pgTimerInterval); }
         function startPGTimer(duration) { var timerDisplay = document.getElementById('pg-timer-display'); var timer = duration, minutes, seconds; clearInterval(pgTimerInterval); pgTimerInterval = setInterval(function () { minutes = parseInt(timer / 60, 10); seconds = parseInt(timer % 60, 10); minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds; timerDisplay.textContent = minutes + ":" + seconds; if (--timer < 0) { clearInterval(pgTimerInterval); timerDisplay.textContent = "EXPIRED"; closePaymentGateway(); } }, 1000); }
         function payViaGatewayApp(appType) { var upi = fbSettings.upiId; if(!upi) { showCustomAlert("Admin hasn't set UPI!", "error"); return; } var upiLink = `upi://pay?pa=${upi}&pn=${encodeURIComponent(fbSettings.appName||'App')}&am=${currentPayAmount}&cu=INR`; window.location.href = upiLink; }
         function submitGatewayUTR() { var utr = document.getElementById('pg-utr-input').value.trim(); if(utr.length < 10) { showCustomAlert("Enter valid UTR Number!", "error"); return; } db.ref('finance/deposits').push({ userId: currentUserData.username, userName: currentUserData.firstName, amount: currentPayAmount, utr: utr, status: 'Pending', time: new Date().toLocaleString() }); db.ref('users/' + currentUserKey + '/transactions').push({ title: "Deposit Processing (UTR: "+utr+")", amount: currentPayAmount, sign: "+", status: "Pending", date: new Date().toLocaleString() }); showCustomAlert("Payment Verification Sent to Admin! ✅"); closePaymentGateway(); }
         function withdrawPrompt() { if(!currentUserData) return; var amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); if(!amount) return; var amt = parseInt(amount); if(amt <= 0 || (currentUserData.winning||0) < amt) { showCustomAlert("Insufficient WINNING balance!", "error"); return; } var upi = prompt("Enter your UPI ID:"); if(!upi) return; db.ref('users/' + currentUserKey).update({ winning: currentUserData.winning - amt }); db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: amt, upi: upi, status: 'Pending' }); db.ref('users/' + currentUserKey + '/transactions').push({ title: "Withdrawal Requested", amount: amt, sign: "-", status: "Pending", date: new Date().toLocaleString() }); showCustomAlert("Withdrawal Requested! ✅"); closeSubPages(); }
 
-        // FOLDERS
         function loadDynamicFolders() { 
             var grid = document.getElementById('dynamic-folders-grid'); 
             if(fbCategories.length === 0) { grid.innerHTML = `<div style="grid-column: span 2;" class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Games Available.</div></div>`; return; } 
             grid.innerHTML = ""; fbCategories.forEach(function(cat) { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); 
         }
-        function openCategoryFolder(categoryName) { currentActiveCategory = categoryName; document.getElementById('category-title-text').innerText = categoryName; document.getElementById('category-page').style.display = 'block'; switchCategoryTab('upcoming'); }
+        function openCategoryFolder(categoryName) { trackPageOpen(); currentActiveCategory = categoryName; document.getElementById('category-title-text').innerText = categoryName; document.getElementById('category-page').style.display = 'block'; switchCategoryTab('upcoming'); }
         function switchCategoryTab(tabName) { currentCategoryTab = tabName; document.querySelectorAll('#category-tabs .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('cat-tab-' + tabName).classList.add('active'); renderCategoryMatches(); }
         
         function renderCategoryMatches() { 
@@ -801,25 +809,22 @@
             }); matchGrid.innerHTML = html; 
         }
 
-        // 📲 WHATSAPP INVITE FUNCTION 📲
         function shareMatchWhatsApp(title, fee, prize, map, type) {
             var text = `🎮 *MH WARRIORS - Esports Tournament* 🎮\n\n🔥 Match: ${title}\n🗺️ Map: ${map} (${type})\n🎟️ Entry Fee: 🪙 ${fee}\n🏆 Prize Pool: 🪙 ${prize}\n\nJoin my squad and win Real Cash! Download the app now:\n🔗 https://kadamshubham01654-cmyk.github.io/mh-warriors-app/`;
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
         }
 
-        // MATCH DETAILS
         function openMatchDetail(key) { 
-            var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; activeMatchId = key; 
+            var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; 
+            trackPageOpen(); activeMatchId = key; 
             document.getElementById('detail-match-name').innerText = match.title; document.getElementById('detail-img').src = match.image; document.getElementById('detail-fee').innerText = match.fee; document.getElementById('detail-prize').innerText = match.prize; document.getElementById('detail-perkill').innerText = match.perKill || '0'; document.getElementById('detail-map').innerText = match.map || '-'; document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
             
             var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); 
             var extraDiv = document.getElementById('detail-extra-info');
             var actionBtns = "";
 
-            // 📲 WhatsApp Button for All matches
             actionBtns += `<button type="button" class="auth-btn" style="background:transparent; color:#25D366; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #25D366;" onclick="shareMatchWhatsApp('${match.title}', '${match.fee}', '${match.prize}', '${match.map}', '${match.teamType}')">📲 Invite Squad via WhatsApp</button>`;
 
-            // 🔴 YouTube Live Button for Ongoing/Resulted matches
             if (match.roomId || match.resultText) {
                 var ytLink = fbSettings.ytLink || "https://youtube.com/";
                 actionBtns += `<button type="button" class="auth-btn" style="background:rgba(255,0,0,0.1); color:#ff0000; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #ff0000;" onclick="window.open('${ytLink}', '_blank')">🔴 WATCH LIVE STREAM</button>`;
@@ -840,12 +845,13 @@
         }
         function closeMatchDetail() { document.getElementById('match-detail-page').style.display = 'none'; }
 
-        function openSeatSelection() { var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match) return; selectedSeats = []; currentMatchFee = parseInt(match.fee); var container = document.getElementById('seat-grid-container'); var html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">'; var bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(function(p) { return p.position; }) : []; var totalTeams = match.totalTeams || 12; var chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']); for(var i=1; i<=totalTeams; i++) { html += `<div style="background:#121a2e; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;"><div style="font-size:11px; color:#8a9bb4; margin-bottom:8px; font-weight:bold;">Team ${i}</div><div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">`; chars.forEach(function(c) { var posId = `T${i}-${c}`; if(bookedSeats.includes(posId)) { html += `<div style="width:28px; height:28px; border-radius:4px; background:#334155; border:1px solid #334155; color:#8a9bb4; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:not-allowed;">${c}</div>`; } else { html += `<div id="seat-${posId}" onclick="toggleSeat('${posId}')" style="width:28px; height:28px; border-radius:4px; background:#070914; border:1px solid #64748b; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; transition:0.2s;">${c}</div>`; } }); html += `</div></div>`; } container.innerHTML = html + '</div>'; document.getElementById('btn-next-seats').innerText = `NEXT (0 Selected)`; document.getElementById('match-detail-page').style.display = 'none'; document.getElementById('seat-selection-page').style.display = 'block'; }
+        function openSeatSelection() { var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); if(!match) return; trackPageOpen(); selectedSeats = []; currentMatchFee = parseInt(match.fee); var container = document.getElementById('seat-grid-container'); var html = '<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">'; var bookedSeats = match.joinedPlayers ? Object.values(match.joinedPlayers).map(function(p) { return p.position; }) : []; var totalTeams = match.totalTeams || 12; var chars = match.teamType === 'Squad' ? ['A','B','C','D'] : (match.teamType === 'Duo' ? ['A','B'] : ['A']); for(var i=1; i<=totalTeams; i++) { html += `<div style="background:#121a2e; border:1px solid rgba(255,255,255,0.1); border-radius:8px; padding:10px; text-align:center;"><div style="font-size:11px; color:#8a9bb4; margin-bottom:8px; font-weight:bold;">Team ${i}</div><div style="display:flex; justify-content:center; gap:6px; flex-wrap:wrap;">`; chars.forEach(function(c) { var posId = `T${i}-${c}`; if(bookedSeats.includes(posId)) { html += `<div style="width:28px; height:28px; border-radius:4px; background:#334155; border:1px solid #334155; color:#8a9bb4; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:not-allowed;">${c}</div>`; } else { html += `<div id="seat-${posId}" onclick="toggleSeat('${posId}')" style="width:28px; height:28px; border-radius:4px; background:#070914; border:1px solid #64748b; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; cursor:pointer; transition:0.2s;">${c}</div>`; } }); html += `</div></div>`; } container.innerHTML = html + '</div>'; document.getElementById('btn-next-seats').innerText = `NEXT (0 Selected)`; document.getElementById('match-detail-page').style.display = 'none'; document.getElementById('seat-selection-page').style.display = 'block'; }
         function toggleSeat(posId) { var idx = selectedSeats.indexOf(posId); var el = document.getElementById(`seat-${posId}`); if(idx > -1) { selectedSeats.splice(idx, 1); el.style.background = '#070914'; el.style.borderColor = '#64748b'; el.style.color = '#fff'; } else { if(selectedSeats.length >= 4) return; selectedSeats.push(posId); el.style.background = '#39ff14'; el.style.borderColor = '#39ff14'; el.style.color = '#000'; } document.getElementById('btn-next-seats').innerText = `NEXT (${selectedSeats.length} Selected)`; }
         function closeSeatSelection() { document.getElementById('seat-selection-page').style.display = 'none'; document.getElementById('match-detail-page').style.display = 'block'; }
         
         function goToRegistration() { 
             if(selectedSeats.length === 0) return; 
+            trackPageOpen();
             var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = ""; 
             selectedSeats.forEach(function(seat, idx) { 
                 html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
@@ -857,11 +863,9 @@
             dynamicInputs.innerHTML = html; 
             document.getElementById('btn-confirm-join').innerText = `Pay 🪙 ${currentMatchFee * selectedSeats.length} & Join`; 
             
-            // RESET RULE CHECKBOX EVERY TIME
             var chk = document.getElementById('anti-hack-chk');
             var btn = document.getElementById('btn-confirm-join');
             if(chk) { chk.checked = false; btn.disabled = true; btn.style.opacity = '0.5'; }
-            
             document.getElementById('register-modal').style.display = 'flex'; 
         }
         
@@ -871,22 +875,13 @@
             if(totalBal < totalFee) { showCustomAlert(`Insufficient coins! Need 🪙 ${totalFee}`, "error"); return; } 
             
             var btn = document.getElementById('btn-confirm-join');
-            btn.innerHTML = `<div class="spinner"></div>`; 
-            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner"></div>`; btn.disabled = true;
 
             var updates = {}; 
             for(var i=0; i<selectedSeats.length; i++) { 
                 var ign = document.getElementById(`reg-ign-${i}`).value.trim(); 
                 var uid = document.getElementById(`reg-uid-${i}`).value.trim() || "-"; 
-                
-                // 🚨 REQUIRED NAME VALIDATION 🚨
-                if(!ign) { 
-                    showCustomAlert("⚠️ Please enter Player " + (i+1) + "'s Name!", "error"); 
-                    btn.innerText = `Pay 🪙 ${totalFee} & Join`; 
-                    btn.disabled = false; 
-                    return; 
-                } 
-                
+                if(!ign) { showCustomAlert("⚠️ Please enter Player " + (i+1) + "'s Name!", "error"); btn.innerText = `Pay 🪙 ${totalFee} & Join`; btn.disabled = false; return; } 
                 var newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push(); updates[`matches/${match.key}/joinedPlayers/${newPlayerRef.key}`] = { name: ign, uid: uid, position: selectedSeats[i], appUser: currentUserData.username }; 
             } 
             var newDep = currentUserData.deposit; var newWin = currentUserData.winning; if (newDep >= totalFee) { newDep -= totalFee; } else { var rem = totalFee - newDep; newDep = 0; newWin -= rem; } 
@@ -900,10 +895,9 @@
             }); 
         }
         function closeRegisterModal() { document.getElementById('register-modal').style.display = 'none'; }
-        function openRegisteredPlayersModal() { var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); var players = match && match.joinedPlayers ? Object.values(match.joinedPlayers) : []; var listDiv = document.getElementById('registered-players-list'); if(players.length === 0) { listDiv.innerHTML = `<p style="text-align: center; color:#8a9bb4;">No players yet!</p>`; } else { var html = ""; players.forEach(function(p, index) { html += `<div style="background: #070914; padding: 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #00f3ff;">#${index+1} ${p.name} <span style="color:#39ff14; font-size:10px;">[${p.position||''}]</span></span></div>`; }); listDiv.innerHTML = html; } document.getElementById('players-modal').style.display = 'flex'; }
+        function openRegisteredPlayersModal() { trackPageOpen(); var match = fbMatches.find(function(m) { return m.key === activeMatchId; }); var players = match && match.joinedPlayers ? Object.values(match.joinedPlayers) : []; var listDiv = document.getElementById('registered-players-list'); if(players.length === 0) { listDiv.innerHTML = `<p style="text-align: center; color:#8a9bb4;">No players yet!</p>`; } else { var html = ""; players.forEach(function(p, index) { html += `<div style="background: #070914; padding: 10px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.05);"><span style="color: #00f3ff;">#${index+1} ${p.name} <span style="color:#39ff14; font-size:10px;">[${p.position||''}]</span></span></div>`; }); listDiv.innerHTML = html; } document.getElementById('players-modal').style.display = 'flex'; }
         function closeRegisteredPlayersModal() { document.getElementById('players-modal').style.display = 'none'; }
 
-        // SYNC & MENU
         function syncJoinedMatches() { if(!currentUserData) return; joinedMatches = []; fbMatches.forEach(function(m) { if(m.joinedPlayers) { var myPlayers = Object.values(m.joinedPlayers).filter(function(p) { return p.appUser === currentUserData.username; }); myPlayers.forEach(function(p) { joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }); }); } }); updateMenuStats(); }
         
         function updateJoinedMatchesUI() { 
@@ -922,7 +916,6 @@
             filteredMatches.forEach(function(data) { 
                 var m = data.live; var u = data.user; 
                 var matchTimeStr = m.date ? `${m.date} ${m.time}` : "TBA";
-                
                 var btnHtml = ""; var timerHtml = "";
                 if (currentMMTab === 'upcoming') {
                     btnHtml = `<div class="wmc-btn wmc-btn-outline" style="border-color:#eab308; color:#ca8a04;">⏳ UPCOMING</div>`;
@@ -935,33 +928,12 @@
                     timerHtml = `<div class="wmc-date" style="color:#8a9bb4;">Match Completed</div>`;
                 }
 
-                html += `
-                <div class="wmc-card">
-                    <div class="wmc-header">
-                        <div class="wmc-logo">🎮</div>
-                        <div class="wmc-title-sec">
-                            <div class="wmc-title">${m.title}</div>
-                            ${timerHtml}
-                        </div>
-                    </div>
-                    <div class="wmc-grid">
-                        <div><div class="wmc-label">Prize Pool</div><div class="wmc-val coin">🪙 ${m.prize || 0}</div></div>
-                        <div><div class="wmc-label">Per Kill</div><div class="wmc-val coin">🪙 ${m.perKill || 0}</div></div>
-                        <div><div class="wmc-label">Entry Fee</div><div class="wmc-val coin">🪙 ${m.fee || 0}</div></div>
-                        <div><div class="wmc-label">Type</div><div class="wmc-val">${m.teamType || 'Solo'}</div></div>
-                        <div><div class="wmc-label">Mode</div><div class="wmc-val">CLASSIC</div></div>
-                        <div><div class="wmc-label">Map</div><div class="wmc-val">${m.map || 'Bermuda'}</div></div>
-                    </div>
-                    <div class="wmc-footer">
-                        ${btnHtml}
-                        <div class="wmc-btn wmc-btn-outline">JOINED: ${u.playerName}</div>
-                    </div>
-                </div>`; 
+                html += `<div class="wmc-card"><div class="wmc-header"><div class="wmc-logo">🎮</div><div class="wmc-title-sec"><div class="wmc-title">${m.title}</div>${timerHtml}</div></div><div class="wmc-grid"><div><div class="wmc-label">Prize Pool</div><div class="wmc-val coin">🪙 ${m.prize || 0}</div></div><div><div class="wmc-label">Per Kill</div><div class="wmc-val coin">🪙 ${m.perKill || 0}</div></div><div><div class="wmc-label">Entry Fee</div><div class="wmc-val coin">🪙 ${m.fee || 0}</div></div><div><div class="wmc-label">Type</div><div class="wmc-val">${m.teamType || 'Solo'}</div></div><div><div class="wmc-label">Mode</div><div class="wmc-val">CLASSIC</div></div><div><div class="wmc-label">Map</div><div class="wmc-val">${m.map || 'Bermuda'}</div></div></div><div class="wmc-footer">${btnHtml}<div class="wmc-btn wmc-btn-outline">JOINED: ${u.playerName}</div></div></div>`; 
             }); 
             container.innerHTML = html; 
         }
 
-        function openMyMatchesPage(tabName) { currentMMTab = tabName; document.getElementById('tournaments-subpage').style.display = 'block'; switchMMTab(tabName); }
+        function openMyMatchesPage(tabName) { trackPageOpen(); currentMMTab = tabName; document.getElementById('tournaments-subpage').style.display = 'block'; switchMMTab(tabName); }
         function switchMMTab(tabName) { currentMMTab = tabName; document.querySelectorAll('#tournaments-subpage .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('mm-tab-' + tabName).classList.add('active'); updateJoinedMatchesUI(); }
         
         function renderMyStatistics() { 
@@ -979,7 +951,7 @@
             container.innerHTML = html; 
         }
 
-        function openStatisticsPage() { document.getElementById('statistics-subpage').style.display = 'block'; renderMyStatistics(); }
+        function openStatisticsPage() { trackPageOpen(); document.getElementById('statistics-subpage').style.display = 'block'; renderMyStatistics(); }
         
         function updateMenuStats() { 
             if(!currentUserData) return; 
@@ -1003,7 +975,7 @@
             if (navigator.share) { navigator.share({ title: 'MH WARRIORS', text: shareText }).catch(function(err){}); } else { window.copyToClipboard(shareText, "Share Text"); }
         }
 
-        function openProfilePage() { if(!currentUserData) return; document.getElementById('edit-fname').value = currentUserData.firstName || ""; document.getElementById('edit-lname').value = currentUserData.lastName || ""; document.getElementById('edit-uname').value = currentUserData.username || ""; document.getElementById('edit-phone').value = currentUserData.phone || ""; document.getElementById('profile-subpage').style.display = 'block'; }
+        function openProfilePage() { if(!currentUserData) return; trackPageOpen(); document.getElementById('edit-fname').value = currentUserData.firstName || ""; document.getElementById('edit-lname').value = currentUserData.lastName || ""; document.getElementById('edit-uname').value = currentUserData.username || ""; document.getElementById('edit-phone').value = currentUserData.phone || ""; document.getElementById('profile-subpage').style.display = 'block'; }
         function updateProfileInfo() { var f = document.getElementById('edit-fname').value.trim(); var l = document.getElementById('edit-lname').value.trim(); var p = document.getElementById('edit-phone').value.trim(); if(!f) return; db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { showCustomAlert("Profile Updated! ✅"); }); }
         
         function loadBrandingUI() { 
@@ -1028,9 +1000,9 @@
         
         function switchTab(tabId) { document.querySelectorAll('.app-section').forEach(function(s) { s.classList.remove('active'); }); document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); }); document.getElementById(tabId).classList.add('active'); document.getElementById('nav-' + tabId).classList.add('active'); }
         function closeCategoryFolder() { document.getElementById('category-page').style.display = 'none'; }
-        function openStaticPage(pageId) { document.getElementById(pageId).style.display = 'block'; }
+        function openStaticPage(pageId) { trackPageOpen(); document.getElementById(pageId).style.display = 'block'; }
         
-        function openSupportPage() { document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
+        function openSupportPage() { trackPageOpen(); document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else showCustomAlert("Link not set.", "error"); }
         function openTelegram() { if(fbSettings.tgLink) window.open(fbSettings.tgLink, '_blank'); else showCustomAlert("Telegram Link not set.", "error"); }
         function openInstagram() { if(fbSettings.igLink) window.open(fbSettings.igLink, '_blank'); else showCustomAlert("Instagram Link not set.", "error"); }
@@ -1038,6 +1010,7 @@
         function closeSubPages() { document.querySelectorAll('.sub-page').forEach(function(p) { p.style.display = 'none'; }); }
 
         function openNotificationsPage() {
+            trackPageOpen();
             document.getElementById('notifications-subpage').style.display = 'block';
             let badge = document.getElementById('notif-badge');
             if(badge) badge.style.display = 'none';
