@@ -680,9 +680,19 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             currentUserKey = getAppStorage('mh_live_user_key');
-            startFirebaseListeners();
-            if(currentUserKey) { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); } 
-            else { toggleAuthMode('login'); }
+            if(currentUserKey) {
+                startFirebaseListeners();
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('main-app').style.display = 'block';
+                loadDynamicFolders();
+                loadBrandingUI();
+            } else {
+                // IMPORTANT: Do not start Firebase listeners while logged out.
+                // This prevents the app from getting stuck in a loading state after logout.
+                document.getElementById('main-app').style.display = 'none';
+                document.getElementById('auth-screen').style.display = 'flex';
+                toggleAuthMode('login');
+            }
         });
 
         // --- BACK BUTTON HASH ROUTING FIX ---
@@ -695,26 +705,82 @@
         });
 
         function startFirebaseListeners() {
-            db.ref().off(); 
-            if(currentUserKey) {
-                db.ref('users/' + currentUserKey).on('value', function(snapshot) {
-                    if(snapshot.exists()) { currentUserData = snapshot.val(); currentUserData.key = snapshot.key; updateWalletUI(); updateMenuStats(); renderTxHistory(); syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics(); } 
-                    else { logoutApp(); }
+            // Remove old listeners before creating new ones.
+            // This is especially important after logout -> login.
+            try { db.ref().off(); } catch(e) {}
+
+            if(!currentUserKey) return;
+
+            db.ref('users/' + currentUserKey).on('value', function(snapshot) {
+                if(snapshot.exists()) {
+                    currentUserData = snapshot.val();
+                    currentUserData.key = snapshot.key;
+                    updateWalletUI();
+                    updateMenuStats();
+                    renderTxHistory();
+                    syncJoinedMatches();
+                    renderCategoryMatches();
+                    updateJoinedMatchesUI();
+                    renderMyStatistics();
+                } else {
+                    // The saved user key is no longer valid. Cleanly return to login.
+                    logoutApp();
+                }
+            }, function(error) {
+                console.error('User listener error:', error);
+                showCustomAlert('Unable to load your account. Please try again.', 'error');
+            });
+
+            db.ref('matches').on('value', function(snapshot) {
+                fbMatches = [];
+                snapshot.forEach(function(child) {
+                    var m = child.val();
+                    m.key = child.key;
+                    fbMatches.push(m);
                 });
-            }
-            db.ref('matches').on('value', function(snapshot) { fbMatches = []; snapshot.forEach(function(child) { var m = child.val(); m.key = child.key; fbMatches.push(m); }); syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics(); });
-            db.ref('categories').on('value', function(snapshot) { fbCategories = []; snapshot.forEach(function(child) { var c = child.val(); c.key = child.key; fbCategories.push(c); }); loadDynamicFolders(); });
-            db.ref('settings').on('value', function(snapshot) { fbSettings = snapshot.val() || {}; loadBrandingUI(); if(fbSettings.maintenance === true) { document.getElementById('maint-screen').style.display = 'flex'; } else { document.getElementById('maint-screen').style.display = 'none'; } });
-            db.ref('notifications').on('value', function(snapshot) { fbNotifications = []; snapshot.forEach(function(child) { var n = child.val(); n.key = child.key; fbNotifications.push(n); }); checkNewNotifications(); });
-            db.ref('users').on('value', function(snapshot) { var usersList = []; snapshot.forEach(function(child) { usersList.push(child.val()); }); loadLeaderboard(usersList); });
+                syncJoinedMatches();
+                renderCategoryMatches();
+                updateJoinedMatchesUI();
+                renderMyStatistics();
+            });
+
+            db.ref('categories').on('value', function(snapshot) {
+                fbCategories = [];
+                snapshot.forEach(function(child) {
+                    var c = child.val();
+                    c.key = child.key;
+                    fbCategories.push(c);
+                });
+                loadDynamicFolders();
+            });
+
+            db.ref('settings').on('value', function(snapshot) {
+                fbSettings = snapshot.val() || {};
+                loadBrandingUI();
+                var maint = document.getElementById('maint-screen');
+                if(maint) maint.style.display = fbSettings.maintenance === true ? 'flex' : 'none';
+            });
+
+            db.ref('notifications').on('value', function(snapshot) {
+                fbNotifications = [];
+                snapshot.forEach(function(child) {
+                    var n = child.val();
+                    n.key = child.key;
+                    fbNotifications.push(n);
+                });
+                checkNewNotifications();
+            });
+
+            db.ref('users').on('value', function(snapshot) {
+                var usersList = [];
+                snapshot.forEach(function(child) { usersList.push(child.val()); });
+                loadLeaderboard(usersList);
+            });
         }
 
-        function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
         
-        document.addEventListener("visibilitychange", function() {
-            if (document.visibilityState === 'visible') { try { db.goOffline(); setTimeout(function(){ db.goOnline(); }, 300); } catch(e) {} }
-        });
-
+function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
+        
         function registerUser() { 
             var fname = document.getElementById('reg-firstname').value.trim(); var lname = document.getElementById('reg-lastname').value.trim(); var uname = document.getElementById('reg-username').value.trim(); var phone = document.getElementById('reg-phone').value.trim(); var email = document.getElementById('reg-email').value.trim(); var pass = document.getElementById('reg-password').value; 
             if(!fname || !uname || !pass) { showCustomAlert("First Name, Username & Password required!", "error"); return; } 
@@ -735,25 +801,93 @@
         }
 
         function loginUser() { 
-            var loginVal = document.getElementById('login-email').value.trim(); var pass = document.getElementById('login-password').value;
+            var loginVal = document.getElementById('login-email').value.trim();
+            var pass = document.getElementById('login-password').value;
             if(!loginVal || !pass) { showCustomAlert("Enter login details & Password!", "error"); return; }
-            
-            var btn = document.getElementById('btn-login-main'); btn.innerHTML = `<div class="spinner"></div>`; btn.disabled = true;
-            var resetTimer = setTimeout(function() { btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("Network Slow! Refreshing app...", "error"); window.location.href = window.location.pathname + "?v=" + new Date().getTime(); }, 12000);
+
+            var btn = document.getElementById('btn-login-main');
+            btn.innerHTML = `<div class="spinner"></div>`;
+            btn.disabled = true;
+
+            // Do not force-refresh the whole app on a slow connection.
+            // A forced refresh was one of the reasons the login screen could loop/loading.
+            var finished = false;
+            var resetTimer = setTimeout(function() {
+                if(finished) return;
+                finished = true;
+                btn.innerText = "LOGIN NOW";
+                btn.disabled = false;
+                showCustomAlert("Network is slow. Please check your internet and try again.", "error");
+            }, 15000);
+
             try {
                 db.ref('users').once('value', function(snapshot) {
-                    clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false;
+                    if(finished) return;
+                    finished = true;
+                    clearTimeout(resetTimer);
+                    btn.innerText = "LOGIN NOW";
+                    btn.disabled = false;
+
                     if(snapshot.exists()) {
-                        var userObj = null; var userKey = null;
-                        snapshot.forEach(function(child) { var u = child.val(); var matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || (u.phone && String(u.phone) === String(loginVal)); if(matchId && u.password === pass) { userObj = u; userKey = child.key; } });
-                        if(userObj) { setAppStorage('mh_live_user_key', userKey); currentUserKey = userKey; startFirebaseListeners(); enterApp(); } else { showCustomAlert("Incorrect Details or Password! ❌", "error"); }
-                    } else { showCustomAlert("User not found! ❌", "error"); }
-                }, function(error) { clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("Connection Error: " + error.message, "error"); });
-            } catch(e) { clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("App Error: " + e.message, "error"); }
+                        var userObj = null;
+                        var userKey = null;
+                        snapshot.forEach(function(child) {
+                            var u = child.val() || {};
+                            var matchId =
+                                (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) ||
+                                (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) ||
+                                (u.phone && String(u.phone) === String(loginVal));
+
+                            if(matchId && u.password === pass) {
+                                userObj = u;
+                                userKey = child.key;
+                            }
+                        });
+
+                        if(userObj && userKey) {
+                            currentUserKey = userKey;
+                            setAppStorage('mh_live_user_key', userKey);
+                            startFirebaseListeners();
+                            enterApp();
+                        } else {
+                            showCustomAlert("Incorrect Details or Password! ❌", "error");
+                        }
+                    } else {
+                        showCustomAlert("User not found! ❌", "error");
+                    }
+                }, function(error) {
+                    if(finished) return;
+                    finished = true;
+                    clearTimeout(resetTimer);
+                    btn.innerText = "LOGIN NOW";
+                    btn.disabled = false;
+                    showCustomAlert("Connection Error: " + error.message, "error");
+                });
+            } catch(e) {
+                if(finished) return;
+                finished = true;
+                clearTimeout(resetTimer);
+                btn.innerText = "LOGIN NOW";
+                btn.disabled = false;
+                showCustomAlert("App Error: " + e.message, "error");
+            }
         }
 
         function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); }
-        function logoutApp() { removeAppStorage('mh_live_user_key'); currentUserKey = null; currentUserData = null; document.getElementById('main-app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; toggleAuthMode('login'); }
+        function logoutApp() {
+            // Stop all Firebase listeners before clearing the current user.
+            try { db.ref().off(); } catch(e) {}
+            removeAppStorage('mh_live_user_key');
+            currentUserKey = null;
+            currentUserData = null;
+            fbMatches = [];
+            fbCategories = [];
+            fbSettings = {};
+            fbNotifications = [];
+            document.getElementById('main-app').style.display = 'none';
+            document.getElementById('auth-screen').style.display = 'flex';
+            toggleAuthMode('login');
+        }
 
         function updateWalletUI() { if(!currentUserData) return; var total = (currentUserData.deposit || 0) + (currentUserData.winning || 0); document.getElementById('wallet-balance').innerText = total; document.getElementById('wallet-coin-display').innerText = total; document.getElementById('wallet-dep-display').innerText = (currentUserData.deposit || 0); document.getElementById('wallet-win-display').innerText = (currentUserData.winning || 0); document.getElementById('my-lb-coins').innerText = (currentUserData.winning || 0); }
         
