@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
+    <link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#070914">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MH WARRIORS</title>
@@ -1170,6 +1172,15 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');
         }
+    </script>
+    <script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js")
+      .then(() => console.log("MH WARRIORS Service Worker registered"))
+      .catch(error => console.error("Service Worker error:", error));
+  });
+}
     </script>
 </body>
 </html>
