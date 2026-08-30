@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MH WARRIORS</title>
-    <link rel="manifest" href="manifest.json?v=2">
+    <link rel="manifest" href="manifest.json?v=3">
     
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -259,7 +259,7 @@
 
     <!-- 🚀 SPLASH SCREEN -->
     <div id="splash-screen">
-        <img src="logo.jpg" class="splash-logo" onerror="this.style.display='none';">
+        <img src="mh-logo.jpg" class="splash-logo" onerror="this.style.display='none';">
         <h2 class="splash-text">MH WARRIORS</h2>
     </div>
 
@@ -281,7 +281,7 @@
     <div id="auth-screen">
         <div class="auth-container">
             <div style="display:flex; justify-content:center; margin-bottom:15px;">
-                <img id="login-app-logo" src="logo.jpg" class="custom-logo" style="width:100px; height:100px; border-radius:20px; display:block; object-fit:cover; border:2px solid #00f3ff; box-shadow: 0 0 15px rgba(0,243,255,0.3);" onerror="this.style.display='none';">
+                <img id="login-app-logo" src="mh-logo.jpg" class="custom-logo" style="width:100px; height:100px; border-radius:20px; display:block; object-fit:cover; border:2px solid #00f3ff; box-shadow: 0 0 15px rgba(0,243,255,0.3);" onerror="this.style.display='none';">
             </div>
             <div class="app-brand" id="login-app-name">MH WARRIORS</div>
             
@@ -312,7 +312,7 @@
     <div id="main-app" style="display: none;">
         <div class="header">
             <div class="user-info">
-                <img id="header-app-logo" src="logo.jpg" class="custom-logo" style="width:38px; height:38px; border-radius:8px; display:block; object-fit:cover;">
+                <img id="header-app-logo" src="mh-logo.jpg" class="custom-logo" style="width:38px; height:38px; border-radius:8px; display:block; object-fit:cover;">
                 <div class="main-app-name" id="header-app-name">MH WARRIORS</div>
             </div>
             <div class="header-actions">
@@ -569,7 +569,7 @@
     <div id="payment-gateway-screen">
         <div class="pg-header-bar">
             <div class="pg-header-brand">
-                <img id="pg-brand-logo" src="logo.jpg" class="custom-logo" style="width:24px; height:24px; border-radius:4px; display:block; object-fit:cover;" onerror="this.style.display='none';">
+                <img id="pg-brand-logo" src="mh-logo.jpg" class="custom-logo" style="width:24px; height:24px; border-radius:4px; display:block; object-fit:cover;" onerror="this.style.display='none';">
                 <span id="pg-brand-name">MH WARRIORS</span>
             </div>
             <div class="pg-close-btn" onclick="closePaymentGateway()">×</div>
@@ -979,7 +979,7 @@
         function updateProfileInfo() { var f = document.getElementById('edit-fname').value.trim(); var l = document.getElementById('edit-lname').value.trim(); var p = document.getElementById('edit-phone').value.trim(); if(!f) return; db.ref('users/' + currentUserKey).update({ firstName: f, lastName: l, phone: p }).then(function() { showCustomAlert("Profile Updated! ✅"); }); }
         
         function loadBrandingUI() { 
-            var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || "logo.jpg"; 
+            var name = fbSettings.appName || "MH WARRIORS"; var logo = fbSettings.appLogo || "mh-logo.jpg"; 
             document.getElementById('login-app-name').innerText = name; document.getElementById('header-app-name').innerText = name; 
             var loginLogo = document.getElementById('login-app-logo'); var headerLogo = document.getElementById('header-app-logo');
             if(loginLogo) { loginLogo.src = logo; loginLogo.style.display = 'block'; }
