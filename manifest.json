@@ -8,14 +8,7 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "mh-logo.jpg",
-      "sizes": "192x192",
-      "type": "image/jpeg"
-    },
-    {
-      "src": "mh-logo.jpg",
-      "sizes": "512x512",
-      "type": "image/jpeg"
+      "src": "mh-logo.jpg"
     }
   ]
 }
