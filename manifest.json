@@ -1,20 +1,25 @@
 {
   "name": "MH WARRIORS",
   "short_name": "Warriors",
-  "start_url": "./index.html",
+  "description": "MH WARRIORS Free Fire Tournament App",
+  "start_url": "/mh-warriors-app/",
+  "scope": "/mh-warriors-app/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#070914",
   "theme_color": "#070914",
   "icons": [
     {
-      "src": "mh-logo.jpg",
+      "src": "/mh-warriors-app/mh-logo.jpg",
       "sizes": "192x192",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
-      "src": "mh-logo.jpg",
+      "src": "/mh-warriors-app/mh-logo.jpg",
       "sizes": "512x512",
-      "type": "image/jpeg"
+      "type": "image/jpeg",
+      "purpose": "any"
     }
   ]
 }
