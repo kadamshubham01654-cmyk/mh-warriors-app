@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="mr">
 <head>
-    <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#070914">
+    <!-- ⚙️ META & MANIFEST -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#070914">
     <title>MH WARRIORS</title>
-    <link rel="manifest" href="manifest.json?v=3">
+    <link rel="manifest" href="manifest.json?v=4">
     
+    <!-- 🎨 CSS STYLING -->
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         
@@ -254,6 +255,7 @@
         .live-timer-badge { color: #ffaa00; font-weight: bold; background: rgba(255, 170, 0, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 10px; }
     </style>
 
+    <!-- 🔗 FIREBASE SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
@@ -274,12 +276,14 @@
         </div>
     </div>
 
+    <!-- ⚙️ MAINTENANCE SCREEN -->
     <div id="maint-screen">
         <h1 style="font-size: 50px; margin-bottom: 10px;">⚙️</h1>
         <h1>UNDER MAINTENANCE</h1>
         <p>Our server is currently being updated. Please check back in a few minutes!</p>
     </div>
 
+    <!-- 🔐 AUTHENTICATION SCREEN (LOGIN/REGISTER) -->
     <div id="auth-screen">
         <div class="auth-container">
             <div style="display:flex; justify-content:center; margin-bottom:15px;">
@@ -311,7 +315,9 @@
         </div>
     </div>
 
+    <!-- 🎮 MAIN APP CONTAINER -->
     <div id="main-app" style="display: none;">
+        <!-- HEADER -->
         <div class="header">
             <div class="user-info">
                 <img id="header-app-logo" src="mh-logo.jpg" class="custom-logo" style="width:38px; height:38px; border-radius:8px; display:block; object-fit:cover;">
@@ -326,6 +332,7 @@
 
         <div class="announcement" id="user-announcement-text">Welcome to MH Warriors! Select a category to play.</div>
 
+        <!-- 🏠 HOME TAB -->
         <div id="home" class="app-section container active" style="padding: 0;">
             <div class="banner-container"><div class="banner-card"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800" class="banner-img" id="user-banner-img" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800'"></div></div>
             
@@ -341,6 +348,7 @@
             <div style="padding: 0 15px 15px 15px;"><h3 style="color: #fff; margin-bottom: 15px; font-size: 16px; border-left: 3px solid #00f3ff; padding-left: 8px;">Games</h3><div class="grid" id="dynamic-folders-grid"></div></div>
         </div>
 
+        <!-- 🏆 LEADERBOARD TAB -->
         <div id="leaderboard" class="app-section container" style="padding: 20px;">
             <h3 style="text-align: center; color: #fff; margin-bottom: 20px; font-size: 22px;">Leaderboard</h3>
             <div class="lb-header-row"><div style="width: 25%;">Position</div><div style="flex: 1; text-align: left;">Player</div><div style="width: 25%; text-align: right;">Winning</div></div>
@@ -351,16 +359,19 @@
             </div>
         </div>
 
+        <!-- NOTIFICATIONS SUBPAGE -->
         <div id="notifications-subpage" class="sub-page">
             <div class="detail-header"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">NOTIFICATIONS</span></div><div style="padding: 20px;" id="user-notif-list"></div>
         </div>
 
+        <!-- CATEGORY SUBPAGE -->
         <div id="category-page" class="sub-page">
             <div class="detail-header"><span class="back-arrow" onclick="closeCategoryFolder()">←</span><span class="detail-title" id="category-title-text">MATCHES</span></div>
             <div class="my-matches-tabs" id="category-tabs"><div class="mm-tab active" id="cat-tab-upcoming" onclick="switchCategoryTab('upcoming')">Upcoming</div><div class="mm-tab" id="cat-tab-ongoing" onclick="switchCategoryTab('ongoing')">Ongoing</div><div class="mm-tab" id="cat-tab-resulted" onclick="switchCategoryTab('resulted')">Resulted</div></div>
             <div style="padding: 15px;"><div class="grid" id="dynamic-match-grid"></div></div>
         </div>
 
+        <!-- TOURNAMENTS (MY MATCHES) SUBPAGE -->
         <div id="tournaments-subpage" class="sub-page">
             <div class="detail-header"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">My Matches</span></div>
             <div class="my-matches-tabs">
@@ -371,6 +382,7 @@
             <div style="padding: 20px;" id="joined-matches-container"></div>
         </div>
 
+        <!-- STATISTICS SUBPAGE -->
         <div id="statistics-subpage" class="sub-page" style="background:#070914;">
             <div class="detail-header" style="background:#0c1220; border-bottom:1px solid #1e293b;">
                 <span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">MY STATISTICS</span>
@@ -378,6 +390,7 @@
             <div style="padding: 15px;" id="statistics-container"></div>
         </div>
 
+        <!-- SEAT SELECTION SUBPAGE -->
         <div id="seat-selection-page" class="sub-page" style="background:#070914;">
             <div class="detail-header" style="background:#0c1220; border-bottom:1px solid #1e293b;">
                 <span class="back-arrow" onclick="closeSeatSelection()">←</span><span class="detail-title">SELECT POSITION</span>
@@ -388,6 +401,7 @@
             </div>
         </div>
 
+        <!-- 🎁 EARN TAB -->
         <div id="earn" class="app-section container" style="padding: 20px;">
             <div class="menu-list" style="text-align: center; padding: 30px; margin: 0; background:#121a2e; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
                 <h1 style="color: #39ff14; font-size: 35px; margin-bottom: 10px;">Refer & Earn</h1>
@@ -397,6 +411,7 @@
             </div>
         </div>
 
+        <!-- 👤 ME (MENU) TAB -->
         <div id="menu" class="app-section">
             <div class="menu-dark-bg"></div>
             <div class="menu-profile-sec">
@@ -436,6 +451,7 @@
             </div>
         </div>
 
+        <!-- STATIC PAGES (FAQ, About, Privacy, Terms, Support, Profile) -->
         <div id="faq-subpage" class="sub-page" style="background:#f0f2f5;">
             <div class="detail-header" style="background:#fff; color:#1e293b; border-bottom:1px solid #e2e8f0;"><span class="back-arrow" style="color:#1e293b;" onclick="closeSubPages()">←</span><span class="detail-title">FAQ</span></div>
             <div class="static-page-content"><h3>💡 1. How do I add money?</h3><p>Open Wallet → Tap Add Coins → Enter amount → Select payment app. Your wallet is updated instantly after successful payment.</p></div>
@@ -452,7 +468,6 @@
             <div class="detail-header" style="background:#fff; color:#1e293b; border-bottom:1px solid #e2e8f0;"><span class="back-arrow" style="color:#1e293b;" onclick="closeSubPages()">←</span><span class="detail-title">TERMS & CONDITIONS</span></div>
             <div class="static-page-content"><h3>Eligibility</h3><ul><li>Users must be 18 years or older to participate.</li><li>Providing fake details may result in account suspension.</li></ul></div>
         </div>
-
         <div id="support-subpage" class="sub-page" style="background:#f0f2f5;">
             <div class="detail-header" style="background:#fff; color:#1e293b; border-bottom:1px solid #e2e8f0;">
                 <span class="back-arrow" style="color:#1e293b;" onclick="closeSubPages()">←</span><span class="detail-title">CONTACT US</span>
@@ -470,7 +485,6 @@
                 <p id="support-rules-text" style="white-space: pre-wrap;">Loading...</p>
             </div>
         </div>
-
         <div id="profile-subpage" class="sub-page" style="background: #f0f2f5;">
             <div class="detail-header" style="background:#fff; color:#1e293b; border-bottom:1px solid #e2e8f0;">
                 <span class="back-arrow" style="color:#1e293b;" onclick="closeSubPages()">←</span><span class="detail-title">UPDATE PROFILE</span>
@@ -495,6 +509,7 @@
             </div>
         </div>
 
+        <!-- 💳 WALLET SUBPAGE -->
         <div id="wallet-subpage" class="sub-page">
             <div class="detail-header"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">MY WALLET</span></div>
             <div style="margin: 20px; padding: 25px; text-align: center; background:#121a2e; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
@@ -509,11 +524,13 @@
             </div>
         </div>
 
+        <!-- TRANSACTION HISTORY SUBPAGE -->
         <div id="tx-history-subpage" class="sub-page">
             <div class="detail-header"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">WALLET HISTORY</span></div>
             <div style="padding: 20px;" id="user-tx-list"></div>
         </div>
 
+        <!-- MATCH DETAIL PAGE -->
         <div id="match-detail-page" class="match-detail-page">
             <div class="detail-header"><span class="back-arrow" onclick="closeMatchDetail()">←</span><span class="detail-title" id="detail-match-name">MATCH</span></div>
             <img id="detail-img" src="" class="match-banner">
@@ -536,6 +553,7 @@
             </div>
         </div>
 
+        <!-- REGISTRATION MODALS -->
         <div id="register-modal" class="modal-bg">
             <div class="modal-box" style="max-height:80vh; overflow-y:auto;">
                 <h3 style="color: #00f3ff; margin-bottom: 15px;">Player Registration</h3>
@@ -560,6 +578,7 @@
             </div>
         </div>
 
+        <!-- 📱 BOTTOM NAVIGATION -->
         <div class="bottom-nav">
             <div class="nav-item active" id="nav-home" onclick="switchTab('home')"><span class="nav-icon">🏠</span>Home</div>
             <div class="nav-item" id="nav-leaderboard" onclick="switchTab('leaderboard')"><span class="nav-icon">🏆</span>Ranks</div>
@@ -568,6 +587,7 @@
         </div>
     </div>
 
+    <!-- 💳 SECURE PAYMENT GATEWAY -->
     <div id="payment-gateway-screen">
         <div class="pg-header-bar">
             <div class="pg-header-brand">
@@ -609,6 +629,7 @@
         </div>
     </div>
 
+    <!-- ⚡ CORE JAVASCRIPT LOGIC -->
     <script>
         function showCustomAlert(msg, type="info") {
             var toast = document.getElementById('live-toast');
@@ -650,7 +671,7 @@
             });
         }, 1000);
 
-        // FIREBASE INITIALIZATION
+        // 🔥 FIREBASE INITIALIZATION 🔥
         const firebaseConfig = {
             apiKey: "AIzaSyBjbcV3uyzNhCSMNI5z7Nac2XgFjjkATuo",
             authDomain: "mh-warrior.firebaseapp.com",
@@ -689,15 +710,12 @@
                 loadDynamicFolders();
                 loadBrandingUI();
             } else {
-                // IMPORTANT: Do not start Firebase listeners while logged out.
-                // This prevents the app from getting stuck in a loading state after logout.
                 document.getElementById('main-app').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'flex';
                 toggleAuthMode('login');
             }
         });
 
-        // --- BACK BUTTON HASH ROUTING FIX ---
         function trackPageOpen() { history.pushState({page: 'view'}, null, '#view'); }
         window.addEventListener('popstate', function (e) {
             if(location.hash !== '#view') {
@@ -707,81 +725,46 @@
         });
 
         function startFirebaseListeners() {
-            // Remove old listeners before creating new ones.
-            // This is especially important after logout -> login.
             try { db.ref().off(); } catch(e) {}
-
             if(!currentUserKey) return;
-
             db.ref('users/' + currentUserKey).on('value', function(snapshot) {
                 if(snapshot.exists()) {
                     currentUserData = snapshot.val();
                     currentUserData.key = snapshot.key;
-                    updateWalletUI();
-                    updateMenuStats();
-                    renderTxHistory();
-                    syncJoinedMatches();
-                    renderCategoryMatches();
-                    updateJoinedMatchesUI();
-                    renderMyStatistics();
-                } else {
-                    // The saved user key is no longer valid. Cleanly return to login.
-                    logoutApp();
-                }
-            }, function(error) {
-                console.error('User listener error:', error);
-                showCustomAlert('Unable to load your account. Please try again.', 'error');
-            });
+                    updateWalletUI(); updateMenuStats(); renderTxHistory(); syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics();
+                } else { logoutApp(); }
+            }, function(error) { showCustomAlert('Unable to load your account. Please try again.', 'error'); });
 
             db.ref('matches').on('value', function(snapshot) {
                 fbMatches = [];
-                snapshot.forEach(function(child) {
-                    var m = child.val();
-                    m.key = child.key;
-                    fbMatches.push(m);
-                });
-                syncJoinedMatches();
-                renderCategoryMatches();
-                updateJoinedMatchesUI();
-                renderMyStatistics();
+                snapshot.forEach(function(child) { var m = child.val(); m.key = child.key; fbMatches.push(m); });
+                syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics();
             });
 
             db.ref('categories').on('value', function(snapshot) {
                 fbCategories = [];
-                snapshot.forEach(function(child) {
-                    var c = child.val();
-                    c.key = child.key;
-                    fbCategories.push(c);
-                });
+                snapshot.forEach(function(child) { var c = child.val(); c.key = child.key; fbCategories.push(c); });
                 loadDynamicFolders();
             });
 
             db.ref('settings').on('value', function(snapshot) {
-                fbSettings = snapshot.val() || {};
-                loadBrandingUI();
+                fbSettings = snapshot.val() || {}; loadBrandingUI();
                 var maint = document.getElementById('maint-screen');
                 if(maint) maint.style.display = fbSettings.maintenance === true ? 'flex' : 'none';
             });
 
             db.ref('notifications').on('value', function(snapshot) {
                 fbNotifications = [];
-                snapshot.forEach(function(child) {
-                    var n = child.val();
-                    n.key = child.key;
-                    fbNotifications.push(n);
-                });
+                snapshot.forEach(function(child) { var n = child.val(); n.key = child.key; fbNotifications.push(n); });
                 checkNewNotifications();
             });
 
             db.ref('users').on('value', function(snapshot) {
-                var usersList = [];
-                snapshot.forEach(function(child) { usersList.push(child.val()); });
-                loadLeaderboard(usersList);
+                var usersList = []; snapshot.forEach(function(child) { usersList.push(child.val()); }); loadLeaderboard(usersList);
             });
         }
 
-        
-function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
+        function toggleAuthMode(mode) { document.getElementById('register-form').style.display = mode === 'login' ? 'none' : 'block'; document.getElementById('login-form').style.display = mode === 'login' ? 'block' : 'none'; }
         
         function registerUser() { 
             var fname = document.getElementById('reg-firstname').value.trim(); var lname = document.getElementById('reg-lastname').value.trim(); var uname = document.getElementById('reg-username').value.trim(); var phone = document.getElementById('reg-phone').value.trim(); var email = document.getElementById('reg-email').value.trim(); var pass = document.getElementById('reg-password').value; 
@@ -808,93 +791,41 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
             if(!loginVal || !pass) { showCustomAlert("Enter login details & Password!", "error"); return; }
 
             var btn = document.getElementById('btn-login-main');
-            btn.innerHTML = `<div class="spinner"></div>`;
-            btn.disabled = true;
+            btn.innerHTML = `<div class="spinner"></div>`; btn.disabled = true;
 
-            // Do not force-refresh the whole app on a slow connection.
-            // A forced refresh was one of the reasons the login screen could loop/loading.
             var finished = false;
             var resetTimer = setTimeout(function() {
-                if(finished) return;
-                finished = true;
-                btn.innerText = "LOGIN NOW";
-                btn.disabled = false;
-                showCustomAlert("Network is slow. Please check your internet and try again.", "error");
+                if(finished) return; finished = true; btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("Network is slow. Please check your internet and try again.", "error");
             }, 15000);
 
             try {
                 db.ref('users').once('value', function(snapshot) {
-                    if(finished) return;
-                    finished = true;
-                    clearTimeout(resetTimer);
-                    btn.innerText = "LOGIN NOW";
-                    btn.disabled = false;
+                    if(finished) return; finished = true; clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false;
 
                     if(snapshot.exists()) {
-                        var userObj = null;
-                        var userKey = null;
+                        var userObj = null; var userKey = null;
                         snapshot.forEach(function(child) {
                             var u = child.val() || {};
-                            var matchId =
-                                (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) ||
-                                (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) ||
-                                (u.phone && String(u.phone) === String(loginVal));
-
-                            if(matchId && u.password === pass) {
-                                userObj = u;
-                                userKey = child.key;
-                            }
+                            var matchId = (u.username && u.username.toLowerCase() === loginVal.toLowerCase()) || (u.email && u.email.toLowerCase() === loginVal.toLowerCase()) || (u.phone && String(u.phone) === String(loginVal));
+                            if(matchId && u.password === pass) { userObj = u; userKey = child.key; }
                         });
-
-                        if(userObj && userKey) {
-                            currentUserKey = userKey;
-                            setAppStorage('mh_live_user_key', userKey);
-                            startFirebaseListeners();
-                            enterApp();
-                        } else {
-                            showCustomAlert("Incorrect Details or Password! ❌", "error");
-                        }
-                    } else {
-                        showCustomAlert("User not found! ❌", "error");
-                    }
-                }, function(error) {
-                    if(finished) return;
-                    finished = true;
-                    clearTimeout(resetTimer);
-                    btn.innerText = "LOGIN NOW";
-                    btn.disabled = false;
-                    showCustomAlert("Connection Error: " + error.message, "error");
-                });
-            } catch(e) {
-                if(finished) return;
-                finished = true;
-                clearTimeout(resetTimer);
-                btn.innerText = "LOGIN NOW";
-                btn.disabled = false;
-                showCustomAlert("App Error: " + e.message, "error");
-            }
+                        if(userObj && userKey) { currentUserKey = userKey; setAppStorage('mh_live_user_key', userKey); startFirebaseListeners(); enterApp(); } else { showCustomAlert("Incorrect Details or Password! ❌", "error"); }
+                    } else { showCustomAlert("User not found! ❌", "error"); }
+                }, function(error) { if(finished) return; finished = true; clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("Connection Error: " + error.message, "error"); });
+            } catch(e) { if(finished) return; finished = true; clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("App Error: " + e.message, "error"); }
         }
 
         function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); }
         function logoutApp() {
-            // Stop all Firebase listeners before clearing the current user.
             try { db.ref().off(); } catch(e) {}
-            removeAppStorage('mh_live_user_key');
-            currentUserKey = null;
-            currentUserData = null;
-            fbMatches = [];
-            fbCategories = [];
-            fbSettings = {};
-            fbNotifications = [];
-            document.getElementById('main-app').style.display = 'none';
-            document.getElementById('auth-screen').style.display = 'flex';
-            toggleAuthMode('login');
+            removeAppStorage('mh_live_user_key'); currentUserKey = null; currentUserData = null; fbMatches = []; fbCategories = []; fbSettings = {}; fbNotifications = [];
+            document.getElementById('main-app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; toggleAuthMode('login');
         }
 
         function updateWalletUI() { if(!currentUserData) return; var total = (currentUserData.deposit || 0) + (currentUserData.winning || 0); document.getElementById('wallet-balance').innerText = total; document.getElementById('wallet-coin-display').innerText = total; document.getElementById('wallet-dep-display').innerText = (currentUserData.deposit || 0); document.getElementById('wallet-win-display').innerText = (currentUserData.winning || 0); document.getElementById('my-lb-coins').innerText = (currentUserData.winning || 0); }
-        
         function openWalletPage() { trackPageOpen(); document.getElementById('wallet-subpage').style.display = 'block'; }
         function openTxHistoryPage() { trackPageOpen(); document.getElementById('tx-history-subpage').style.display = 'block'; renderTxHistory(); }
+        
         function renderTxHistory() { 
             var list = document.getElementById('user-tx-list'); 
             if(!currentUserData || !currentUserData.transactions) { list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Transactions Yet.</div></div>`; return; } 
@@ -911,11 +842,7 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         function submitGatewayUTR() { var utr = document.getElementById('pg-utr-input').value.trim(); if(utr.length < 10) { showCustomAlert("Enter valid UTR Number!", "error"); return; } db.ref('finance/deposits').push({ userId: currentUserData.username, userName: currentUserData.firstName, amount: currentPayAmount, utr: utr, status: 'Pending', time: new Date().toLocaleString() }); db.ref('users/' + currentUserKey + '/transactions').push({ title: "Deposit Processing (UTR: "+utr+")", amount: currentPayAmount, sign: "+", status: "Pending", date: new Date().toLocaleString() }); showCustomAlert("Payment Verification Sent to Admin! ✅"); closePaymentGateway(); }
         function withdrawPrompt() { if(!currentUserData) return; var amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); if(!amount) return; var amt = parseInt(amount); if(amt <= 0 || (currentUserData.winning||0) < amt) { showCustomAlert("Insufficient WINNING balance!", "error"); return; } var upi = prompt("Enter your UPI ID:"); if(!upi) return; db.ref('users/' + currentUserKey).update({ winning: currentUserData.winning - amt }); db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: amt, upi: upi, status: 'Pending' }); db.ref('users/' + currentUserKey + '/transactions').push({ title: "Withdrawal Requested", amount: amt, sign: "-", status: "Pending", date: new Date().toLocaleString() }); showCustomAlert("Withdrawal Requested! ✅"); closeSubPages(); }
 
-        function loadDynamicFolders() { 
-            var grid = document.getElementById('dynamic-folders-grid'); 
-            if(fbCategories.length === 0) { grid.innerHTML = `<div style="grid-column: span 2;" class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Games Available.</div></div>`; return; } 
-            grid.innerHTML = ""; fbCategories.forEach(function(cat) { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); 
-        }
+        function loadDynamicFolders() { var grid = document.getElementById('dynamic-folders-grid'); if(fbCategories.length === 0) { grid.innerHTML = `<div style="grid-column: span 2;" class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Games Available.</div></div>`; return; } grid.innerHTML = ""; fbCategories.forEach(function(cat) { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); }
         function openCategoryFolder(categoryName) { trackPageOpen(); currentActiveCategory = categoryName; document.getElementById('category-title-text').innerText = categoryName; document.getElementById('category-page').style.display = 'block'; switchCategoryTab('upcoming'); }
         function switchCategoryTab(tabName) { currentCategoryTab = tabName; document.querySelectorAll('#category-tabs .mm-tab').forEach(function(t) { t.classList.remove('active'); }); document.getElementById('cat-tab-' + tabName).classList.add('active'); renderCategoryMatches(); }
         
@@ -923,53 +850,55 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
             var matchGrid = document.getElementById('dynamic-match-grid'); 
             var filteredMatches = fbMatches.filter(function(match) { var hasRoomId = match.roomId && match.roomId.trim() !== ""; var hasResult = match.resultText && match.resultText.trim() !== ""; return match.category === currentActiveCategory && ((currentCategoryTab === 'upcoming' && !hasRoomId && !hasResult) || (currentCategoryTab === 'ongoing' && hasRoomId && !hasResult) || (currentCategoryTab === 'resulted' && hasResult)); }); 
             if(filteredMatches.length === 0) { matchGrid.innerHTML = `<div style="grid-column: span 2;" class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No matches found.</div></div>`; return; } 
-            
             var html = ""; 
             filteredMatches.forEach(function(match) { 
-                var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); var statusBadge = ""; var extraInfo = ""; 
-                var matchTimeStr = match.date ? `${match.date} ${match.time}` : "TBA";
-                
-                if(currentCategoryTab === 'upcoming') { 
-                    statusBadge = `<span class="live-timer-badge" data-date="${match.date}" data-time="${match.time}">⏳ ${matchTimeStr}</span>`; 
-                } else if(currentCategoryTab === 'ongoing') { 
-                    statusBadge = `<span style="color:#39ff14; font-size:10px;">🔴 LIVE</span>`; 
-                    if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;"><div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div><button type="button" style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div><button type="button" style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>`; } 
-                    else { extraInfo = `<div style="margin-top:10px; text-align:center; color:#ff0055; font-size:10px; font-weight:bold; background:rgba(255,0,85,0.1); padding:6px; border-radius:4px;">🔒 ID/PASS HIDDEN</div>`; } 
-                } else if (currentCategoryTab === 'resulted') { 
-                    statusBadge = `<span style="color:#2D63F9; font-size:10px;">🏆 RESULTED</span>`; 
-                    var myWonAmt = 0; if (isJoined && match.resultData) { var myRes = match.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) myWonAmt = myRes.winning; }
-                    var resultTextHtml = myWonAmt > 0 ? `<span style="color:#39ff14; font-weight:bold;">You Won 🪙 ${myWonAmt}! 🎉</span>` : `<span style="color:#8a9bb4; font-weight:bold;">Match Completed</span>`;
-                    extraInfo = `<div style="margin-top:10px; background:rgba(57,255,20,0.05); border:1px solid rgba(255,255,255,0.1); padding:8px; border-radius:6px; font-size:11px; text-align:center;">${resultTextHtml}</div>`;
-                } 
+                var filledSlots = match.joinedPlayers ? Object.keys(match.joinedPlayers).length : 0; var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); var statusBadge = ""; var extraInfo = ""; var matchTimeStr = match.date ? `${match.date} ${match.time}` : "TBA";
+                if(currentCategoryTab === 'upcoming') { statusBadge = `<span class="live-timer-badge" data-date="${match.date}" data-time="${match.time}">⏳ ${matchTimeStr}</span>`; } else if(currentCategoryTab === 'ongoing') { statusBadge = `<span style="color:#39ff14; font-size:10px;">🔴 LIVE</span>`; if (isJoined) { extraInfo = `<div style="margin-top:10px; background:rgba(0,243,255,0.05); border:1px dashed #00f3ff; padding:8px; border-radius:6px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;"><div style="font-size:11px; color:#8a9bb4;">ID: <b style="color:#00f3ff; font-size:13px;">${match.roomId}</b></div><button type="button" style="background:#2D63F9; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="font-size:11px; color:#8a9bb4;">PASS: <b style="color:#00f3ff; font-size:13px;">${match.roomPass}</b></div><button type="button" style="background:#39ff14; color:#000; border:none; padding:4px 8px; border-radius:4px; font-size:9px; font-weight:bold; cursor:pointer;" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>`; } else { extraInfo = `<div style="margin-top:10px; text-align:center; color:#ff0055; font-size:10px; font-weight:bold; background:rgba(255,0,85,0.1); padding:6px; border-radius:4px;">🔒 ID/PASS HIDDEN</div>`; } } else if (currentCategoryTab === 'resulted') { statusBadge = `<span style="color:#2D63F9; font-size:10px;">🏆 RESULTED</span>`; var myWonAmt = 0; if (isJoined && match.resultData) { var myRes = match.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) myWonAmt = myRes.winning; } var resultTextHtml = myWonAmt > 0 ? `<span style="color:#39ff14; font-weight:bold;">You Won 🪙 ${myWonAmt}! 🎉</span>` : `<span style="color:#8a9bb4; font-weight:bold;">Match Completed</span>`; extraInfo = `<div style="margin-top:10px; background:rgba(57,255,20,0.05); border:1px solid rgba(255,255,255,0.1); padding:8px; border-radius:6px; font-size:11px; text-align:center;">${resultTextHtml}</div>`; } 
                 html += `<div class="game-card" onclick="openMatchDetail('${match.key}')"><img src="${match.image}" class="game-card-img"><div class="game-card-footer"><span class="game-title">${match.title}</span><div style="font-size:9px; color:#8a9bb4;">📅 ${matchTimeStr}</div><div class="live-status"><span class="fee-badge">🪙 ${match.fee}</span><div style="color:#39ff14;">${filledSlots}/${match.slots} Joined</div></div><div style="text-align:center; margin-top:5px; font-weight:bold;">${statusBadge}</div>${extraInfo}</div></div>`; 
             }); matchGrid.innerHTML = html; 
         }
 
-        function shareMatchWhatsApp(title, fee, prize, map, type) {
-            var text = `🎮 *MH WARRIORS - Esports Tournament* 🎮\n\n🔥 Match: ${title}\n🗺️ Map: ${map} (${type})\n🎟️ Entry Fee: 🪙 ${fee}\n🏆 Prize Pool: 🪙 ${prize}\n\nJoin my squad and win Real Cash! Download the app now:\n🔗 https://kadamshubham01654-cmyk.github.io/mh-warriors-app/`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-        }
+        function shareMatchWhatsApp(title, fee, prize, map, type) { var text = `🎮 *MH WARRIORS - Esports Tournament* 🎮\n\n🔥 Match: ${title}\n🗺️ Map: ${map} (${type})\n🎟️ Entry Fee: 🪙 ${fee}\n🏆 Prize Pool: 🪙 ${prize}\n\nJoin my squad and win Real Cash! Download the app now:\n🔗 https://kadamshubham01654-cmyk.github.io/mh-warriors-app/`; window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank'); }
 
         function openMatchDetail(key) { 
             var match = fbMatches.find(function(m) { return m.key === key; }); if(!match) return; 
             trackPageOpen(); activeMatchId = key; 
             document.getElementById('detail-match-name').innerText = match.title; document.getElementById('detail-img').src = match.image; document.getElementById('detail-fee').innerText = match.fee; document.getElementById('detail-prize').innerText = match.prize; document.getElementById('detail-perkill').innerText = match.perKill || '0'; document.getElementById('detail-map').innerText = match.map || '-'; document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
             
-            var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); 
-            var extraDiv = document.getElementById('detail-extra-info');
-            var actionBtns = "";
-
+            var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); var extraDiv = document.getElementById('detail-extra-info'); var actionBtns = "";
             actionBtns += `<button type="button" class="auth-btn" style="background:transparent; color:#25D366; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #25D366;" onclick="shareMatchWhatsApp('${match.title}', '${match.fee}', '${match.prize}', '${match.map}', '${match.teamType}')">📲 Invite Squad via WhatsApp</button>`;
 
-            if (match.roomId || match.resultText) {
-                var ytLink = fbSettings.ytLink || "https://youtube.com/";
-                actionBtns += `<button type="button" class="auth-btn" style="background:rgba(255,0,0,0.1); color:#ff0000; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #ff0000;" onclick="window.open('${ytLink}', '_blank')">🔴 WATCH LIVE STREAM</button>`;
-            }
+            if (match.roomId || match.resultText) { var ytLink = fbSettings.ytLink || "https://youtube.com/"; actionBtns += `<button type="button" class="auth-btn" style="background:rgba(255,0,0,0.1); color:#ff0000; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #ff0000;" onclick="window.open('${ytLink}', '_blank')">🔴 WATCH LIVE STREAM</button>`; }
 
+            // 🎯 NEW: In-Game Name Display Logic for Results
             if (match.resultText && match.resultData) {
                 match.resultData.sort(function(a, b) { return (b.winning || 0) - (a.winning || 0); });
                 var resHtml = `<div class="res-winner-box">🔥 BOOYAH! 🏆</div><div class="res-full-header">FULL RESULT</div><div class="res-table-head"><div class="res-col-1">#</div><div class="res-col-2">Player Name</div><div class="res-col-3">Kills</div><div class="res-col-4">Winning</div></div>`;
-                match.resultData.forEach(function(player, index) { var rankClass = ""; if(index === 0) rankClass = "top-1"; else if(index === 1) rankClass = "top-2"; else if(index === 2) rankClass = "top-3"; resHtml += `<div class="res-row ${rankClass}"><div class="res-col-1">${index + 1}</div><div class="res-col-2">${player.playerName || player.appUser}</div><div class="res-col-3">${player.kills || 0}</div><div class="res-col-4">🪙 ${player.winning || 0}</div></div>`; });
+                
+                var joinedMap = {};
+                if (match.joinedPlayers) {
+                    Object.values(match.joinedPlayers).forEach(function(jp) {
+                        if (jp.position) { joinedMap[jp.position] = jp.name; }
+                        if (jp.appUser) { joinedMap[jp.appUser] = jp.name; }
+                    });
+                }
+
+                match.resultData.forEach(function(player, index) { 
+                    var rankClass = ""; 
+                    if(index === 0) rankClass = "top-1"; else if(index === 1) rankClass = "top-2"; else if(index === 2) rankClass = "top-3"; 
+                    
+                    var displayName = player.playerName || "";
+                    if (player.position && joinedMap[player.position]) {
+                        displayName = joinedMap[player.position];
+                    } else if (player.appUser && joinedMap[player.appUser]) {
+                        displayName = joinedMap[player.appUser];
+                    }
+                    if (!displayName) {
+                        displayName = player.playerName || player.appUser || "Unknown Player";
+                    }
+
+                    resHtml += `<div class="res-row ${rankClass}"><div class="res-col-1">${index + 1}</div><div class="res-col-2">${displayName}</div><div class="res-col-3">${player.kills || 0}</div><div class="res-col-4">🪙 ${player.winning || 0}</div></div>`; 
+                });
                 extraDiv.innerHTML = actionBtns + resHtml;
             } else if (match.roomId && !match.resultText) {
                 var credHtml = isJoined ? `<div class="cred-box" style="margin: 0 15px 12px 15px;"><div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>` : `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`;
@@ -986,22 +915,10 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         function closeSeatSelection() { document.getElementById('seat-selection-page').style.display = 'none'; document.getElementById('match-detail-page').style.display = 'block'; }
         
         function goToRegistration() { 
-            if(selectedSeats.length === 0) return; 
-            trackPageOpen();
-            var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = ""; 
-            selectedSeats.forEach(function(seat, idx) { 
-                html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
-                            <label style="font-size:12px; color:#39ff14; font-weight:bold; display:block; margin-bottom:8px;">Player ${idx+1} <span style="color:#fff;">[ Pos: ${seat} ]</span></label>
-                            <input type="text" id="reg-ign-${idx}" class="auth-input" style="margin-bottom:8px;" placeholder="In-Game Name (Required) *">
-                            <input type="text" id="reg-uid-${idx}" class="auth-input" style="margin-bottom:0;" placeholder="Free Fire UID (Optional)">
-                        </div>`; 
-            }); 
-            dynamicInputs.innerHTML = html; 
-            document.getElementById('btn-confirm-join').innerText = `Pay 🪙 ${currentMatchFee * selectedSeats.length} & Join`; 
-            
-            var chk = document.getElementById('anti-hack-chk');
-            var btn = document.getElementById('btn-confirm-join');
-            if(chk) { chk.checked = false; btn.disabled = true; btn.style.opacity = '0.5'; }
+            if(selectedSeats.length === 0) return; trackPageOpen(); var dynamicInputs = document.getElementById('dynamic-player-inputs'); var html = ""; 
+            selectedSeats.forEach(function(seat, idx) { html += `<div style="text-align:left; margin-bottom:12px; background:#0b1528; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);"><label style="font-size:12px; color:#39ff14; font-weight:bold; display:block; margin-bottom:8px;">Player ${idx+1} <span style="color:#fff;">[ Pos: ${seat} ]</span></label><input type="text" id="reg-ign-${idx}" class="auth-input" style="margin-bottom:8px;" placeholder="In-Game Name (Required) *"><input type="text" id="reg-uid-${idx}" class="auth-input" style="margin-bottom:0;" placeholder="Free Fire UID (Optional)"></div>`; }); 
+            dynamicInputs.innerHTML = html; document.getElementById('btn-confirm-join').innerText = `Pay 🪙 ${currentMatchFee * selectedSeats.length} & Join`; 
+            var chk = document.getElementById('anti-hack-chk'); var btn = document.getElementById('btn-confirm-join'); if(chk) { chk.checked = false; btn.disabled = true; btn.style.opacity = '0.5'; }
             document.getElementById('register-modal').style.display = 'flex'; 
         }
         
@@ -1010,13 +927,11 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
             var totalFee = match.fee * selectedSeats.length; var totalBal = (currentUserData.deposit || 0) + (currentUserData.winning || 0); 
             if(totalBal < totalFee) { showCustomAlert(`Insufficient coins! Need 🪙 ${totalFee}`, "error"); return; } 
             
-            var btn = document.getElementById('btn-confirm-join');
-            btn.innerHTML = `<div class="spinner"></div>`; btn.disabled = true;
+            var btn = document.getElementById('btn-confirm-join'); btn.innerHTML = `<div class="spinner"></div>`; btn.disabled = true;
 
             var updates = {}; 
             for(var i=0; i<selectedSeats.length; i++) { 
-                var ign = document.getElementById(`reg-ign-${i}`).value.trim(); 
-                var uid = document.getElementById(`reg-uid-${i}`).value.trim() || "-"; 
+                var ign = document.getElementById(`reg-ign-${i}`).value.trim(); var uid = document.getElementById(`reg-uid-${i}`).value.trim() || "-"; 
                 if(!ign) { showCustomAlert("⚠️ Please enter Player " + (i+1) + "'s Name!", "error"); btn.innerText = `Pay 🪙 ${totalFee} & Join`; btn.disabled = false; return; } 
                 var newPlayerRef = db.ref(`matches/${match.key}/joinedPlayers`).push(); updates[`matches/${match.key}/joinedPlayers/${newPlayerRef.key}`] = { name: ign, uid: uid, position: selectedSeats[i], appUser: currentUserData.username }; 
             } 
@@ -1025,9 +940,7 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
             
             db.ref().update(updates).then(function() { 
                 db.ref(`users/${currentUserKey}/transactions`).push({ title: "Joined Match: " + match.title, amount: totalFee, sign: "-", status: "Success", date: new Date().toLocaleString() }); 
-                showCustomAlert(`Successfully Registered!`); 
-                document.getElementById('register-modal').style.display = 'none'; closeSeatSelection(); closeMatchDetail(); 
-                btn.innerText = `Pay & Join`; btn.disabled = false;
+                showCustomAlert(`Successfully Registered!`); document.getElementById('register-modal').style.display = 'none'; closeSeatSelection(); closeMatchDetail(); btn.innerText = `Pay & Join`; btn.disabled = false;
             }); 
         }
         function closeRegisterModal() { document.getElementById('register-modal').style.display = 'none'; }
@@ -1037,36 +950,15 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         function syncJoinedMatches() { if(!currentUserData) return; joinedMatches = []; fbMatches.forEach(function(m) { if(m.joinedPlayers) { var myPlayers = Object.values(m.joinedPlayers).filter(function(p) { return p.appUser === currentUserData.username; }); myPlayers.forEach(function(p) { joinedMatches.push({ playerName: p.name, playerUid: p.uid, matchId: m.key }); }); } }); updateMenuStats(); }
         
         function updateJoinedMatchesUI() { 
-            var container = document.getElementById('joined-matches-container'); 
-            var filteredMatches = []; 
-            joinedMatches.forEach(function(uMatch) { 
-                var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); 
-                if(liveMatch) { 
-                    var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); 
-                    if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } 
-                } 
-            }); 
+            var container = document.getElementById('joined-matches-container'); var filteredMatches = []; 
+            joinedMatches.forEach(function(uMatch) { var liveMatch = fbMatches.find(function(m) { return m.key === uMatch.matchId; }); if(liveMatch) { var status = liveMatch.resultText ? 'completed' : (liveMatch.roomId ? 'ongoing' : 'upcoming'); if(status === currentMMTab) { filteredMatches.push({ user: uMatch, live: liveMatch }); } } }); 
             if(filteredMatches.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">Matches Not Found!</div></div>`; return; } 
-            
             var html = ""; 
             filteredMatches.forEach(function(data) { 
-                var m = data.live; var u = data.user; 
-                var matchTimeStr = m.date ? `${m.date} ${m.time}` : "TBA";
-                var btnHtml = ""; var timerHtml = "";
-                if (currentMMTab === 'upcoming') {
-                    btnHtml = `<div class="wmc-btn wmc-btn-outline" style="border-color:#eab308; color:#ca8a04;">⏳ UPCOMING</div>`;
-                    timerHtml = `<div class="wmc-date live-timer-badge" data-date="${m.date}" data-time="${m.time}">⏳ ${matchTimeStr}</div>`;
-                } else if (currentMMTab === 'ongoing') {
-                    btnHtml = `<div class="wmc-btn wmc-btn-primary" style="background:#2D63F9;" onclick="openMatchDetail('${m.key}')">🎮 VIEW ROOM ID</div>`;
-                    timerHtml = `<div class="wmc-date" style="color:#39ff14;">🔴 LIVE NOW</div>`;
-                } else {
-                    btnHtml = `<div class="wmc-btn wmc-btn-primary" onclick="openMatchDetail('${m.key}')">🏆 WATCH RESULT</div>`;
-                    timerHtml = `<div class="wmc-date" style="color:#8a9bb4;">Match Completed</div>`;
-                }
-
+                var m = data.live; var u = data.user; var matchTimeStr = m.date ? `${m.date} ${m.time}` : "TBA"; var btnHtml = ""; var timerHtml = "";
+                if (currentMMTab === 'upcoming') { btnHtml = `<div class="wmc-btn wmc-btn-outline" style="border-color:#eab308; color:#ca8a04;">⏳ UPCOMING</div>`; timerHtml = `<div class="wmc-date live-timer-badge" data-date="${m.date}" data-time="${m.time}">⏳ ${matchTimeStr}</div>`; } else if (currentMMTab === 'ongoing') { btnHtml = `<div class="wmc-btn wmc-btn-primary" style="background:#2D63F9;" onclick="openMatchDetail('${m.key}')">🎮 VIEW ROOM ID</div>`; timerHtml = `<div class="wmc-date" style="color:#39ff14;">🔴 LIVE NOW</div>`; } else { btnHtml = `<div class="wmc-btn wmc-btn-primary" onclick="openMatchDetail('${m.key}')">🏆 WATCH RESULT</div>`; timerHtml = `<div class="wmc-date" style="color:#8a9bb4;">Match Completed</div>`; }
                 html += `<div class="wmc-card"><div class="wmc-header"><div class="wmc-logo">🎮</div><div class="wmc-title-sec"><div class="wmc-title">${m.title}</div>${timerHtml}</div></div><div class="wmc-grid"><div><div class="wmc-label">Prize Pool</div><div class="wmc-val coin">🪙 ${m.prize || 0}</div></div><div><div class="wmc-label">Per Kill</div><div class="wmc-val coin">🪙 ${m.perKill || 0}</div></div><div><div class="wmc-label">Entry Fee</div><div class="wmc-val coin">🪙 ${m.fee || 0}</div></div><div><div class="wmc-label">Type</div><div class="wmc-val">${m.teamType || 'Solo'}</div></div><div><div class="wmc-label">Mode</div><div class="wmc-val">CLASSIC</div></div><div><div class="wmc-label">Map</div><div class="wmc-val">${m.map || 'Bermuda'}</div></div></div><div class="wmc-footer">${btnHtml}<div class="wmc-btn wmc-btn-outline">JOINED: ${u.playerName}</div></div></div>`; 
-            }); 
-            container.innerHTML = html; 
+            }); container.innerHTML = html; 
         }
 
         function openMyMatchesPage(tabName) { trackPageOpen(); currentMMTab = tabName; document.getElementById('tournaments-subpage').style.display = 'block'; switchMMTab(tabName); }
@@ -1076,36 +968,22 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
             var container = document.getElementById('statistics-container'); 
             if(joinedMatches.length === 0) { container.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Matches Played Yet!</div></div>`; return; } 
             var html = ""; 
-            [...joinedMatches].reverse().forEach(function(uMatch) { 
-                var m = fbMatches.find(function(x) { return x.key === uMatch.matchId; }); 
-                if(m) { 
-                    var wonAmt = 0; 
-                    if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) wonAmt = myRes.winning; } 
-                    html += `<div class="stat-match-card"><div class="sm-header"><div class="sm-title">${m.title}</div></div><div class="sm-footer"><div class="sm-col"><span class="sm-label">Entry Fee</span><span class="sm-val" style="color:#ffaa00;">🪙 ${m.fee}</span></div><div class="sm-col" style="text-align:right;"><span class="sm-label">Prize Won</span><span class="sm-val" style="color:${wonAmt > 0 ? '#39ff14' : '#f8fafc'};">🪙 ${wonAmt}</span></div></div></div>`; 
-                } 
-            }); 
-            container.innerHTML = html; 
+            [...joinedMatches].reverse().forEach(function(uMatch) { var m = fbMatches.find(function(x) { return x.key === uMatch.matchId; }); if(m) { var wonAmt = 0; if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) wonAmt = myRes.winning; } html += `<div class="stat-match-card"><div class="sm-header"><div class="sm-title">${m.title}</div></div><div class="sm-footer"><div class="sm-col"><span class="sm-label">Entry Fee</span><span class="sm-val" style="color:#ffaa00;">🪙 ${m.fee}</span></div><div class="sm-col" style="text-align:right;"><span class="sm-label">Prize Won</span><span class="sm-val" style="color:${wonAmt > 0 ? '#39ff14' : '#f8fafc'};">🪙 ${wonAmt}</span></div></div></div>`; } }); container.innerHTML = html; 
         }
 
         function openStatisticsPage() { trackPageOpen(); document.getElementById('statistics-subpage').style.display = 'block'; renderMyStatistics(); }
         
         function updateMenuStats() { 
-            if(!currentUserData) return; 
-            document.getElementById('menu-display-name').innerText = currentUserData.username; 
+            if(!currentUserData) return; document.getElementById('menu-display-name').innerText = currentUserData.username; 
             var rawName = currentUserData.username.toUpperCase(); var finalRefCode = rawName;
-            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } 
-            else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } else { finalRefCode = "MH-" + rawName; }
+            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } else { finalRefCode = "MH-" + rawName; }
             document.getElementById('my-ref-code').innerText = finalRefCode;
-            
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
         }
 
         function shareMyReferral() {
-            if(!currentUserData) return;
-            var rawName = currentUserData.username.toUpperCase(); var finalRefCode = rawName;
-            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } 
-            else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } else { finalRefCode = "MH-" + rawName; }
-            
+            if(!currentUserData) return; var rawName = currentUserData.username.toUpperCase(); var finalRefCode = rawName;
+            if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } else { finalRefCode = "MH-" + rawName; }
             var appLink = "https://kadamshubham01654-cmyk.github.io/mh-warriors-app/";
             var shareText = `🎮 *Invite Friends & Earn Rewards!* 🎮\n\nमित्रांना इन्व्हाईट करा आणि जिंका रियल कॅश! 💰\nमाझा Referral Code वापरून रजिस्टर कर आणि मिळव 🪙 10 Welcome Bonus!\n\n🔥 *My Referral Code:* ${finalRefCode}\n📥 *Download MH WARRIORS now:* ${appLink}`;
             if (navigator.share) { navigator.share({ title: 'MH WARRIORS', text: shareText }).catch(function(err){}); } else { window.copyToClipboard(shareText, "Share Text"); }
@@ -1127,8 +1005,7 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         function checkNewNotifications() { var count = fbNotifications.length; if(count > knownNotifCount) { if(knownNotifCount !== 0) { showCustomAlert(fbNotifications[0].message, "info"); } knownNotifCount = count; document.getElementById('notif-badge').style.display = 'block'; } }
 
         function loadLeaderboard(usersList) { 
-            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); 
-            var listHtml = ""; 
+            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); var listHtml = ""; 
             if(usersList.length === 0) { listHtml = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No players ranked yet.</div></div>`; }
             else { usersList.forEach(function(p, i) { var isMe = currentUserData && p.username === currentUserData.username; listHtml += `<div class="lb-list-item" style="${isMe ? 'border: 1px solid #00f3ff;' : ''}"><div style="width: 25%; font-size: 14px; color: #fff;">${i+1}</div><div style="flex: 1; font-size: 14px; font-weight: bold; color: #fff; text-align: left;">${p.username}</div><div style="width: 25%; font-size: 14px; font-weight: bold; color: #ffaa00; text-align: right;">🪙 ${p.winning||0}</div></div>`; }); }
             document.getElementById('lb-list-container').innerHTML = listHtml; 
@@ -1137,7 +1014,6 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         function switchTab(tabId) { document.querySelectorAll('.app-section').forEach(function(s) { s.classList.remove('active'); }); document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); }); document.getElementById(tabId).classList.add('active'); document.getElementById('nav-' + tabId).classList.add('active'); }
         function closeCategoryFolder() { document.getElementById('category-page').style.display = 'none'; }
         function openStaticPage(pageId) { trackPageOpen(); document.getElementById(pageId).style.display = 'block'; }
-        
         function openSupportPage() { trackPageOpen(); document.getElementById('support-rules-text').innerText = fbSettings.rules || "No rules set."; document.getElementById('support-subpage').style.display = 'block'; }
         function openWhatsApp() { if(fbSettings.waLink) window.open(fbSettings.waLink, '_blank'); else showCustomAlert("Link not set.", "error"); }
         function openTelegram() { if(fbSettings.tgLink) window.open(fbSettings.tgLink, '_blank'); else showCustomAlert("Telegram Link not set.", "error"); }
@@ -1146,41 +1022,41 @@ function toggleAuthMode(mode) { document.getElementById('register-form').style.d
         function closeSubPages() { document.querySelectorAll('.sub-page').forEach(function(p) { p.style.display = 'none'; }); }
 
         function openNotificationsPage() {
-            trackPageOpen();
-            document.getElementById('notifications-subpage').style.display = 'block';
-            let badge = document.getElementById('notif-badge');
-            if(badge) badge.style.display = 'none';
-
+            trackPageOpen(); document.getElementById('notifications-subpage').style.display = 'block'; let badge = document.getElementById('notif-badge'); if(badge) badge.style.display = 'none';
             var list = document.getElementById('user-notif-list');
-            if (!fbNotifications || fbNotifications.length === 0) {
-                list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Notifications Yet.</div></div>`;
-                return;
-            }
+            if (!fbNotifications || fbNotifications.length === 0) { list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Notifications Yet.</div></div>`; return; }
+            var html = ""; [...fbNotifications].reverse().forEach(function(n) { html += `<div style="background: #121a2e; border: 1px solid rgba(0,243,255,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00f3ff;"><div style="color: #fff; font-size: 14px; font-weight: bold; margin-bottom: 5px;">🔔 ${n.title}</div><div style="color: #8a9bb4; font-size: 12px; margin-bottom: 8px;">${n.message}</div><div style="color: #64748b; font-size: 10px; text-align: right;">${n.time || ''}</div></div>`; }); list.innerHTML = html;
+        }
 
-            var html = "";
-            [...fbNotifications].reverse().forEach(function(n) {
-                html += `<div style="background: #121a2e; border: 1px solid rgba(0,243,255,0.2); padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #00f3ff;">
-                    <div style="color: #fff; font-size: 14px; font-weight: bold; margin-bottom: 5px;">🔔 ${n.title}</div>
-                    <div style="color: #8a9bb4; font-size: 12px; margin-bottom: 8px;">${n.message}</div>
-                    <div style="color: #64748b; font-size: 10px; text-align: right;">${n.time || ''}</div>
-                </div>`;
+        // 🛡️ ANTI-HACK & SECURITY SCRIPT 🛡️
+        document.addEventListener('contextmenu', event => event.preventDefault()); // राईट क्लिक ब्लॉक
+        document.onkeydown = function(e) {
+            if(e.keyCode == 123) return false; // F12 Block
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; 
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false; 
+        };
+        setInterval(function() {
+            var before = new Date().getTime();
+            debugger; // हॅकरचा कन्सोल उघडल्यास ॲप क्रॅश होईल
+            var after = new Date().getTime();
+            if (after - before > 100) {
+                document.body.innerHTML = "<div style='background:#000; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'><h1 style='color:#ff0055; font-size:40px;'>⚠️ HACKING DETECTED! ⚠️</h1><p style='color:#fff;'>Your activity has been logged. Account banned.</p></div>";
+                setTimeout(() => { window.location.replace("about:blank"); }, 2000);
+            }
+        }, 1000);
+    </script>
+    
+    <!-- ⚙️ PWA SERVICE WORKER -->
+    <script>
+        if ("serviceWorker" in navigator) {
+            window.addEventListener("load", () => {
+                navigator.serviceWorker.register("./sw.js")
+                .then(() => console.log("MH WARRIORS Service Worker registered!"))
+                .catch(error => console.error("Service Worker error:", error));
             });
-            list.innerHTML = html;
         }
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('sw.js');
-        }
-    </script>
-    <script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js")
-      .then(() => console.log("MH WARRIORS Service Worker registered"))
-      .catch(error => console.error("Service Worker error:", error));
-  });
-}
     </script>
 </body>
 </html>
