@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#070914">
     <title>MH WARRIORS</title>
-    <link rel="manifest" href="manifest.json?v=4">
+    <link rel="manifest" href="manifest.json?v=5">
     
     <!-- 🎨 CSS STYLING -->
     <style>
@@ -351,7 +351,7 @@
         <!-- 🏆 LEADERBOARD TAB -->
         <div id="leaderboard" class="app-section container" style="padding: 20px;">
             <h3 style="text-align: center; color: #fff; margin-bottom: 20px; font-size: 22px;">Leaderboard</h3>
-            <div class="lb-header-row"><div style="width: 25%;">Position</div><div style="flex: 1; text-align: left;">Player</div><div style="width: 25%; text-align: right;">Winning</div></div>
+            <!-- <div class="lb-header-row"><div style="width: 25%;">Position</div><div style="flex: 1; text-align: left;">Player</div><div style="width: 25%; text-align: right;">Winning</div></div> -->
             <div id="lb-list-container"></div>
             <div style="margin-top: 20px; background: rgba(45,99,249,0.1); border: 1px solid #2D63F9; padding: 15px; border-radius: 8px; text-align: center;">
                 <p style="font-size: 12px; color: #8a9bb4;">Your Winning Coins</p>
@@ -401,13 +401,25 @@
             </div>
         </div>
 
-        <!-- 🎁 EARN TAB -->
+        <!-- 🎁 EARN TAB (WITH ADVANCED TRACKER) -->
         <div id="earn" class="app-section container" style="padding: 20px;">
             <div class="menu-list" style="text-align: center; padding: 30px; margin: 0; background:#121a2e; border-radius:12px; border:1px solid rgba(255,255,255,0.05);">
                 <h1 style="color: #39ff14; font-size: 35px; margin-bottom: 10px;">Refer & Earn</h1>
                 <p style="color: #8a9bb4; font-size: 13px; margin-bottom: 20px;">Share your code. When a friend signs up, you get <b id="earn-owner-bonus" style="color:#ffaa00;">🪙 15</b> and they get <b id="earn-newuser-bonus" style="color:#39ff14;">🪙 10</b>!</p>
                 <div style="background:#070914; padding:15px; border-radius:8px; border:1px dashed #00f3ff; margin-bottom:20px;"><p style="font-size:11px; color:#8a9bb4; margin-bottom:5px; text-transform:uppercase;">Your Unique Referral Code</p><h2 id="my-ref-code" style="color:#fff; letter-spacing:2px;">-</h2></div>
-                <button type="button" class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9;" onclick="shareMyReferral()">📤 Share Code & Link</button>
+                <button type="button" class="auth-btn" style="width: 100%; padding: 12px; background:#2D63F9; margin-bottom: 20px;" onclick="shareMyReferral()">📤 Share Code & Link</button>
+                
+                <!-- 📊 नवीन: Advanced Referral Tracker -->
+                <div style="background:#0c1220; padding:15px; border-radius:10px; border:1px solid rgba(0,243,255,0.2); display:flex; justify-content:space-between; text-align:center;">
+                    <div style="flex:1; border-right:1px solid rgba(255,255,255,0.1);">
+                        <div style="font-size:24px; font-weight:900; color:#fff;" id="track-invites">0</div>
+                        <div style="font-size:10px; color:#8a9bb4; text-transform:uppercase; margin-top:5px;">Total Invites</div>
+                    </div>
+                    <div style="flex:1;">
+                        <div style="font-size:24px; font-weight:900; color:#39ff14;" id="track-earned">🪙 0</div>
+                        <div style="font-size:10px; color:#8a9bb4; text-transform:uppercase; margin-top:5px;">Total Earned</div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -778,7 +790,7 @@
                     if(snapshot.exists()) { showCustomAlert("Username already taken! Choose another.", "error"); btn.innerText = "REGISTER NOW"; btn.disabled = false; } 
                     else {
                         var newUserRef = db.ref('users').push();
-                        var userData = { firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass, deposit: 0, winning: 0, key: newUserRef.key };
+                        var userData = { firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass, deposit: 0, winning: 0, totalInvited: 0, key: newUserRef.key };
                         newUserRef.set(userData, function(error) { if (error) { showCustomAlert("Registration Error: " + error.message, "error"); btn.innerText = "REGISTER NOW"; btn.disabled = false; } else { setAppStorage('mh_live_user_key', newUserRef.key); currentUserKey = newUserRef.key; startFirebaseListeners(); enterApp(); btn.innerText = "REGISTER NOW"; btn.disabled = false; } });
                     }
                 }, function(error) { clearTimeout(resetTimer); showCustomAlert("Database Error: " + error.message, "error"); btn.innerText = "REGISTER NOW"; btn.disabled = false; });
@@ -979,6 +991,13 @@
             if(rawName.startsWith("MH_") || rawName.startsWith("MH-")) { finalRefCode = "MH-" + rawName.substring(3); } else if(rawName.startsWith("MH")) { finalRefCode = "MH-" + rawName.substring(2); } else { finalRefCode = "MH-" + rawName; }
             document.getElementById('my-ref-code').innerText = finalRefCode;
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
+            
+            // 📊 ट्रॅकर अपडेट करण्याचा कोड 
+            var invites = currentUserData.totalInvited || 0;
+            var trackInvitesEl = document.getElementById('track-invites');
+            var trackEarnedEl = document.getElementById('track-earned');
+            if(trackInvitesEl) trackInvitesEl.innerText = invites;
+            if(trackEarnedEl) trackEarnedEl.innerText = "🪙 " + (invites * 15);
         }
 
         function shareMyReferral() {
@@ -1004,10 +1023,31 @@
         
         function checkNewNotifications() { var count = fbNotifications.length; if(count > knownNotifCount) { if(knownNotifCount !== 0) { showCustomAlert(fbNotifications[0].message, "info"); } knownNotifCount = count; document.getElementById('notif-badge').style.display = 'block'; } }
 
+        // 🏆 डायनॅमिक लीडर बोर्ड
         function loadLeaderboard(usersList) { 
-            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); var listHtml = ""; 
-            if(usersList.length === 0) { listHtml = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No players ranked yet.</div></div>`; }
-            else { usersList.forEach(function(p, i) { var isMe = currentUserData && p.username === currentUserData.username; listHtml += `<div class="lb-list-item" style="${isMe ? 'border: 1px solid #00f3ff;' : ''}"><div style="width: 25%; font-size: 14px; color: #fff;">${i+1}</div><div style="flex: 1; font-size: 14px; font-weight: bold; color: #fff; text-align: left;">${p.username}</div><div style="width: 25%; font-size: 14px; font-weight: bold; color: #ffaa00; text-align: right;">🪙 ${p.winning||0}</div></div>`; }); }
+            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); 
+            var listHtml = ""; 
+            if(usersList.length === 0) { 
+                listHtml = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No players ranked yet.</div></div>`; 
+            } else { 
+                usersList.forEach(function(p, i) { 
+                    var isMe = currentUserData && p.username === currentUserData.username; 
+                    
+                    var rankIcon = "🎖️"; var rankColor = "#fff"; var borderCss = "border: 1px solid rgba(255,255,255,0.05); background: #121a2e;";
+                    if(i === 0) { rankIcon = "👑"; rankColor = "#ffaa00"; borderCss = "border: 2px solid #ffaa00; background: rgba(255, 170, 0, 0.1);"; } // 1st Rank
+                    else if(i === 1) { rankIcon = "🥈"; rankColor = "#c0c0c0"; borderCss = "border: 1px solid #c0c0c0; background: rgba(192, 192, 192, 0.1);"; } // 2nd Rank
+                    else if(i === 2) { rankIcon = "🥉"; rankColor = "#cd7f32"; borderCss = "border: 1px solid #cd7f32; background: rgba(205, 127, 50, 0.1);"; } // 3rd Rank
+                    else if(isMe) { borderCss = "border: 1px solid #00f3ff; background: rgba(0, 243, 255, 0.05);"; }
+
+                    listHtml += `<div class="lb-list-item" style="${borderCss} padding: 15px 20px; border-radius: 8px; margin-bottom: 8px; display: flex; align-items: center;">
+                        <div style="width: 15%; font-size: 18px; font-weight: 900; color: ${rankColor}; text-align: center;">${i+1}</div>
+                        <div style="flex: 1; text-align: left; padding-left: 10px;">
+                            <div style="font-size: 15px; font-weight: bold; color: ${rankColor}; text-transform: uppercase;">${rankIcon} ${p.username}</div>
+                        </div>
+                        <div style="width: 30%; font-size: 16px; font-weight: 900; color: #39ff14; text-align: right;">🪙 ${p.winning||0}</div>
+                    </div>`; 
+                }); 
+            }
             document.getElementById('lb-list-container').innerHTML = listHtml; 
         }
         
@@ -1029,9 +1069,9 @@
         }
 
         // 🛡️ ANTI-HACK & SECURITY SCRIPT 🛡️
-        document.addEventListener('contextmenu', event => event.preventDefault()); // राईट क्लिक ब्लॉक
+        document.addEventListener('contextmenu', event => event.preventDefault()); 
         document.onkeydown = function(e) {
-            if(e.keyCode == 123) return false; // F12 Block
+            if(e.keyCode == 123) return false; 
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) return false; 
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) return false; 
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) return false; 
@@ -1039,7 +1079,7 @@
         };
         setInterval(function() {
             var before = new Date().getTime();
-            debugger; // हॅकरचा कन्सोल उघडल्यास ॲप क्रॅश होईल
+            debugger; 
             var after = new Date().getTime();
             if (after - before > 100) {
                 document.body.innerHTML = "<div style='background:#000; height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'><h1 style='color:#ff0055; font-size:40px;'>⚠️ HACKING DETECTED! ⚠️</h1><p style='color:#fff;'>Your activity has been logged. Account banned.</p></div>";
