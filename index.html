@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#070914">
     <title>MH WARRIORS</title>
-    <link rel="manifest" href="manifest.json?v=6">
+    <link rel="manifest" href="manifest.json?v=7">
     
     <!-- 🎨 CSS STYLING -->
     <style>
@@ -67,7 +67,9 @@
         .notif-bell { font-size: 20px; cursor: pointer; position: relative; }
         .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: #ff0055; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #070914; }
 
-        .announcement { background: #121929; padding: 10px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; color: #00f3ff; font-weight: bold; }
+        /* UPDATED: Announcement color changed to white */
+        .announcement { background: #121929; padding: 10px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; color: #ffffff; font-weight: bold; }
+        
         .banner-container { padding: 12px 15px; }
         .banner-card { width: 100%; aspect-ratio: 21/9; border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: #121a2e; }
         .banner-img { width: 100%; height: 100%; object-fit: cover; }
@@ -134,7 +136,7 @@
         .app-section { display: none; }
         .app-section.active { display: block; }
 
-        /* 🏆 NEW VIDEO STYLE LEADERBOARD 🏆 */
+        /* 🏆 VIDEO STYLE LEADERBOARD 🏆 */
         .lb-vid-tabs { display: flex; gap: 5px; background: #0c1220; padding: 5px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
         .lb-vid-tab { flex: 1; text-align: center; padding: 12px 0; font-size: 13px; font-weight: bold; color: #8a9bb4; border-radius: 8px; cursor: pointer; transition: 0.3s; }
         .lb-vid-tab.active { background: #4f46e5; color: #fff; box-shadow: 0 2px 10px rgba(79,70,229,0.3); }
@@ -144,6 +146,37 @@
         .lb-vid-name { flex: 1; font-size: 14px; color: #fff; text-align: left; }
         .lb-vid-win { width: 25%; font-size: 14px; color: #fff; text-align: right; display: flex; justify-content: flex-end; align-items: center; gap: 6px; }
         .lb-vid-coin { width: 14px; height: 14px; background: #ffaa00; border-radius: 50%; display: inline-block; border: 2px solid #ffd700; }
+
+        /* 💸 NEW ADD COIN & WITHDRAW UI CLASSES 💸 */
+        .amt-list-page { display: none; background: #050b14; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 250; overflow-y: auto; padding-bottom: 60px; }
+        .amt-card { background: #0c1427; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .amt-card:active { transform: scale(0.98); background: #16223f; border-color: #2D63F9; }
+        .amt-logo-sec { display: flex; align-items: center; gap: 15px; }
+        .amt-icon-circle { width: 45px; height: 45px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+        .amt-title-sec { text-align: left; }
+        .amt-title { font-size: 16px; font-weight: 900; color: #fff; letter-spacing: 0.5px; }
+        .amt-sub { font-size: 11px; color: #8a9bb4; margin-top: 2px; }
+        .amt-value { font-size: 18px; font-weight: 900; color: #c084fc; letter-spacing: 1px; }
+
+        /* WITHDRAW WHITE FORM */
+        .wd-form-page { display: none; background: #050b14; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 260; overflow-y: auto; }
+        .wd-header { display: flex; align-items: center; padding: 15px 20px; background: #09101f; color: white; font-size: 18px; font-weight: bold; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);}
+        .wd-top-bal { text-align: center; padding: 25px 0; color: white; background: #09101f; }
+        .wd-top-bal p { font-size: 14px; color: #8a9bb4; margin-bottom: 5px; }
+        .wd-top-bal h1 { font-size: 35px; font-weight: 400; color: #e2e8f0; }
+        .wd-white-box { background: white; margin: 0 15px; border-radius: 12px; padding: 20px; color: black; box-shadow: 0 10px 25px rgba(0,0,0,0.5); transform: translateY(-10px); }
+        .wd-input-group { margin-bottom: 20px; }
+        .wd-label { font-size: 13px; font-weight: bold; color: #1e293b; margin-bottom: 8px; display: block; }
+        .wd-input, .wd-select { width: 100%; padding: 12px 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 15px; outline: none; background: #fff; color: #0f172a; transition: 0.2s; }
+        .wd-input:focus, .wd-select:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59,130,246,0.2); }
+        .wd-btn-row { display: flex; gap: 12px; margin-top: 25px; }
+        .wd-btn { flex: 1; padding: 14px; border-radius: 6px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
+        .wd-btn-cancel { background: #ef4444; }
+        .wd-btn-cancel:active { background: #dc2626; }
+        .wd-btn-withdraw { background: #3b82f6; }
+        .wd-btn-withdraw:active { background: #2563eb; }
+        .wd-history-sec { text-align: center; margin-top: 20px; color: white; }
+        .wd-history-title { background: #0c1427; padding: 12px; font-weight: bold; font-size: 14px; border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05); color: #f8fafc; }
 
         #menu.app-section { background: #f0f2f5; min-height: 100vh; padding: 0; color: #1e293b; }
         .menu-dark-bg { background: #0c1220; height: 110px; width: 100%; border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
@@ -188,7 +221,7 @@
         .profile-input-group:focus-within { border-color: #3b82f6; background: #fff; }
         .profile-input-no-border { flex: 1; border: none; padding: 12px 10px; outline: none; background: transparent; color: #1e293b; font-size: 14px; width: 100%; }
         
-        #payment-gateway-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 2000; overflow-y: auto; padding-bottom: 30px; }
+        #payment-gateway-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f0f2f5; z-index: 3000; overflow-y: auto; padding-bottom: 30px; }
         .pg-header-bar { background: #0c1220; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
         .pg-header-brand { display: flex; align-items: center; gap: 10px; color: white; font-weight: bold; font-size: 16px; }
         .pg-close-btn { color: white; font-size: 24px; cursor: pointer; }
@@ -240,7 +273,7 @@
         .res-row.top-2 { background: rgba(192, 192, 192, 0.1); border-color: #c0c0c0; }
         .res-row.top-3 { background: rgba(205, 127, 50, 0.1); border-color: #cd7f32; }
         
-        /* 🤍 NEW WHITE CARD DESIGN 🤍 */
+        /* 🤍 WHITE CARD DESIGN 🤍 */
         .wmc-card { background: #ffffff; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative; border-bottom: 4px solid #2D63F9; }
         .wmc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
         .wmc-logo { width: 45px; height: 45px; border-radius: 50%; background: #0c1220; display: flex; align-items: center; justify-content: center; font-size: 22px; border: 2px solid #2D63F9; }
@@ -335,10 +368,11 @@
             </div>
         </div>
 
-        <div class="announcement" id="user-announcement-text">Welcome to MH Warriors! Select a category to play.</div>
-
         <!-- 🏠 HOME TAB -->
         <div id="home" class="app-section container active" style="padding: 0;">
+            <!-- UPDATED: Announcement is now only on Home Page & text color is White -->
+            <div class="announcement" id="user-announcement-text">Welcome to MH Warriors! Select a category to play.</div>
+
             <div class="banner-container"><div class="banner-card"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800" class="banner-img" id="user-banner-img" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800'"></div></div>
             
             <div class="my-matches-section">
@@ -542,8 +576,62 @@
                     <div><p style="font-size: 11px; color: #8a9bb4;">Deposit Balance</p><h3 style="color: #fff; margin-top: 5px;">🪙 <span id="wallet-dep-display">0</span></h3></div>
                     <div style="border-left: 1px solid rgba(255,255,255,0.1); padding-left: 20px;"><p style="font-size: 11px; color: #8a9bb4;">Winning Balance</p><h3 style="color: #39ff14; margin-top: 5px;">🪙 <span id="wallet-win-display">0</span></h3></div>
                 </div>
-                <div style="display: flex; gap: 10px;"><button type="button" class="auth-btn" style="background: linear-gradient(45deg, #00b300, #39ff14); color: black; flex:1;" onclick="openPaymentGateway()">Add Coins</button><button type="button" class="auth-btn" style="background: #ffaa00; color: black; flex:1;" onclick="withdrawPrompt()">Withdraw</button></div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="auth-btn" style="background: linear-gradient(45deg, #00b300, #39ff14); color: black; flex:1;" onclick="openAddCoinAmountPage()">Add Coins</button>
+                    <button type="button" class="auth-btn" style="background: #ffaa00; color: black; flex:1;" onclick="openWithdrawAmountPage()">Withdraw</button>
+                </div>
                 <button type="button" class="auth-btn" style="width: 100%; background: #16243D; color: #00f3ff; border: 1px solid #00f3ff; margin-top: 15px; font-size:14px;" onclick="openTxHistoryPage()">📜 View Transaction History</button>
+            </div>
+        </div>
+
+        <!-- 💸 NEW: ADD COIN AMOUNT LIST PAGE -->
+        <div id="add-coin-amounts-page" class="amt-list-page">
+            <div class="detail-header" style="background:#09101f; border-bottom:1px solid rgba(255,255,255,0.05);"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">Add Coins</span></div>
+            <div style="padding: 15px;" id="add-coin-list">
+                <!-- Javascript will load amounts here -->
+            </div>
+        </div>
+
+        <!-- 💸 NEW: WITHDRAW AMOUNT LIST PAGE -->
+        <div id="withdraw-amounts-page" class="amt-list-page">
+            <div class="detail-header" style="background:#09101f; border-bottom:1px solid rgba(255,255,255,0.05);"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">Redeem Won Coins</span></div>
+            <div style="padding: 15px;" id="withdraw-coin-list">
+                <!-- Javascript will load amounts here -->
+            </div>
+        </div>
+
+        <!-- 💸 NEW: WITHDRAW WHITE FORM -->
+        <div id="withdraw-form-page" class="wd-form-page">
+            <div class="wd-header"><span class="back-arrow" onclick="document.getElementById('withdraw-form-page').style.display='none'">←</span> Withdraw</div>
+            <div class="wd-top-bal"><p>Win Balance</p><h1 id="wd-form-bal">₹ 0</h1></div>
+            
+            <div class="wd-white-box">
+                <div class="wd-input-group">
+                    <label class="wd-label">Withdrawal Method</label>
+                    <select id="wd-method" class="wd-select" onchange="updateWdPlaceholder()">
+                        <option value="PHONE PE">PHONE PE</option>
+                        <option value="PAYTM">PAYTM</option>
+                        <option value="GPAY">GOOGLE PAY</option>
+                        <option value="OTHER UPI">OTHER UPI</option>
+                    </select>
+                </div>
+                <div class="wd-input-group">
+                    <label class="wd-label" id="wd-method-label" style="text-transform: uppercase;">PHONE PE UPI ID</label>
+                    <input type="text" id="wd-upi-input" class="wd-input" placeholder="Enter PHONE PE UPI ID">
+                </div>
+                <div class="wd-input-group">
+                    <label class="wd-label">Amount</label>
+                    <div style="font-size:26px; font-weight:bold; border-bottom:1px solid #cbd5e1; padding-bottom:8px; color:#0f172a;">₹ <span id="wd-form-amt-display">50</span></div>
+                </div>
+                <div class="wd-btn-row">
+                    <button class="wd-btn wd-btn-cancel" onclick="document.getElementById('withdraw-form-page').style.display='none'">Cancel</button>
+                    <button class="wd-btn wd-btn-withdraw" onclick="submitWithdrawForm()">Withdraw</button>
+                </div>
+            </div>
+
+            <div class="wd-history-sec">
+                <div class="wd-history-title">Withdrawals History</div>
+                <div style="padding: 25px; color: #8a9bb4; font-size: 13px;">Please check wallet history for details.</div>
             </div>
         </div>
 
@@ -732,6 +820,8 @@
                 document.getElementById('main-app').style.display = 'block';
                 loadDynamicFolders();
                 loadBrandingUI();
+                renderAddCoinList();
+                renderWithdrawCoinList();
             } else {
                 document.getElementById('main-app').style.display = 'none';
                 document.getElementById('auth-screen').style.display = 'flex';
@@ -742,7 +832,7 @@
         function trackPageOpen() { history.pushState({page: 'view'}, null, '#view'); }
         window.addEventListener('popstate', function (e) {
             if(location.hash !== '#view') {
-                document.querySelectorAll('.sub-page, .match-detail-page, #payment-gateway-screen').forEach(function(p) { p.style.display = 'none'; });
+                document.querySelectorAll('.sub-page, .match-detail-page, #payment-gateway-screen, .amt-list-page, .wd-form-page').forEach(function(p) { p.style.display = 'none'; });
                 document.querySelectorAll('.modal-bg').forEach(function(m) { m.style.display = 'none'; });
             }
         });
@@ -838,7 +928,7 @@
             } catch(e) { if(finished) return; finished = true; clearTimeout(resetTimer); btn.innerText = "LOGIN NOW"; btn.disabled = false; showCustomAlert("App Error: " + e.message, "error"); }
         }
 
-        function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); }
+        function enterApp() { document.getElementById('auth-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; loadDynamicFolders(); loadBrandingUI(); renderAddCoinList(); renderWithdrawCoinList(); }
         function logoutApp() {
             try { db.ref().off(); } catch(e) {}
             removeAppStorage('mh_live_user_key'); currentUserKey = null; currentUserData = null; fbMatches = []; fbCategories = []; fbSettings = {}; fbNotifications = [];
@@ -857,13 +947,103 @@
             list.innerHTML = html; 
         }
 
-        var pgTimerInterval; var currentPayAmount = 0;
-        function openPaymentGateway() { var amt = prompt("Enter Amount to Add (₹):", "50"); if(!amt || isNaN(amt) || parseInt(amt) <= 0) return; trackPageOpen(); currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; startPGTimer(8 * 60); document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block'; }
+        // 💸 NEW ADD COINS LIST UI
+        function renderAddCoinList() {
+            var amounts = [10, 20, 30, 40, 50, 100, 500, 1000];
+            var html = "";
+            amounts.forEach(function(amt) {
+                html += `<div class="amt-card" onclick="processAddCoin(${amt})">
+                    <div class="amt-logo-sec">
+                        <div class="amt-icon-circle">🪙</div>
+                        <div class="amt-title-sec"><div class="amt-title">Add Coins</div><div class="amt-sub">Recharge Wallet</div></div>
+                    </div>
+                    <div class="amt-value">${amt} INR</div>
+                </div>`;
+            });
+            document.getElementById('add-coin-list').innerHTML = html;
+        }
+
+        function openAddCoinAmountPage() { trackPageOpen(); document.getElementById('add-coin-amounts-page').style.display = 'block'; }
+        
+        function processAddCoin(amt) {
+            currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; startPGTimer(8 * 60); document.getElementById('add-coin-amounts-page').style.display = 'none'; document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block';
+        }
+
+        // 💸 NEW WITHDRAW AMOUNT LIST UI
+        function renderWithdrawCoinList() {
+            var amounts = [50, 60, 70, 80, 100, 150, 200];
+            var html = "";
+            amounts.forEach(function(amt) {
+                html += `<div class="amt-card" onclick="openWithdrawForm(${amt})">
+                    <div class="amt-logo-sec">
+                        <div class="amt-icon-circle" style="font-size:16px;">UPI</div>
+                        <div class="amt-title-sec"><div class="amt-title">UPI</div><div class="amt-sub">Redeem Won Coins</div></div>
+                    </div>
+                    <div class="amt-value">${amt} INR</div>
+                </div>`;
+            });
+            document.getElementById('withdraw-coin-list').innerHTML = html;
+        }
+
+        function openWithdrawAmountPage() { trackPageOpen(); document.getElementById('withdraw-amounts-page').style.display = 'block'; }
+        
+        // 💸 NEW WITHDRAW FORM UI
+        var currentWdAmount = 0;
+        function openWithdrawForm(amt) {
+            if(!currentUserData) return;
+            var winBal = currentUserData.winning || 0;
+            if(winBal < amt) { showCustomAlert(`Insufficient WINNING balance! Need 🪙 ${amt}`, "error"); return; }
+            
+            trackPageOpen();
+            currentWdAmount = amt;
+            document.getElementById('wd-form-bal').innerText = "₹ " + winBal;
+            document.getElementById('wd-form-amt-display').innerText = amt;
+            document.getElementById('wd-upi-input').value = ""; // clear previous
+            updateWdPlaceholder();
+            document.getElementById('withdraw-form-page').style.display = 'block';
+        }
+
+        function updateWdPlaceholder() {
+            var method = document.getElementById('wd-method').value;
+            var label = document.getElementById('wd-method-label');
+            var input = document.getElementById('wd-upi-input');
+            label.innerText = method + " UPI ID / NUMBER";
+            input.placeholder = "Enter " + method + " Details";
+        }
+
+        function submitWithdrawForm() {
+            if(!currentUserData) return;
+            var winBal = currentUserData.winning || 0;
+            if(winBal < currentWdAmount) { showCustomAlert("Insufficient WINNING balance!", "error"); return; }
+            
+            var method = document.getElementById('wd-method').value;
+            var upi = document.getElementById('wd-upi-input').value.trim();
+            if(!upi) { showCustomAlert("Please enter " + method + " details!", "error"); return; }
+
+            var btn = document.querySelector('.wd-btn-withdraw');
+            btn.innerText = "Processing..."; btn.disabled = true;
+
+            var fullDetails = method + ": " + upi;
+
+            db.ref('users/' + currentUserKey).update({ winning: winBal - currentWdAmount }).then(function() {
+                db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: currentWdAmount, upi: fullDetails, status: 'Pending' }); 
+                db.ref('users/' + currentUserKey + '/transactions').push({ title: "Withdrawal Requested", amount: currentWdAmount, sign: "-", status: "Pending", date: new Date().toLocaleString() }); 
+                showCustomAlert("Withdrawal Requested! ✅"); 
+                document.getElementById('withdraw-form-page').style.display='none';
+                closeSubPages();
+                btn.innerText = "Withdraw"; btn.disabled = false;
+            }).catch(function() {
+                showCustomAlert("Error processing request.", "error");
+                btn.innerText = "Withdraw"; btn.disabled = false;
+            });
+        }
+
+
+        var pgTimerInterval; 
         function closePaymentGateway() { document.getElementById('payment-gateway-screen').style.display = 'none'; document.getElementById('main-app').style.display = 'block'; clearInterval(pgTimerInterval); }
         function startPGTimer(duration) { var timerDisplay = document.getElementById('pg-timer-display'); var timer = duration, minutes, seconds; clearInterval(pgTimerInterval); pgTimerInterval = setInterval(function () { minutes = parseInt(timer / 60, 10); seconds = parseInt(timer % 60, 10); minutes = minutes < 10 ? "0" + minutes : minutes; seconds = seconds < 10 ? "0" + seconds : seconds; timerDisplay.textContent = minutes + ":" + seconds; if (--timer < 0) { clearInterval(pgTimerInterval); timerDisplay.textContent = "EXPIRED"; closePaymentGateway(); } }, 1000); }
         function payViaGatewayApp(appType) { var upi = fbSettings.upiId; if(!upi) { showCustomAlert("Admin hasn't set UPI!", "error"); return; } var upiLink = `upi://pay?pa=${upi}&pn=${encodeURIComponent(fbSettings.appName||'App')}&am=${currentPayAmount}&cu=INR`; window.location.href = upiLink; }
         function submitGatewayUTR() { var utr = document.getElementById('pg-utr-input').value.trim(); if(utr.length < 10) { showCustomAlert("Enter valid UTR Number!", "error"); return; } db.ref('finance/deposits').push({ userId: currentUserData.username, userName: currentUserData.firstName, amount: currentPayAmount, utr: utr, status: 'Pending', time: new Date().toLocaleString() }); db.ref('users/' + currentUserKey + '/transactions').push({ title: "Deposit Processing (UTR: "+utr+")", amount: currentPayAmount, sign: "+", status: "Pending", date: new Date().toLocaleString() }); showCustomAlert("Payment Verification Sent to Admin! ✅"); closePaymentGateway(); }
-        function withdrawPrompt() { if(!currentUserData) return; var amount = prompt(`Withdraw WINNING Coins\n(Available: 🪙 ${currentUserData.winning || 0}):`, "50"); if(!amount) return; var amt = parseInt(amount); if(amt <= 0 || (currentUserData.winning||0) < amt) { showCustomAlert("Insufficient WINNING balance!", "error"); return; } var upi = prompt("Enter your UPI ID:"); if(!upi) return; db.ref('users/' + currentUserKey).update({ winning: currentUserData.winning - amt }); db.ref('finance/withdrawals').push({ name: currentUserData.username, userId: currentUserData.username, amount: amt, upi: upi, status: 'Pending' }); db.ref('users/' + currentUserKey + '/transactions').push({ title: "Withdrawal Requested", amount: amt, sign: "-", status: "Pending", date: new Date().toLocaleString() }); showCustomAlert("Withdrawal Requested! ✅"); closeSubPages(); }
 
         function loadDynamicFolders() { var grid = document.getElementById('dynamic-folders-grid'); if(fbCategories.length === 0) { grid.innerHTML = `<div style="grid-column: span 2;" class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No Games Available.</div></div>`; return; } grid.innerHTML = ""; fbCategories.forEach(function(cat) { grid.innerHTML += `<div class="category-card" onclick="openCategoryFolder('${cat.title}')"><img src="${cat.image}" class="category-img"><div class="category-overlay">${cat.title}</div></div>`; }); }
         function openCategoryFolder(categoryName) { trackPageOpen(); currentActiveCategory = categoryName; document.getElementById('category-title-text').innerText = categoryName; document.getElementById('category-page').style.display = 'block'; switchCategoryTab('upcoming'); }
@@ -893,7 +1073,6 @@
 
             if (match.roomId || match.resultText) { var ytLink = fbSettings.ytLink || "https://youtube.com/"; actionBtns += `<button type="button" class="auth-btn" style="background:rgba(255,0,0,0.1); color:#ff0000; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #ff0000;" onclick="window.open('${ytLink}', '_blank')">🔴 WATCH LIVE STREAM</button>`; }
 
-            // 🎯 NEW: In-Game Name Display Logic for Results
             if (match.resultText && match.resultData) {
                 match.resultData.sort(function(a, b) { return (b.winning || 0) - (a.winning || 0); });
                 var resHtml = `<div class="res-winner-box">🔥 BOOYAH! 🏆</div><div class="res-full-header">FULL RESULT</div><div class="res-table-head"><div class="res-col-1">#</div><div class="res-col-2">Player Name</div><div class="res-col-3">Kills</div><div class="res-col-4">Winning</div></div>`;
@@ -1003,7 +1182,6 @@
             document.getElementById('my-ref-code').innerText = finalRefCode;
             var mCount = joinedMatches.length; var totalKills = 0; var totalWon = 0; fbMatches.forEach(function(m) { if(m.resultData) { var myRes = m.resultData.find(function(r) { return r.appUser === currentUserData.username; }); if(myRes) { totalKills += (myRes.kills || 0); totalWon += (myRes.winning || 0); } } }); document.getElementById('menu-stat-matches').innerText = mCount; document.getElementById('menu-stat-kills').innerText = totalKills; document.getElementById('menu-stat-won').innerText = totalWon; 
             
-            // 📊 ट्रॅकर अपडेट करण्याचा कोड 
             var invites = currentUserData.totalInvited || 0;
             var trackInvitesEl = document.getElementById('track-invites');
             var trackEarnedEl = document.getElementById('track-earned');
@@ -1034,7 +1212,6 @@
         
         function checkNewNotifications() { var count = fbNotifications.length; if(count > knownNotifCount) { if(knownNotifCount !== 0) { showCustomAlert(fbNotifications[0].message, "info"); } knownNotifCount = count; document.getElementById('notif-badge').style.display = 'block'; } }
 
-        // 🏆 NEW VIDEO STYLE LEADERBOARD
         function loadLeaderboard(usersList) { 
             usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); 
             var listHtml = ""; 
@@ -1052,7 +1229,6 @@
             document.getElementById('lb-list-container').innerHTML = listHtml; 
         }
 
-        // Weekly/Monthly/Fulltime टॅब बदलणारा कोड
         function switchLbVidTab(tabName) {
             document.querySelectorAll('.lb-vid-tab').forEach(function(t) { t.classList.remove('active'); });
             document.getElementById('lb-tab-' + tabName).classList.add('active');
@@ -1066,7 +1242,7 @@
         function openTelegram() { if(fbSettings.tgLink) window.open(fbSettings.tgLink, '_blank'); else showCustomAlert("Telegram Link not set.", "error"); }
         function openInstagram() { if(fbSettings.igLink) window.open(fbSettings.igLink, '_blank'); else showCustomAlert("Instagram Link not set.", "error"); }
         function callSupport() { if(fbSettings.supportNo) window.location.href = "tel:" + fbSettings.supportNo; else showCustomAlert("Number not set.", "error"); }
-        function closeSubPages() { document.querySelectorAll('.sub-page').forEach(function(p) { p.style.display = 'none'; }); }
+        function closeSubPages() { document.querySelectorAll('.sub-page, .amt-list-page, .wd-form-page').forEach(function(p) { p.style.display = 'none'; }); }
 
         function openNotificationsPage() {
             trackPageOpen(); document.getElementById('notifications-subpage').style.display = 'block'; let badge = document.getElementById('notif-badge'); if(badge) badge.style.display = 'none';
