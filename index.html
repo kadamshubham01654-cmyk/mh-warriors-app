@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#070914">
     <title>MH WARRIORS</title>
-    <link rel="manifest" href="manifest.json?v=7">
+    <link rel="manifest" href="manifest.json?v=8">
     
     <!-- 🎨 CSS STYLING -->
     <style>
@@ -14,7 +14,7 @@
         
         /* TEXT SELECTION DISABLE CODE & SCROLL FIX */
         body { background: #070914; color: #fff; padding-bottom: 70px; -webkit-touch-callout: none; -webkit-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; overscroll-behavior-y: contain; }
-        input { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
+        input, select { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
         
         /* SPLASH SCREEN */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #070914; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease-out; }
@@ -67,7 +67,7 @@
         .notif-bell { font-size: 20px; cursor: pointer; position: relative; }
         .notif-badge { display: none; position: absolute; top: -2px; right: -2px; background: #ff0055; width: 10px; height: 10px; border-radius: 50%; border: 2px solid #070914; }
 
-        /* UPDATED: Announcement color changed to white */
+        /* 🔥 UPDATED: Announcement is White */
         .announcement { background: #121929; padding: 10px 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 12px; color: #ffffff; font-weight: bold; }
         
         .banner-container { padding: 12px 15px; }
@@ -370,7 +370,7 @@
 
         <!-- 🏠 HOME TAB -->
         <div id="home" class="app-section container active" style="padding: 0;">
-            <!-- UPDATED: Announcement is now only on Home Page & text color is White -->
+            <!-- 🔥 UPDATED: Announcement ONLY on Home Page and color is White -->
             <div class="announcement" id="user-announcement-text">Welcome to MH Warriors! Select a category to play.</div>
 
             <div class="banner-container"><div class="banner-card"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800" class="banner-img" id="user-banner-img" onerror="this.src='https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=800'"></div></div>
@@ -584,7 +584,7 @@
             </div>
         </div>
 
-        <!-- 💸 NEW: ADD COIN AMOUNT LIST PAGE -->
+        <!-- 💸 ADD COIN AMOUNT LIST PAGE -->
         <div id="add-coin-amounts-page" class="amt-list-page">
             <div class="detail-header" style="background:#09101f; border-bottom:1px solid rgba(255,255,255,0.05);"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">Add Coins</span></div>
             <div style="padding: 15px;" id="add-coin-list">
@@ -592,7 +592,7 @@
             </div>
         </div>
 
-        <!-- 💸 NEW: WITHDRAW AMOUNT LIST PAGE -->
+        <!-- 💸 WITHDRAW AMOUNT LIST PAGE -->
         <div id="withdraw-amounts-page" class="amt-list-page">
             <div class="detail-header" style="background:#09101f; border-bottom:1px solid rgba(255,255,255,0.05);"><span class="back-arrow" onclick="closeSubPages()">←</span><span class="detail-title">Redeem Won Coins</span></div>
             <div style="padding: 15px;" id="withdraw-coin-list">
@@ -600,7 +600,7 @@
             </div>
         </div>
 
-        <!-- 💸 NEW: WITHDRAW WHITE FORM -->
+        <!-- 💸 WITHDRAW WHITE FORM -->
         <div id="withdraw-form-page" class="wd-form-page">
             <div class="wd-header"><span class="back-arrow" onclick="document.getElementById('withdraw-form-page').style.display='none'">←</span> Withdraw</div>
             <div class="wd-top-bal"><p>Win Balance</p><h1 id="wd-form-bal">₹ 0</h1></div>
@@ -811,6 +811,21 @@
         var joinedMatches = []; var activeMatchId = null; 
         var currentMMTab = 'ongoing'; var currentActiveCategory = ""; var currentCategoryTab = 'upcoming';
         var knownNotifCount = 0; var selectedSeats = []; var currentMatchFee = 0;
+        
+        // Leaderboard Variables
+        var currentLbTab = 'fulltime';
+        window.lastUsersList = [];
+
+        // 📅 SMART LEADERBOARD DATE HELPERS
+        function getResetWeekStr() {
+            let d = new Date(); let day = d.getDay();
+            let diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            let monday = new Date(d.setDate(diff));
+            return monday.getFullYear() + "-W" + (monday.getMonth()+1) + "-" + monday.getDate();
+        }
+        function getResetMonthStr() {
+            let d = new Date(); return d.getFullYear() + "-M" + (d.getMonth() + 1);
+        }
 
         document.addEventListener("DOMContentLoaded", function() {
             currentUserKey = getAppStorage('mh_live_user_key');
@@ -844,6 +859,14 @@
                 if(snapshot.exists()) {
                     currentUserData = snapshot.val();
                     currentUserData.key = snapshot.key;
+                    
+                    // 📅 SMART AUTO-RESET LOGIC: Resets user's own weekly/monthly score in DB if date changed
+                    let cw = getResetWeekStr(); let cm = getResetMonthStr();
+                    let updates = {}; let needsUpdate = false;
+                    if(currentUserData.lb_week !== cw) { updates['lb_week'] = cw; updates['weekly_winning'] = 0; needsUpdate = true; }
+                    if(currentUserData.lb_month !== cm) { updates['lb_month'] = cm; updates['monthly_winning'] = 0; needsUpdate = true; }
+                    if(needsUpdate) { db.ref('users/' + currentUserKey).update(updates); }
+
                     updateWalletUI(); updateMenuStats(); renderTxHistory(); syncJoinedMatches(); renderCategoryMatches(); updateJoinedMatchesUI(); renderMyStatistics();
                 } else { logoutApp(); }
             }, function(error) { showCustomAlert('Unable to load your account. Please try again.', 'error'); });
@@ -891,7 +914,7 @@
                     if(snapshot.exists()) { showCustomAlert("Username already taken! Choose another.", "error"); btn.innerText = "REGISTER NOW"; btn.disabled = false; } 
                     else {
                         var newUserRef = db.ref('users').push();
-                        var userData = { firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass, deposit: 0, winning: 0, totalInvited: 0, key: newUserRef.key };
+                        var userData = { firstName: fname, lastName: lname, username: uname, phone: phone, email: email, password: pass, deposit: 0, winning: 0, totalInvited: 0, lb_week: getResetWeekStr(), lb_month: getResetMonthStr(), weekly_winning: 0, monthly_winning: 0, key: newUserRef.key };
                         newUserRef.set(userData, function(error) { if (error) { showCustomAlert("Registration Error: " + error.message, "error"); btn.innerText = "REGISTER NOW"; btn.disabled = false; } else { setAppStorage('mh_live_user_key', newUserRef.key); currentUserKey = newUserRef.key; startFirebaseListeners(); enterApp(); btn.innerText = "REGISTER NOW"; btn.disabled = false; } });
                     }
                 }, function(error) { clearTimeout(resetTimer); showCustomAlert("Database Error: " + error.message, "error"); btn.innerText = "REGISTER NOW"; btn.disabled = false; });
@@ -947,7 +970,7 @@
             list.innerHTML = html; 
         }
 
-        // 💸 NEW ADD COINS LIST UI
+        // 💸 ADD COINS LIST UI
         function renderAddCoinList() {
             var amounts = [10, 20, 30, 40, 50, 100, 500, 1000];
             var html = "";
@@ -969,14 +992,14 @@
             currentPayAmount = parseInt(amt); document.getElementById('pg-display-amount').innerText = currentPayAmount + ".00"; document.getElementById('pg-txn-hash').innerText = "TXN-" + Math.random().toString(36).substring(2, 10).toUpperCase(); document.getElementById('pg-admin-upi').innerText = fbSettings.upiId || "Not Set"; document.getElementById('pg-admin-qr').src = fbSettings.qrUrl || "https://via.placeholder.com/200?text=QR+Not+Set"; startPGTimer(8 * 60); document.getElementById('add-coin-amounts-page').style.display = 'none'; document.getElementById('main-app').style.display = 'none'; document.getElementById('payment-gateway-screen').style.display = 'block';
         }
 
-        // 💸 NEW WITHDRAW AMOUNT LIST UI
+        // 💸 WITHDRAW AMOUNT LIST UI
         function renderWithdrawCoinList() {
             var amounts = [50, 60, 70, 80, 100, 150, 200];
             var html = "";
             amounts.forEach(function(amt) {
                 html += `<div class="amt-card" onclick="openWithdrawForm(${amt})">
                     <div class="amt-logo-sec">
-                        <div class="amt-icon-circle" style="font-size:16px;">UPI</div>
+                        <div class="amt-icon-circle" style="font-size:16px; color:#1e293b;">UPI</div>
                         <div class="amt-title-sec"><div class="amt-title">UPI</div><div class="amt-sub">Redeem Won Coins</div></div>
                     </div>
                     <div class="amt-value">${amt} INR</div>
@@ -987,7 +1010,7 @@
 
         function openWithdrawAmountPage() { trackPageOpen(); document.getElementById('withdraw-amounts-page').style.display = 'block'; }
         
-        // 💸 NEW WITHDRAW FORM UI
+        // 💸 WITHDRAW FORM UI
         var currentWdAmount = 0;
         function openWithdrawForm(amt) {
             if(!currentUserData) return;
@@ -998,7 +1021,7 @@
             currentWdAmount = amt;
             document.getElementById('wd-form-bal').innerText = "₹ " + winBal;
             document.getElementById('wd-form-amt-display').innerText = amt;
-            document.getElementById('wd-upi-input').value = ""; // clear previous
+            document.getElementById('wd-upi-input').value = "";
             updateWdPlaceholder();
             document.getElementById('withdraw-form-page').style.display = 'block';
         }
@@ -1068,7 +1091,14 @@
             trackPageOpen(); activeMatchId = key; 
             document.getElementById('detail-match-name').innerText = match.title; document.getElementById('detail-img').src = match.image; document.getElementById('detail-fee').innerText = match.fee; document.getElementById('detail-prize').innerText = match.prize; document.getElementById('detail-perkill').innerText = match.perKill || '0'; document.getElementById('detail-map').innerText = match.map || '-'; document.getElementById('detail-teamtype').innerText = match.teamType || 'Solo'; document.getElementById('detail-schedule').innerText = match.date ? `${match.date} at ${match.time}` : "TBA"; 
             
-            var isJoined = joinedMatches.some(function(jm) { return jm.matchId === match.key; }); var extraDiv = document.getElementById('detail-extra-info'); var actionBtns = "";
+            // 🔥 STRICT SECURITY LOCK LOGIC
+            var isStrictlyJoined = false;
+            if(match.joinedPlayers && currentUserData) {
+                var myReg = Object.values(match.joinedPlayers).find(p => p.appUser === currentUserData.username);
+                if(myReg) isStrictlyJoined = true;
+            }
+
+            var extraDiv = document.getElementById('detail-extra-info'); var actionBtns = "";
             actionBtns += `<button type="button" class="auth-btn" style="background:transparent; color:#25D366; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #25D366;" onclick="shareMatchWhatsApp('${match.title}', '${match.fee}', '${match.prize}', '${match.map}', '${match.teamType}')">📲 Invite Squad via WhatsApp</button>`;
 
             if (match.roomId || match.resultText) { var ytLink = fbSettings.ytLink || "https://youtube.com/"; actionBtns += `<button type="button" class="auth-btn" style="background:rgba(255,0,0,0.1); color:#ff0000; font-size:12px; padding:10px; margin:0 15px 12px 15px; width:calc(100% - 30px); border:1px solid #ff0000;" onclick="window.open('${ytLink}', '_blank')">🔴 WATCH LIVE STREAM</button>`; }
@@ -1103,7 +1133,7 @@
                 });
                 extraDiv.innerHTML = actionBtns + resHtml;
             } else if (match.roomId && !match.resultText) {
-                var credHtml = isJoined ? `<div class="cred-box" style="margin: 0 15px 12px 15px;"><div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>` : `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`;
+                var credHtml = isStrictlyJoined ? `<div class="cred-box" style="margin: 0 15px 12px 15px;"><div class="cred-row"><span class="cred-label">ROOM ID</span><span class="cred-val" style="user-select:text;">${match.roomId}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomId}', 'Room ID');">COPY</button></div><div class="cred-row" style="margin-top:10px;"><span class="cred-label">PASSWORD</span><span class="cred-val" style="user-select:text;">${match.roomPass}</span><button type="button" class="copy-btn" onclick="event.stopPropagation(); window.copyToClipboard('${match.roomPass}', 'Password');">COPY</button></div></div>` : `<div style="margin: 0 15px 12px 15px; text-align:center; color:#ff0055; font-size:12px; font-weight:bold; background:rgba(255,0,85,0.1); padding:10px; border-radius:8px;">🔒 Join Match to see ID & Password</div>`;
                 extraDiv.innerHTML = actionBtns + credHtml;
             } else { extraDiv.innerHTML = actionBtns; }
 
@@ -1212,17 +1242,39 @@
         
         function checkNewNotifications() { var count = fbNotifications.length; if(count > knownNotifCount) { if(knownNotifCount !== 0) { showCustomAlert(fbNotifications[0].message, "info"); } knownNotifCount = count; document.getElementById('notif-badge').style.display = 'block'; } }
 
+        // 🏆 SMART LEADERBOARD RENDERING
         function loadLeaderboard(usersList) { 
-            usersList.sort(function(a, b) { return (b.winning||0) - (a.winning||0); }); 
+            window.lastUsersList = usersList;
+            let currentWeek = getResetWeekStr();
+            let currentMonth = getResetMonthStr();
+
+            let processedList = usersList.map(function(p) {
+                let wScore = (p.lb_week === currentWeek) ? (p.weekly_winning || 0) : 0;
+                let mScore = (p.lb_month === currentMonth) ? (p.monthly_winning || 0) : 0;
+                let fScore = p.winning || 0;
+                return { ...p, computedWeekly: wScore, computedMonthly: mScore, computedFull: fScore };
+            });
+
+            processedList.sort(function(a, b) { 
+                if(currentLbTab === 'weekly') return b.computedWeekly - a.computedWeekly;
+                if(currentLbTab === 'monthly') return b.computedMonthly - a.computedMonthly;
+                return b.computedFull - a.computedFull;
+            }); 
+            
             var listHtml = ""; 
-            if(usersList.length === 0) { 
+            if(processedList.length === 0) { 
                 listHtml = `<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No players ranked yet.</div></div>`; 
             } else { 
-                usersList.forEach(function(p, i) { 
+                processedList.forEach(function(p, i) { 
+                    let score = 0;
+                    if(currentLbTab === 'weekly') score = p.computedWeekly;
+                    else if(currentLbTab === 'monthly') score = p.computedMonthly;
+                    else score = p.computedFull;
+                    
                     listHtml += `<div class="lb-vid-item">
                         <div class="lb-vid-pos">${i+1}</div>
                         <div class="lb-vid-name">${p.username}</div>
-                        <div class="lb-vid-win"><span class="lb-vid-coin"></span> ${p.winning||0}</div>
+                        <div class="lb-vid-win"><span class="lb-vid-coin"></span> ${score}</div>
                     </div>`; 
                 }); 
             }
@@ -1232,6 +1284,10 @@
         function switchLbVidTab(tabName) {
             document.querySelectorAll('.lb-vid-tab').forEach(function(t) { t.classList.remove('active'); });
             document.getElementById('lb-tab-' + tabName).classList.add('active');
+            currentLbTab = tabName;
+            if(window.lastUsersList && window.lastUsersList.length > 0) {
+                loadLeaderboard(window.lastUsersList);
+            }
         }
         
         function switchTab(tabId) { document.querySelectorAll('.app-section').forEach(function(s) { s.classList.remove('active'); }); document.querySelectorAll('.nav-item').forEach(function(i) { i.classList.remove('active'); }); document.getElementById(tabId).classList.add('active'); document.getElementById('nav-' + tabId).classList.add('active'); }
